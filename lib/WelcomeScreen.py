@@ -11,7 +11,7 @@ from PaintUtils import *
 
 
 class WelcomeScreen(QWidget,FilePaths):
-    create = pyqtSignal()
+    create = pyqtSignal(str)
     load = pyqtSignal(str)
 
     save_files = None
@@ -30,7 +30,7 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addWidget(self.new_label)
 
         self.game_name = QLineEdit()
-        self.game_name.setText('Enter game name...')
+        self.game_name.setText('Enter game name')
         self.layout.addWidget(self.game_name)
 
         self.start_button = QPushButton('Create')
@@ -52,10 +52,12 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addWidget(self.load_button)
 
     def find_save_files(self):
+        print(self.user_path)
         self.file_names = os.listdir(f'{self.user_path}saves/')
     
     def start_game(self):
-        self.create.emit()
+        self.create.emit(self.game_name.text())
 
     def load_game(self):
+        self.load_file_name = self.save_games.currentText()
         self.load.emit(self.load_file_name)

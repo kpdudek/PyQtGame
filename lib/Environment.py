@@ -15,13 +15,12 @@ class Environment(QWidget,Colors,FilePaths):
 
     generate_env = True
     env_snapshot = {}
+    game_snapshot = []
+    env_idx = 0
 
     def __init__(self,width,height,time_of_day,player,save_file, load = True):
         super().__init__()
-        
-        if self.load:
-            self.load_game
-            self.generate_env = False
+        self.load = load
         
         self.layout = QStackedLayout()
         self.setLayout(self.layout)
@@ -30,6 +29,11 @@ class Environment(QWidget,Colors,FilePaths):
         self.height = height
         self.player = player
         self.save_file = save_file
+
+        if self.load:
+            self.load_game()
+            self.generate_env = False
+            self.env_snapshot = self.game_snapshot[0]
 
         self.main_frame = QLabel()
         self.layout.addWidget(self.main_frame)
@@ -44,14 +48,23 @@ class Environment(QWidget,Colors,FilePaths):
         self.draw_ground()
         self.draw_player()
 
-        self.save_game()
+        if not self.load:
+            self.save_game()
 
         self.generate_env = False
+
+        log('Environment initialized...')
 
     def load_game(self):
         with open(f'{self.user_path}saves/{self.save_file}') as fp:
             game = json.load(fp)
-        self.env_snapshot = game
+        self.game_snapshot = game
+    
+    def save_game(self):
+        self.game_snapshot.append(self.env_snapshot)
+        fp = open(f'{self.user_path}saves/{self.save_file}','w')
+        json.dump(self.game_snapshot,fp)
+        fp.close()
 
     def set_sky(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
@@ -276,14 +289,19 @@ class Environment(QWidget,Colors,FilePaths):
         self.set_sky()
         self.draw_ground()
         self.draw_player()
+        
         self.save_game()
-
-    def save_game():
-        with open(f'{self.user_path}saves/{self.save_file}') as fp:
-            json.dump(self.env_snapshot,fp)
     
     def update_player(self):
         self.canvas = QPixmap(self.width,self.height)
         self.main_frame.setPixmap(self.canvas)
 
         self.redraw_scene()
+
+    def new_environment(self):
+        self.game_snapshot.append(self.env_snapshot)
+        self.generate_env = True
+        self.redraw_scene()
+        self.generate_env = False
+
+        self.save_game()

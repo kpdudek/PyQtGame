@@ -12,6 +12,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+import pathlib
+
 def hide_all_widgets(layout):
     items = (layout.itemAt(i) for i in range(layout.count())) 
     for item in items:
@@ -23,7 +25,7 @@ def hide_all_widgets(layout):
 
 class FilePaths(object):
     user_name = pwd.getpwuid( os.getuid() ).pw_name
-    user_path = '/home/%s/Documents/Python/OregonTrail/'%user_name
+    user_path = str(pathlib.Path().absolute()) + '/'
 
 def log(text, color=None):
     '''
@@ -65,7 +67,7 @@ def log(text, color=None):
     
     # Write log message to the log file
     name = pwd.getpwuid( os.getuid() ).pw_name
-    user_path = '/home/%s/Documents/Python/OregonTrail/'%name
+    user_path = str(pathlib.Path().absolute()) + '/'
     with open('%slogs.txt'%(user_path),'a') as fp:
         if not os.stat('%slogs.txt'%(user_path)).st_size == 0: # if file isn't empty
             if text == 'Game started...':

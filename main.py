@@ -5,10 +5,12 @@ from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 import random, sys, os, pwd, math
+import pathlib
 
 user_name = pwd.getpwuid( os.getuid() ).pw_name
-user_path = '/home/%s/Documents/Python/OregonTrail/lib/'%user_name
+user_path = str(pathlib.Path().absolute()) + '/lib/'
 sys.path.insert(1,user_path)
+print(user_path)
 
 from Utils import *
 from PaintUtils import *
@@ -31,6 +33,8 @@ class Game(QMainWindow,FilePaths):
     update_env = False
     exit_game = False
 
+    load = None
+
     def __init__(self):
         super().__init__()
 
@@ -49,14 +53,25 @@ class Game(QMainWindow,FilePaths):
         # Show main window
         self.show()
 
-    def load_game(self):
-        pass
+    def load_game(self,name):
+        self.load = True
+        self.save_file_name = name
+        self.player = Player()
+        self.display_environment()
+
+        # Begin game timer and game loop
+        self.game_timer = QTimer()
+        self.game_timer.setInterval(math.ceil((1.0/self.fps)*1000.0))
+        self.game_timer.timeout.connect(self.game_loop)
+        self.game_timer.start()
         
-    def start_game(self):
+    def start_game(self,name):
         # self.main_widget.hide()
         # Game Elements
         self.player = Player()
-        self.environments = []
+        # self.environments = []
+        self.save_file_name = name + '.json'
+        self.load = False
         self.display_environment()
 
         # Begin game timer and game loop
@@ -72,39 +87,39 @@ class Game(QMainWindow,FilePaths):
             self.update_env = True
 
     def display_environment(self):
-        if len(self.environments) == 0:
+        # if len(self.environments) == 0:
 
-            self.environment = Environment(self.width,self.height,self.env,self.player)
-            # self.layout.addWidget(self.environment)
-            self.setGeometry(100, 100, self.width, self.height)
-            self.setCentralWidget(self.environment)
-            self.environments.append(self.environment)
+        self.environment = Environment(self.width,self.height,self.env,self.player,self.save_file_name,load = self.load)
+        # self.layout.addWidget(self.environment)
+        self.setGeometry(100, 100, self.width, self.height)
+        self.setCentralWidget(self.environment)
+        # self.environments.append(self.environment)
 
-            log('Game initialized...',color='g')
-            log(f'Sky set to: {self.env}')
+        # log('Game initialized...',color='g')
+        # log(f'Sky set to: {self.env}')
        
-        else:
-            if self.new_env:
-                # self.layout.removeWidget(self.environment)
-                self.environment.deleteLater()
+        # else:
+        #     if self.new_env:
+        #         # self.layout.removeWidget(self.environment)
+        #         self.environment.deleteLater()
 
-                self.environment = Environment(self.width,self.height,self.env,self.player)
-                # self.layout.addWidget(self.environment)
-                self.setCentralWidget(self.environment)
+        #         self.environment = Environment(self.width,self.height,self.env,self.player)
+        #         # self.layout.addWidget(self.environment)
+        #         self.setCentralWidget(self.environment)
 
-                self.environments.append(self.environment)
+        #         self.environments.append(self.environment)
 
-                log(f'New environment...')
-                log(f'Sky set to: {self.env}')
+        #         log(f'New environment...')
+        #         log(f'Sky set to: {self.env}')
 
-                self.new_env = False
+        #         self.new_env = False
             
-            elif self.update_env:
-                self.environment.update_player()
-                self.environment.repaint()
+        #     elif self.update_env:
+        #         self.environment.update_player()
+        #         self.environment.repaint()
 
-                log(f'Updated environment...')
-                self.update_env = False
+        #         log(f'Updated environment...')
+        #         self.update_env = False
     
     def end_game(self):
         self.close()
@@ -129,6 +144,9 @@ class Game(QMainWindow,FilePaths):
         # Exit game if flag is true
         if self.exit_game:
             self.end_game()
+        if self.new_env:
+            self.environment.new_environment()
+            self.new_env = False
         
         # Log loop number in factors of 100
         if self.loop_number%100 == 0:
@@ -140,7 +158,10 @@ class Game(QMainWindow,FilePaths):
 
         # Update player pose and redraw environment
         self.update_player()
-        self.display_environment()
+        # self.display_environment()
+        # self.environment.player = self.player
+        self.environment.redraw_scene()
+        self.environment.repaint()
 
         # Update game loop tracking information
         self.key_pressed = None
