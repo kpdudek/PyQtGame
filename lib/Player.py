@@ -40,3 +40,9 @@ class Player(QWidget,Colors,FilePaths):
             self.pose[1] += 1*self.speed
         else:
             log('Player pose update. Key not recognized...',color='r')
+
+    def gravity(self):
+        pass
+
+    def animate(self):
+        pass

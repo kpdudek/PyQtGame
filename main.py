@@ -7,12 +7,12 @@ from PyQt5.QtCore import *
 import random, sys, os, pwd, math
 import pathlib
 
-user_name = pwd.getpwuid( os.getuid() ).pw_name
-user_path = str(pathlib.Path().absolute()) + '/lib/'
-sys.path.insert(1,user_path)
-print(user_path)
-
 from Utils import *
+file_paths = FilePaths()
+# user_name = pwd.getpwuid( os.getuid() ).pw_name
+# user_path = str(pathlib.Path().absolute()) + '/lib/'
+sys.path.insert(1,file_paths.user_path+'lib/')
+
 from PaintUtils import *
 from Environment import *
 from Player import *
@@ -20,8 +20,8 @@ from WelcomeScreen import *
 
 class Game(QMainWindow,FilePaths):
     
-    width = 800
-    height = 600
+    width = 1920
+    height = 1080
     
     fps = 30.0
     game_time = 0.0
@@ -30,19 +30,21 @@ class Game(QMainWindow,FilePaths):
     key_pressed = None
     env = 'day'
     new_env = False
+    next_scene = False
     update_env = False
     exit_game = False
 
     load = None
+
+    keylist = []
+    firstrelease = None
 
     def __init__(self):
         super().__init__()
 
         # setting title 
         self.setWindowTitle("Game Title") 
-        # setting geometry 
-        # self.setGeometry(100, 100, self.width, self.height) 
-        self.setGeometry(100, 100, 400, 300) 
+        self.setGeometry(700, 400, 400, 300) 
 
         # Set main widget as main windows central widget
         self.main_widget = WelcomeScreen()
@@ -57,6 +59,7 @@ class Game(QMainWindow,FilePaths):
         self.load = True
         self.save_file_name = name
         self.player = Player()
+        log(f'Loading game called: {self.save_file_name}')
         self.display_environment()
 
         # Begin game timer and game loop
@@ -66,12 +69,11 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.start()
         
     def start_game(self,name):
-        # self.main_widget.hide()
         # Game Elements
         self.player = Player()
-        # self.environments = []
         self.save_file_name = name + '.json'
         self.load = False
+        log(f'Creating game called: {self.save_file_name}')
         self.display_environment()
 
         # Begin game timer and game loop
@@ -81,50 +83,24 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.start()
     
     def update_player(self):
-        # if self.loop_number%2 == 0:
         if self.key_pressed != None:
             self.player.update_position(self.key_pressed)
             self.update_env = True
 
     def display_environment(self):
-        # if len(self.environments) == 0:
-
         self.environment = Environment(self.width,self.height,self.env,self.player,self.save_file_name,load = self.load)
-        # self.layout.addWidget(self.environment)
-        self.setGeometry(100, 100, self.width, self.height)
+        self.setGeometry(0, 0, self.width, self.height)
         self.setCentralWidget(self.environment)
-        # self.environments.append(self.environment)
-
-        # log('Game initialized...',color='g')
-        # log(f'Sky set to: {self.env}')
-       
-        # else:
-        #     if self.new_env:
-        #         # self.layout.removeWidget(self.environment)
-        #         self.environment.deleteLater()
-
-        #         self.environment = Environment(self.width,self.height,self.env,self.player)
-        #         # self.layout.addWidget(self.environment)
-        #         self.setCentralWidget(self.environment)
-
-        #         self.environments.append(self.environment)
-
-        #         log(f'New environment...')
-        #         log(f'Sky set to: {self.env}')
-
-        #         self.new_env = False
-            
-        #     elif self.update_env:
-        #         self.environment.update_player()
-        #         self.environment.repaint()
-
-        #         log(f'Updated environment...')
-        #         self.update_env = False
     
     def end_game(self):
+        self.environment.save_game()
         self.close()
 
     def keyPressEvent(self, event):
+        # self.firstrelease = True
+        # astr = "pressed: " + str(event.key())
+        # self.keylist.append(astr)
+
         if event.key() == Qt.Key_D:
             self.key_pressed = 'right'
         elif event.key() == Qt.Key_A:
@@ -133,33 +109,56 @@ class Game(QMainWindow,FilePaths):
             self.key_pressed = 'up'
         elif event.key() == Qt.Key_S:
             self.key_pressed = 'down'
+        
         elif event.key() == Qt.Key_N:
+            log('New scene called...',color='y')
             self.new_env = True
+        
+        elif event.key() == Qt.Key_M:
+            log('Advancing to next scene')
+            self.next_scene = True
+        
         elif event.key() == Qt.Key_Escape:
+            log('Exit game called...',color='y')
+            try:
+                self.environment.save_game()
+                log('Game saved successfully...',color='g')
+            except:
+                log('Couldn"t save game...',color='r')
             self.exit_game = True
         else:
             log('Key not recognized...')
-    
+
+    # def keyReleaseEvent(self, event):
+    #     if self.firstrelease == True: 
+    #         self.processmultikeys(self.keylist)
+    #     self.firstrelease = False
+    #     del self.keylist[-1]
+
+    # def processmultikeys(self,keyspressed):
+    #     print(keyspressed)
+        
     def game_loop(self):
         # Exit game if flag is true
         if self.exit_game:
             self.end_game()
-        if self.new_env:
+        
+        elif self.new_env:
             self.environment.new_environment()
             self.new_env = False
         
-        # Log loop number in factors of 100
-        if self.loop_number%100 == 0:
-            log(f'Loop number: {str(self.loop_number)}')
+        elif self.next_scene:
+            self.environment.advance_scene()
+            self.next_scene = False
         
-        # Print the latest key press from last game loop
+        ### Print the latest key press from last game loop
         if self.key_pressed != None:
             log(f'Key pressed: {self.key_pressed}')
 
-        # Update player pose and redraw environment
+        ### Update player pose and redraw environment
         self.update_player()
-        # self.display_environment()
-        # self.environment.player = self.player
+
+        ### recreate environment and repaint widget
         self.environment.redraw_scene()
         self.environment.repaint()
 

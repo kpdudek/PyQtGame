@@ -15,8 +15,9 @@ class Environment(QWidget,Colors,FilePaths):
 
     generate_env = True
     env_snapshot = {}
-    game_snapshot = []
+    game_snapshot = {}
     env_idx = 0
+    env_create_count = 0
 
     def __init__(self,width,height,time_of_day,player,save_file, load = True):
         super().__init__()
@@ -33,7 +34,7 @@ class Environment(QWidget,Colors,FilePaths):
         if self.load:
             self.load_game()
             self.generate_env = False
-            self.env_snapshot = self.game_snapshot[0]
+            self.env_snapshot = self.game_snapshot[str(self.env_idx)]
 
         self.main_frame = QLabel()
         self.layout.addWidget(self.main_frame)
@@ -49,19 +50,26 @@ class Environment(QWidget,Colors,FilePaths):
         self.draw_player()
 
         if not self.load:
+            log('Saving new game for the first time...')
+            self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
             self.save_game()
+            self.env_create_count += 1
+        else:
+            self.env_create_count = len(self.game_snapshot)
 
         self.generate_env = False
 
         log('Environment initialized...')
+        log(f'Create count: {self.env_create_count} | env idx: {self.env_idx}')
 
     def load_game(self):
         with open(f'{self.user_path}saves/{self.save_file}') as fp:
             game = json.load(fp)
         self.game_snapshot = game
+
+        log(f'Environment keys: {self.game_snapshot.keys()}')
     
     def save_game(self):
-        self.game_snapshot.append(self.env_snapshot)
         fp = open(f'{self.user_path}saves/{self.save_file}','w')
         json.dump(self.game_snapshot,fp)
         fp.close()
@@ -156,8 +164,6 @@ class Environment(QWidget,Colors,FilePaths):
 
                     sub_clouds.append(sub_cloud)
                 else:
-                    # print(sub_cloud_idx)
-                    # print(len(self.env_snapshot['clouds'][cloud_idx]['sub_clouds']))
                     rad_x,rad_y = self.env_snapshot['clouds'][cloud_idx]['sub_clouds'][sub_cloud_idx]['radii'] 
                     x_offset,y_offset = self.env_snapshot['clouds'][cloud_idx]['sub_clouds'][sub_cloud_idx]['offsets']
                 
@@ -241,7 +247,6 @@ class Environment(QWidget,Colors,FilePaths):
     
         # Generate ground
         painter.drawRect(QtCore.QRect(origin[0], origin[1], origin[0]+size[0], origin[1]+size[1]))
-
         painter.end()
 
         if self.generate_env:
@@ -289,9 +294,7 @@ class Environment(QWidget,Colors,FilePaths):
         self.set_sky()
         self.draw_ground()
         self.draw_player()
-        
-        self.save_game()
-    
+            
     def update_player(self):
         self.canvas = QPixmap(self.width,self.height)
         self.main_frame.setPixmap(self.canvas)
@@ -299,9 +302,35 @@ class Environment(QWidget,Colors,FilePaths):
         self.redraw_scene()
 
     def new_environment(self):
-        self.game_snapshot.append(self.env_snapshot)
+        try: # Check if the environment index exists
+            self.game_snapshot[str(self.env_create_count)]
+            log(f'Env create count exists: {self.env_create_count}',color='r')
+        except:
+            # self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
+            # self.env_create_count += 1
+            self.env_snapshot = {}
+
         self.generate_env = True
         self.redraw_scene()
         self.generate_env = False
 
+        self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
+
         self.save_game()
+
+    def advance_scene(self):
+        self.env_idx += 1
+        if self.env_idx > (len(self.game_snapshot) -1):
+            log('Reached end of environments...')
+            return
+        
+        self.env_snapshot = self.game_snapshot[str(self.env_idx)]
+        log(f'Set environment index: {self.env_idx}')
+        self.redraw_scene()
+
+    def is_collision(self,ob1,ob2):
+        '''
+        Check if the passed objects intersect
+        return True if they intersect
+        '''
+        pass
