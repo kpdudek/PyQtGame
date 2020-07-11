@@ -302,21 +302,23 @@ class Environment(QWidget,Colors,FilePaths):
         self.redraw_scene()
 
     def new_environment(self):
-        try: # Check if the environment index exists
-            self.game_snapshot[str(self.env_create_count)]
-            log(f'Env create count exists: {self.env_create_count}',color='r')
-        except:
-            # self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
-            # self.env_create_count += 1
-            self.env_snapshot = {}
+        # try: # Check if the environment index exists
+        #     self.game_snapshot[str(self.env_create_count)]
+        #     log(f'Env create count exists: {self.env_create_count}',color='r')
+        # except:
+        #     # self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
+        #     # self.env_create_count += 1
+        # self.game_snapshot.update({str(self.env_create_count-1):self.env_snapshot})
+        
+        self.env_snapshot = {}
 
         self.generate_env = True
         self.redraw_scene()
         self.generate_env = False
 
         self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
-
         self.save_game()
+        self.env_create_count += 1
 
     def advance_scene(self):
         self.env_idx += 1
@@ -328,9 +330,11 @@ class Environment(QWidget,Colors,FilePaths):
         log(f'Set environment index: {self.env_idx}')
         self.redraw_scene()
 
-    def is_collision(self,ob1,ob2):
-        '''
-        Check if the passed objects intersect
-        return True if they intersect
-        '''
-        pass
+    # def is_collision(self,key1,key2):
+    #     '''
+    #     Check if the passed objects intersect
+    #     return True if they intersect
+    #     '''
+    #     ob1 = self.env_snapshot[key1]
+    #     ob2 = self.env_snapshot[key2]
+    #     pass

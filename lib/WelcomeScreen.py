@@ -48,6 +48,7 @@ class WelcomeScreen(QWidget,FilePaths):
         self.game_name = QLineEdit()
         # self.game_name.setText('Enter game name')
         self.game_name_layout.addWidget(self.game_name,3)
+        self.game_name.returnPressed.connect(self.start_game)
 
         self.layout.addLayout(self.game_name_layout)
 

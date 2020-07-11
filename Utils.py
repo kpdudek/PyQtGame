@@ -14,15 +14,6 @@ from PyQt5.QtGui import *
 
 import pathlib
 
-def hide_all_widgets(layout):
-    items = (layout.itemAt(i) for i in range(layout.count())) 
-    for item in items:
-        item = item.widget()
-        try:
-            item.hide()
-        except:
-            pass
-
 class FilePaths(object):
     user_name = pwd.getpwuid( os.getuid() ).pw_name
     user_path = str(pathlib.Path().absolute()) + '/'
@@ -82,5 +73,14 @@ def log(text, color=None):
         fp.close()
     except:
         print('Error closing log file...')
+
+def hide_all_widgets(layout):
+    items = (layout.itemAt(i) for i in range(layout.count())) 
+    for item in items:
+        item = item.widget()
+        try:
+            item.hide()
+        except:
+            pass
 
     

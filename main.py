@@ -20,14 +20,14 @@ from WelcomeScreen import *
 
 class Game(QMainWindow,FilePaths):
     
-    width = 1920
-    height = 1080
+    width = 1200
+    height = 800
     
-    fps = 30.0
+    fps = 45.0
     game_time = 0.0
     loop_number = 0
 
-    key_pressed = None
+    key_pressed = []
     env = 'day'
     new_env = False
     next_scene = False
@@ -83,9 +83,18 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.start()
     
     def update_player(self):
-        if self.key_pressed != None:
+        tmp_player = self.player
+
+        if len(self.key_pressed) != 0:
             self.player.update_position(self.key_pressed)
             self.update_env = True
+        
+        player_bot = self.player.pose[1] + self.player.size[1]
+        ground_top = self.environment.env_snapshot['ground']['origin'][1]
+        if player_bot < ground_top:
+            self.player.gravity()
+
+        #TODO: check for collisions
 
     def display_environment(self):
         self.environment = Environment(self.width,self.height,self.env,self.player,self.save_file_name,load = self.load)
@@ -102,13 +111,13 @@ class Game(QMainWindow,FilePaths):
         # self.keylist.append(astr)
 
         if event.key() == Qt.Key_D:
-            self.key_pressed = 'right'
+            self.key_pressed.append('right')
         elif event.key() == Qt.Key_A:
-            self.key_pressed = 'left'
+            self.key_pressed.append('left')
         elif event.key() == Qt.Key_W:
-            self.key_pressed = 'up'
+            self.key_pressed.append('up')
         elif event.key() == Qt.Key_S:
-            self.key_pressed = 'down'
+            self.key_pressed.append('down')
         
         elif event.key() == Qt.Key_N:
             log('New scene called...',color='y')
@@ -129,12 +138,15 @@ class Game(QMainWindow,FilePaths):
         else:
             log('Key not recognized...')
 
-    # def keyReleaseEvent(self, event):
-    #     if self.firstrelease == True: 
-    #         self.processmultikeys(self.keylist)
-    #     self.firstrelease = False
-    #     del self.keylist[-1]
-
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_D:
+            self.key_pressed.remove('right')
+        elif event.key() == Qt.Key_A:
+            self.key_pressed.remove('left')
+        elif event.key() == Qt.Key_W:
+            self.key_pressed.remove('up')
+        elif event.key() == Qt.Key_S:
+            self.key_pressed.remove('down')
     # def processmultikeys(self,keyspressed):
     #     print(keyspressed)
         
@@ -152,8 +164,8 @@ class Game(QMainWindow,FilePaths):
             self.next_scene = False
         
         ### Print the latest key press from last game loop
-        if self.key_pressed != None:
-            log(f'Key pressed: {self.key_pressed}')
+        # if len(self.key_pressed) != 0:
+        #     log(f'Key pressed: {self.key_pressed}')
 
         ### Update player pose and redraw environment
         self.update_player()
@@ -163,7 +175,7 @@ class Game(QMainWindow,FilePaths):
         self.environment.repaint()
 
         # Update game loop tracking information
-        self.key_pressed = None
+        # self.key_pressed = []
         self.loop_number += 1
         self.game_time += self.game_timer.interval() / 1000.0
 
