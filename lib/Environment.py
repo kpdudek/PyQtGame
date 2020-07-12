@@ -10,8 +10,7 @@ from Utils import *
 from PaintUtils import *
 
 class Environment(QWidget,Colors,FilePaths):
-    num_clouds = 10
-    num_stars = 200
+    time_of_day = None
 
     generate_env = True
     env_snapshot = {}
@@ -19,7 +18,7 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,time_of_day,player,save_file, load = True):
+    def __init__(self,width,height,player,save_file, load = True, time_of_day = None):
         super().__init__()
         self.load = load
         
@@ -35,14 +34,14 @@ class Environment(QWidget,Colors,FilePaths):
             self.load_game()
             self.generate_env = False
             self.env_snapshot = self.game_snapshot[str(self.env_idx)]
+        else:
+            self.time_of_day = time_of_day
 
         self.main_frame = QLabel()
         self.layout.addWidget(self.main_frame)
 
         self.canvas = QPixmap(self.width,self.height)
         self.main_frame.setPixmap(self.canvas)
-
-        self.time_of_day = time_of_day
 
         # Display environment components
         self.set_sky()
@@ -77,6 +76,11 @@ class Environment(QWidget,Colors,FilePaths):
     def set_sky(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
+        if self.generate_env:
+            self.env_snapshot.update({'time_of_day':self.time_of_day})
+        else:
+            self.time_of_day = self.env_snapshot['time_of_day']
+        
         if self.time_of_day == 'day':
             pen = QtGui.QPen()
             pen.setWidth(3)
@@ -127,9 +131,18 @@ class Environment(QWidget,Colors,FilePaths):
         if self.generate_env:
             clouds = []
 
+            self.num_clouds = 10
+    
             self.cloud_x_range = [20,self.width-20]
             self.cloud_y_range = [0,math.ceil(self.height/2.)]
+
+            self.env_snapshot.update({'num_clouds':self.num_clouds})
+
+        else:
+            self.num_clouds = self.env_snapshot['num_clouds']
         
+
+        ### Draw clouds using number of clouds, and range to generate random pose if generating new environment
         for cloud_idx in range(0,self.num_clouds):
             
             if self.generate_env:
@@ -193,9 +206,16 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.generate_env:
             stars = []
+
+            self.num_stars = 200 
+
             # Generate random stars
             self.star_x_range = [0,self.width-0]
-            self.star_y_range = [0,math.ceil(self.height/2.)]            
+            self.star_y_range = [0,math.ceil(self.height/2.)]   
+
+            self.env_snapshot.update({'num_stars':self.num_stars})
+        else:
+            self.num_stars = self.env_snapshot['num_stars']         
         
         for star_idx in range(0,self.num_stars):
             if self.generate_env:
@@ -302,39 +322,54 @@ class Environment(QWidget,Colors,FilePaths):
         self.redraw_scene()
 
     def new_environment(self):
-        # try: # Check if the environment index exists
-        #     self.game_snapshot[str(self.env_create_count)]
-        #     log(f'Env create count exists: {self.env_create_count}',color='r')
-        # except:
-        #     # self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
-        #     # self.env_create_count += 1
-        # self.game_snapshot.update({str(self.env_create_count-1):self.env_snapshot})
-        
+        '''
+        New environment expects the current environment to be saved already.
+        Additionally, the environment create count should be for the new entry
+        '''
+        try:
+            self.game_snapshot[str(self.env_create_count)]
+            log(f'Environment already exists with idx: {self.env_create_count}')
+            return
+        except:
+            pass
+
         self.env_snapshot = {}
+
+        if self.time_of_day == 'day':
+            self.time_of_day = 'night'
+        else:
+            self.time_of_day = 'day'
 
         self.generate_env = True
         self.redraw_scene()
         self.generate_env = False
+        self.env_idx = self.env_create_count
 
         self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
         self.save_game()
         self.env_create_count += 1
 
+        log(f'New scene created. env_create_count: {self.env_create_count} | env_idx: {self.env_idx}')
+
     def advance_scene(self):
         self.env_idx += 1
         if self.env_idx > (len(self.game_snapshot) -1):
             log('Reached end of environments...')
+            self.env_idx -= 1
             return
         
         self.env_snapshot = self.game_snapshot[str(self.env_idx)]
         log(f'Set environment index: {self.env_idx}')
         self.redraw_scene()
 
-    # def is_collision(self,key1,key2):
-    #     '''
-    #     Check if the passed objects intersect
-    #     return True if they intersect
-    #     '''
-    #     ob1 = self.env_snapshot[key1]
-    #     ob2 = self.env_snapshot[key2]
-    #     pass
+    def previous_scene(self):
+        self.env_idx -= 1
+        if self.env_idx < 0:
+            log('Reached beginning of environments...')
+            self.env_idx = 0
+            return
+        
+        self.env_snapshot = self.game_snapshot[str(self.env_idx)]
+        log(f'Set environment index: {self.env_idx}')
+        self.redraw_scene()
+

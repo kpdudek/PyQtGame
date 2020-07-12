@@ -28,23 +28,28 @@ class Game(QMainWindow,FilePaths):
     loop_number = 0
 
     key_pressed = []
-    env = 'day'
+    tod = 'day'
+
     new_env = False
     next_scene = False
+    prev_scene = False
+
     update_env = False
     exit_game = False
 
-    load = None
-
-    keylist = []
-    firstrelease = None
+    load = None # If a game is being loaded, set True
 
     def __init__(self):
         super().__init__()
 
         # setting title 
-        self.setWindowTitle("Game Title") 
-        self.setGeometry(700, 400, 400, 300) 
+        self.setWindowTitle("Game Title")
+
+        screen_width = 1920
+        screen_height = 1080
+        welcome_width = 800
+        welcome_height = 600
+        self.setGeometry((screen_width-welcome_width)/2, (screen_height-welcome_height)/2, welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
         self.main_widget = WelcomeScreen()
@@ -97,7 +102,7 @@ class Game(QMainWindow,FilePaths):
         #TODO: check for collisions
 
     def display_environment(self):
-        self.environment = Environment(self.width,self.height,self.env,self.player,self.save_file_name,load = self.load)
+        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.setGeometry(0, 0, self.width, self.height)
         self.setCentralWidget(self.environment)
     
@@ -106,10 +111,8 @@ class Game(QMainWindow,FilePaths):
         self.close()
 
     def keyPressEvent(self, event):
-        # self.firstrelease = True
-        # astr = "pressed: " + str(event.key())
-        # self.keylist.append(astr)
 
+        ### Move Keys
         if event.key() == Qt.Key_D:
             self.key_pressed.append('right')
         elif event.key() == Qt.Key_A:
@@ -119,6 +122,8 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_S:
             self.key_pressed.append('down')
         
+
+        ### Game operation keys
         elif event.key() == Qt.Key_N:
             log('New scene called...',color='y')
             self.new_env = True
@@ -126,6 +131,10 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
+        
+        elif event.key() == Qt.Key_B:
+            log('Switching to previous scene')
+            self.prev_scene = True
         
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
@@ -139,16 +148,17 @@ class Game(QMainWindow,FilePaths):
             log('Key not recognized...')
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_D:
-            self.key_pressed.remove('right')
-        elif event.key() == Qt.Key_A:
-            self.key_pressed.remove('left')
-        elif event.key() == Qt.Key_W:
-            self.key_pressed.remove('up')
-        elif event.key() == Qt.Key_S:
-            self.key_pressed.remove('down')
-    # def processmultikeys(self,keyspressed):
-    #     print(keyspressed)
+        try:
+            if event.key() == Qt.Key_D:
+                self.key_pressed.remove('right')
+            elif event.key() == Qt.Key_A:
+                self.key_pressed.remove('left')
+            elif event.key() == Qt.Key_W:
+                self.key_pressed.remove('up')
+            elif event.key() == Qt.Key_S:
+                self.key_pressed.remove('down')
+        except:
+            pass
         
     def game_loop(self):
         # Exit game if flag is true
@@ -158,6 +168,10 @@ class Game(QMainWindow,FilePaths):
         elif self.new_env:
             self.environment.new_environment()
             self.new_env = False
+
+        elif self.prev_scene:
+            self.environment.previous_scene()
+            self.prev_scene = False
         
         elif self.next_scene:
             self.environment.advance_scene()
@@ -187,20 +201,21 @@ def main():
     # Now use a palette to switch to dark colors:
     dark_mode = True
     if dark_mode:
-        palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(53, 53, 53))
-        palette.setColor(QPalette.WindowText, Qt.white)
-        palette.setColor(QPalette.Base, QColor(25, 25, 25))
-        palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-        palette.setColor(QPalette.ToolTipBase, Qt.white)
-        palette.setColor(QPalette.ToolTipText, Qt.white)
-        palette.setColor(QPalette.Text, Qt.white)
-        palette.setColor(QPalette.Button, QColor(53, 53, 53))
-        palette.setColor(QPalette.ButtonText, QColor(255, 153, 85)) #Qt.white
-        palette.setColor(QPalette.BrightText, Qt.red)
-        palette.setColor(QPalette.Link, QColor(255, 153, 85))
-        palette.setColor(QPalette.Highlight, QColor(255, 153, 85))
-        palette.setColor(QPalette.HighlightedText, Qt.black)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        # palette.setColor(QPalette.WindowText, Qt.white)
+        # palette.setColor(QPalette.Base, QColor(25, 25, 25))
+        # palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        # palette.setColor(QPalette.ToolTipBase, Qt.white)
+        # palette.setColor(QPalette.ToolTipText, Qt.white)
+        # palette.setColor(QPalette.Text, Qt.white)
+        # palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        # palette.setColor(QPalette.ButtonText, QColor(255, 153, 85)) #Qt.white
+        # palette.setColor(QPalette.BrightText, Qt.red)
+        # palette.setColor(QPalette.Link, QColor(255, 153, 85))
+        # palette.setColor(QPalette.Highlight, QColor(255, 153, 85))
+        # palette.setColor(QPalette.HighlightedText, Qt.black)
+        palette = Colors().palette
         app.setPalette(palette)
     
     # create the instance of our Window 

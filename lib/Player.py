@@ -39,9 +39,9 @@ class Player(QWidget,Colors,FilePaths):
             elif key == 'left':
                 self.pose[0] -= 1*self.speed
             elif key == 'up':
-                self.pose[1] -= 1*self.speed
+                self.pose[1] -= 2*self.speed
             elif key == 'down':
-                self.pose[1] += 1*self.speed
+                self.pose[1] += 2*self.speed
             else:
                 log('Player pose update. Key not recognized...',color='r')
 

@@ -8,6 +8,7 @@ import random, sys, os, pwd, math
 
 from Utils import *
 from PaintUtils import *
+from Widgets import *
 
 
 class WelcomeScreen(QWidget,FilePaths):
@@ -26,51 +27,44 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.setAlignment(Qt.AlignCenter)
 
         self.main_title = QtSvg.QSvgWidget(f'{self.user_path}graphics/title_banner.svg')
-        self.layout.addWidget(self.main_title)
-
-        self.divider = QLabel()
-        self.divider.setStyleSheet(f"background-color: {self.divider_color}")
-        self.divider.setFixedHeight(3)
-        self.layout.addWidget(self.divider)
+        self.main_title.setMinimumHeight(250)
+        self.layout.addWidget(self.main_title,2)
 
         ######################################################
         # Game Creator
-        self.new_label = QLabel('Create a New Game:')
-        self.new_label.setStyleSheet(f"font:bold italic 24px")
-        self.layout.addWidget(self.new_label)
+        ######################################################
+        self.layout.addWidget(Divider('Create New Game',top_spacer=False))
 
         # Game name sub layout
-        self.game_name_layout = QHBoxLayout()
+        # self.game_name_layout = QHBoxLayout()
         
-        self.game_name_label = QLabel('Enter name:')
-        self.game_name_layout.addWidget(self.game_name_label,1)
+        # self.game_name_label = QLabel('Enter name:')
+        # self.game_name_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        # self.game_name_layout.addWidget(self.game_name_label,1)
 
-        self.game_name = QLineEdit()
-        # self.game_name.setText('Enter game name')
-        self.game_name_layout.addWidget(self.game_name,3)
-        self.game_name.returnPressed.connect(self.start_game)
+        # self.game_name = QLineEdit()
+        # self.game_name_layout.addWidget(self.game_name,3)
+        # self.game_name.returnPressed.connect(self.start_game)
 
-        self.layout.addLayout(self.game_name_layout)
+        self.game_name_form = FormEntry('Enter name',return_press = self.start_game)
+        self.layout.addLayout(self.game_name_form.form)
+
+        # self.layout.addLayout(self.game_name_layout)
 
         self.start_button = QPushButton('Create')
         self.start_button.clicked.connect(self.start_game)
         self.layout.addWidget(self.start_button)
-        ######################################################
-
-        self.layout.addStretch()
-        self.layout.addWidget(self.divider)
-        self.layout.addStretch()
 
         ######################################################
         # Game loading
-        self.load_label = QLabel('Load a Game:')
-        self.load_label.setStyleSheet(f"font:bold italic 24px")
-        self.layout.addWidget(self.load_label)
+        ######################################################
+        self.layout.addWidget(Divider('Load Game'))
 
         # game load combo box sub layout
         self.game_load_layout = QHBoxLayout()
 
         self.game_load_label = QLabel('Saved Games:')
+        self.game_load_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
         self.game_load_layout.addWidget(self.game_load_label,1)
 
         self.save_games = QComboBox()
@@ -89,13 +83,25 @@ class WelcomeScreen(QWidget,FilePaths):
         self.file_names = os.listdir(f'{self.user_path}saves/')
     
     def start_game(self):
-        if len(self.game_name.text()) == 0:
+        if len(self.game_name_form.form_line_edit.text()) == 0:
             log('Game name cannot be empty!',color='r')
+            size = self.size()
+            pose = QRect(600,400,200,200)
+            self.warning = WarningPrompt('Game name cannot be empty!',rect=pose)
+            self.warning.show()
             return
         else:
-            log(f'Creating game: {self.game_name.text()}')
-            self.create.emit(self.game_name.text())
+            log(f'Creating game: {self.game_name_form.form_line_edit.text()}')
+            self.create.emit(self.game_name_form.form_line_edit.text())
 
     def load_game(self):
         self.load_file_name = self.save_games.currentText()
+        if self.load_file_name == '':
+            size = self.size()
+            pose = QRect(600,400,200,200)
+            self.warning = WarningPrompt('There is no save game selected!',rect=pose)
+            self.warning.show()
+            return
+            
+        log(f'Loading game: {self.load_file_name}')
         self.load.emit(self.load_file_name)
