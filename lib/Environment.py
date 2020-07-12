@@ -22,7 +22,7 @@ class Environment(QWidget,Colors,FilePaths):
         super().__init__()
         self.load = load
         
-        self.layout = QStackedLayout()
+        self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
         self.width = width

@@ -17,10 +17,11 @@ from PaintUtils import *
 from Environment import *
 from Player import *
 from WelcomeScreen import *
+from GameController import *
 
 class Game(QMainWindow,FilePaths):
     
-    width = 1200
+    width = 1600
     height = 800
     
     fps = 45.0
@@ -91,7 +92,7 @@ class Game(QMainWindow,FilePaths):
         tmp_player = self.player
 
         if len(self.key_pressed) != 0:
-            self.player.update_position(self.key_pressed)
+            self.player.update_position(self.key_pressed,self.width,self.height)
             self.update_env = True
         
         player_bot = self.player.pose[1] + self.player.size[1]
@@ -102,9 +103,29 @@ class Game(QMainWindow,FilePaths):
         #TODO: check for collisions
 
     def display_environment(self):
+        self.game_widget = QWidget()
+        self.game_layout = QVBoxLayout()
+        self.game_widget.setLayout(self.game_layout)
+        self.game_layout.setAlignment(Qt.AlignCenter)
+
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
+        self.game_layout.addWidget(self.environment)
+
+        self.game_controller = GameController()
+        self.game_layout.addWidget(self.game_controller)
+        self.game_controller.next_scene_signal.connect(self.next_scene_event)
+        self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
+        
         self.setGeometry(0, 0, self.width, self.height)
-        self.setCentralWidget(self.environment)
+        self.setCentralWidget(self.game_widget)
+
+    def next_scene_event(self):
+        log('New scene called...',color='y')
+        self.new_env = True
+    def prev_scene_event(self):
+        log('Switching to previous scene')
+        self.prev_scene = True
+
     
     def end_game(self):
         self.environment.save_game()
@@ -125,16 +146,14 @@ class Game(QMainWindow,FilePaths):
 
         ### Game operation keys
         elif event.key() == Qt.Key_N:
-            log('New scene called...',color='y')
-            self.new_env = True
+            self.next_scene_event()
         
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
         
         elif event.key() == Qt.Key_B:
-            log('Switching to previous scene')
-            self.prev_scene = True
+            self.prev_scene_event()
         
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
