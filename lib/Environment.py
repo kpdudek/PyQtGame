@@ -34,6 +34,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.load_game()
             self.generate_env = False
             self.env_snapshot = self.game_snapshot[str(self.env_idx)]
+            self.env_idx = len(self.game_snapshot)-1
         else:
             self.time_of_day = time_of_day
 

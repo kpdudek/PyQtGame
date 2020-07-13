@@ -13,6 +13,10 @@ class Player(QWidget,Colors,FilePaths):
     speed = 8
     gravity_accel = 6
 
+    mass = 1
+    force = 1
+    drag = 2
+
     velocity = 0
     acceleration = 4
 
@@ -41,18 +45,22 @@ class Player(QWidget,Colors,FilePaths):
                 self.pose[0] += 1*self.speed
                 if self.pose[0]+self.size[0] > width:
                     self.pose[0] = width-self.size[0]
+                
             elif key == 'left':
                 self.pose[0] -= 1*self.speed
                 if self.pose[0] < 0:
                     self.pose[0] = 0
+
             elif key == 'up':
                 self.pose[1] -= 2*self.speed
                 if self.pose[1] < 0:
                     self.pose[1] = 0
+
             elif key == 'down':
                 self.pose[1] += 2*self.speed
                 if self.pose[1]+self.size[1] > height:
                     self.pose[1] = height-self.size[1]
+
             else:
                 log('Player pose update. Key not recognized...',color='r')
 
