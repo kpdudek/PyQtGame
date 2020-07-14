@@ -113,4 +113,31 @@ class ControlButton(QPushButton,Colors,FilePaths):
         if default:
             self.setDefault(True)
 
+class KeyboardShortcuts(QWidget,Colors,FilePaths):
+
+    def __init__(self,rect=None):
+        super().__init__()
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignCenter)
+
+        if rect:
+            self.setGeometry(rect)
+        else:
+            self.setGeometry(400,400,200,200)
+
+        self.controls_label = QLabel('Controls:')
+        self.controls_label.setStyleSheet(f"font:bold italic 24px")
+        self.controls_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+        self.layout.addWidget(self.controls_label)
+
+        self.ok_button = QPushButton('Close')
+        self.ok_button.clicked.connect(self.close_window)
+        self.ok_button.setDefault(True)
+        self.layout.addWidget(self.ok_button)
+
+        self.setLayout(self.layout)
+        self.show()
+
+    def close_window(self):
+        self.close()
     

@@ -40,6 +40,10 @@ class GameController(QFrame,FilePaths,Colors):
         self.exit_button = ControlButton('Exit Game',fn=self.exit_game)
         self.button_grid.addWidget(self.exit_button,1,2)
 
+        self.show_controls_button = ControlButton('Controls',fn=self.show_controls)
+        self.button_grid.addWidget(self.show_controls_button,0,3)
+
+
     def new_scene(self):
         self.new_scene_signal.emit()
 
@@ -54,3 +58,6 @@ class GameController(QFrame,FilePaths,Colors):
     
     def exit_game(self):
         self.exit_game_signal.emit()
+    
+    def show_controls(self):
+        self.controls_window = KeyboardShortcuts()
