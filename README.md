@@ -6,6 +6,7 @@ Players will have inventories, and will be able to craft items.
 ## Installation
 To run the game you need python3, PyQt, and the PyQt SVG package.
 
+### Ubuntu 18.04
 ```
 sudo apt-get install python3-pyqt5
 sudo apt-get install python3-pyqt5.qtsvg
