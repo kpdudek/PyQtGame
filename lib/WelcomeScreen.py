@@ -66,7 +66,13 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addWidget(self.load_button)
 
     def find_save_files(self):
-        # print(self.user_path)
+        if not os.path.exists(f'{self.user_path}saves/'):
+            try:
+                os.makedirs(f'{self.user_path}saves/')
+                log("Save folder didn't exist so one was created...")
+            except:
+                log('Could not make save game folder!',color='r')
+                    
         self.file_names = os.listdir(f'{self.user_path}saves/')
     
     def start_game(self):

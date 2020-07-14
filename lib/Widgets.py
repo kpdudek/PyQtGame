@@ -123,12 +123,24 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         if rect:
             self.setGeometry(rect)
         else:
-            self.setGeometry(400,400,200,200)
+            self.setGeometry(200,200,600,600)
 
         self.controls_label = QLabel('Controls:')
         self.controls_label.setStyleSheet(f"font:bold italic 24px")
         self.controls_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
         self.layout.addWidget(self.controls_label)
+
+        self.controls_list_layout = QHBoxLayout()
+
+        self.controls_list = QListWidget()
+        self.controls_list.addItem('Control 1')
+        self.controls_list_layout.addWidget(self.controls_list)
+
+        self.button_list = QListWidget()
+        self.button_list.addItem('Button 1')
+        self.controls_list_layout.addWidget(self.button_list)
+        
+        self.layout.addLayout(self.controls_list_layout)
 
         self.ok_button = QPushButton('Close')
         self.ok_button.clicked.connect(self.close_window)
