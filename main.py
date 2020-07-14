@@ -49,7 +49,7 @@ class Game(QMainWindow,FilePaths):
         screen_width = 1920
         screen_height = 1080
         welcome_width = 800
-        welcome_height = 600
+        welcome_height = 500
         self.setGeometry((screen_width-welcome_width)/2, (screen_height-welcome_height)/2, welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
@@ -113,19 +113,27 @@ class Game(QMainWindow,FilePaths):
 
         self.game_controller = GameController()
         self.game_layout.addWidget(self.game_controller)
-        self.game_controller.next_scene_signal.connect(self.next_scene_event)
+        self.game_controller.new_scene_signal.connect(self.new_scene_event)
         self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
+        self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
+        self.game_controller.save_scene_signal.connect(self.save_scene_event)
+        self.game_controller.exit_game_signal.connect(self.end_game)
         
         self.setGeometry(0, 0, self.width, self.height)
         self.setCentralWidget(self.game_widget)
 
-    def next_scene_event(self):
+    def new_scene_event(self):
         log('New scene called...',color='y')
         self.new_env = True
     def prev_scene_event(self):
-        log('Switching to previous scene')
+        log('Switching to previous scene...')
         self.prev_scene = True
-
+    def advance_scene_event(self):
+        log('Advancing to the next scene...')
+        self.next_scene = True
+    def save_scene_event(self):
+        log('Save scene called...')
+        self.environment.save_game()
     
     def end_game(self):
         self.environment.save_game()
@@ -142,26 +150,21 @@ class Game(QMainWindow,FilePaths):
             self.key_pressed.append('up')
         elif event.key() == Qt.Key_S:
             self.key_pressed.append('down')
-        
 
         ### Game operation keys
+        # increase environment index
         elif event.key() == Qt.Key_N:
-            self.next_scene_event()
+            self.new_scene_event()
         
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
-        
+
         elif event.key() == Qt.Key_B:
             self.prev_scene_event()
         
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
-            try:
-                self.environment.save_game()
-                log('Game saved successfully...',color='g')
-            except:
-                log('Couldn"t save game...',color='r')
             self.exit_game = True
         else:
             log('Key not recognized...')
@@ -195,10 +198,6 @@ class Game(QMainWindow,FilePaths):
         elif self.next_scene:
             self.environment.advance_scene()
             self.next_scene = False
-        
-        ### Print the latest key press from last game loop
-        # if len(self.key_pressed) != 0:
-        #     log(f'Key pressed: {self.key_pressed}')
 
         ### Update player pose and redraw environment
         self.update_player()
@@ -208,7 +207,6 @@ class Game(QMainWindow,FilePaths):
         self.environment.repaint()
 
         # Update game loop tracking information
-        # self.key_pressed = []
         self.loop_number += 1
         self.game_time += self.game_timer.interval() / 1000.0
 
@@ -220,20 +218,6 @@ def main():
     # Now use a palette to switch to dark colors:
     dark_mode = True
     if dark_mode:
-        # palette = QPalette()
-        # palette.setColor(QPalette.Window, QColor(53, 53, 53))
-        # palette.setColor(QPalette.WindowText, Qt.white)
-        # palette.setColor(QPalette.Base, QColor(25, 25, 25))
-        # palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-        # palette.setColor(QPalette.ToolTipBase, Qt.white)
-        # palette.setColor(QPalette.ToolTipText, Qt.white)
-        # palette.setColor(QPalette.Text, Qt.white)
-        # palette.setColor(QPalette.Button, QColor(53, 53, 53))
-        # palette.setColor(QPalette.ButtonText, QColor(255, 153, 85)) #Qt.white
-        # palette.setColor(QPalette.BrightText, Qt.red)
-        # palette.setColor(QPalette.Link, QColor(255, 153, 85))
-        # palette.setColor(QPalette.Highlight, QColor(255, 153, 85))
-        # palette.setColor(QPalette.HighlightedText, Qt.black)
         palette = Colors().palette
         app.setPalette(palette)
     

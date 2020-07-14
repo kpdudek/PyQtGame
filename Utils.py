@@ -57,9 +57,6 @@ def log(text, color=None):
         print(log_msg)
     
     # Write log message to the log file
-    # name = pwd.getpwuid( os.getuid() ).pw_name
-    # user_path = str(pathlib.Path().absolute()) + '/'
-
     file_paths = FilePaths()
     with open('%slogs.txt'%(file_paths.user_path),'a') as fp:
         if not os.stat('%slogs.txt'%(file_paths.user_path)).st_size == 0: # if file isn't empty

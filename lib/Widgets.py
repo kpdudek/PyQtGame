@@ -30,7 +30,7 @@ class Divider(QWidget,Colors,FilePaths):
             self.layout.addWidget(self.spacer1)
 
         # Divider
-        self.divider = QLabel(text)
+        self.divider = QLabel(f'{text}:')
         self.divider.setStyleSheet(f"font:bold italic 24px; color: {self.background_color}; background-color: {self.divider_color}")
         # self.divider.setFixedHeight(3)
         self.layout.addWidget(self.divider)
@@ -58,6 +58,7 @@ class FormEntry():
 
         self.form_line_edit = QLineEdit()
         self.form.addWidget(self.form_line_edit,3)
+
         if return_press:
             self.connect_return(return_press)
         
@@ -97,5 +98,19 @@ class WarningPrompt(QWidget,Colors,FilePaths):
 
     def close_window(self):
         self.close()
+
+class ControlButton(QPushButton,Colors,FilePaths):
+
+    def __init__(self,text,fn = None, default = False):
+        super().__init__()
+
+        self.setText(text)
+        self.setFixedSize(150,30)
+
+        if fn:
+            self.clicked.connect(fn)
+        
+        if default:
+            self.setDefault(True)
 
     

@@ -12,47 +12,45 @@ from Widgets import *
 
 
 class GameController(QFrame,FilePaths,Colors):
-    next_scene_signal = pyqtSignal()
+    new_scene_signal = pyqtSignal()
     prev_scene_signal = pyqtSignal()
+    advance_scene_signal = pyqtSignal()
+    save_scene_signal = pyqtSignal()
+    exit_game_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        # Set main widget as main windows central widget
-        # self.layout = QStackedLayout()
-        # self.setLayout(self.layout)
-        # self.layout.setAlignment(Qt.AlignCenter)
-
-        # self.paint
-        # renderer = QtSvg.QSvgRenderer(f'{self.user_path}graphics/game_controls.svg')
-        # # widget.resize(renderer.defaultSize())
-        # painter = QtGui.QPainter(self)
-        # # painter.restore()
-        # renderer.render(painter)
-        # painter.end()
 
         # self.button_grid_widget = QWidget()
         self.button_grid = QGridLayout()
         self.setLayout(self.button_grid)
 
-        # self.button_grid_widget.setLayout(self.button_grid)
-        # self.layout.addWidget(self.button_grid_widget)
-
-        self.go_back_button = QPushButton('Go Back')
-        self.go_back_button.clicked.connect(self.prev_scene)
+        self.go_back_button = ControlButton('Go Back',fn=self.prev_scene)
         self.button_grid.addWidget(self.go_back_button,0,0)
 
-        self.next_scene_button = QPushButton('End Turn')
-        self.next_scene_button.clicked.connect(self.next_scene)
+        self.advance_button = ControlButton('Advance',fn=self.advance_scene)
+        self.button_grid.addWidget(self.advance_button,1,0)
+
+        self.next_scene_button = ControlButton('End Turn',fn=self.new_scene)
         self.button_grid.addWidget(self.next_scene_button,0,1)
 
-        # self.main_title = QtSvg.QSvgWidget(f'{self.user_path}graphics/game_controls.svg')
-        # self.main_title.setMinimumHeight(150)
-        # self.layout.addWidget(self.main_title)
-        # self.setStyleSheet("background-image: {}")
-        # self.setStyleSheet(f'background-image: {self.user_path}graphics/game_controls.svg')
+        self.save_button = ControlButton('Save',fn=self.save_scene)
+        self.button_grid.addWidget(self.save_button,0,2)
 
-    def next_scene(self):
-        self.next_scene_signal.emit()
+        self.exit_button = ControlButton('Exit Game',fn=self.exit_game)
+        self.button_grid.addWidget(self.exit_button,1,2)
+
+    def new_scene(self):
+        self.new_scene_signal.emit()
 
     def prev_scene(self):
         self.prev_scene_signal.emit()
+
+    def advance_scene(self):
+        self.advance_scene_signal.emit()
+
+    def save_scene(self):
+        self.save_scene_signal.emit()
+    
+    def exit_game(self):
+        self.exit_game_signal.emit()

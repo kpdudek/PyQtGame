@@ -70,9 +70,13 @@ class Environment(QWidget,Colors,FilePaths):
         log(f'Environment keys: {self.game_snapshot.keys()}')
     
     def save_game(self):
-        fp = open(f'{self.user_path}saves/{self.save_file}','w')
-        json.dump(self.game_snapshot,fp)
-        fp.close()
+        try:
+            fp = open(f'{self.user_path}saves/{self.save_file}','w')
+            json.dump(self.game_snapshot,fp)
+            fp.close()
+            log('Save game returned sucessfully!',color='g')
+        except:
+            log('Save game failed!',color='r')
 
     def set_sky(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())

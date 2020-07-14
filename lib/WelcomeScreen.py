@@ -35,21 +35,8 @@ class WelcomeScreen(QWidget,FilePaths):
         ######################################################
         self.layout.addWidget(Divider('Create New Game',top_spacer=False))
 
-        # Game name sub layout
-        # self.game_name_layout = QHBoxLayout()
-        
-        # self.game_name_label = QLabel('Enter name:')
-        # self.game_name_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
-        # self.game_name_layout.addWidget(self.game_name_label,1)
-
-        # self.game_name = QLineEdit()
-        # self.game_name_layout.addWidget(self.game_name,3)
-        # self.game_name.returnPressed.connect(self.start_game)
-
         self.game_name_form = FormEntry('Enter name',return_press = self.start_game)
         self.layout.addLayout(self.game_name_form.form)
-
-        # self.layout.addLayout(self.game_name_layout)
 
         self.start_button = QPushButton('Create')
         self.start_button.clicked.connect(self.start_game)

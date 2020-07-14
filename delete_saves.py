@@ -19,8 +19,13 @@ def main():
 
     if (user_in == 'y') or (user_in == 'Y'):
         log('Commencing save game deletion!',color='y')
-        for save_file in files:
-            os.remove(f'{save_filepath}{save_file}')
+        try:
+            for save_file in files:
+                log(f'Removing: {save_file}')
+                os.remove(f'{save_filepath}{save_file}')
+            log('All save games deleted successfully!',color='g')
+        except:
+            log('Could not delete all save games!',color='r')
     else:
         log('File deletion aborted!')
 
