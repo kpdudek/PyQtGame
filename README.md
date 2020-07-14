@@ -17,7 +17,7 @@ Launch the game by navigating to the PyQtGame folder and then executing `main.py
 user@computer:~/path/to/PyQtGame$ ./main.py
 ```
 
-Your save files will populate in the `saves/` folder
+Your save files will populate in the `saves/` folder. 
 If you'd like to clear the saves folder, you can do so by running the `delete_saves.py` file. It will print the existing save files, and ask for permission to continue.
 
 ## Developing
