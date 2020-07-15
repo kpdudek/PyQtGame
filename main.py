@@ -145,7 +145,6 @@ class Game(QMainWindow,FilePaths):
         self.close()
 
     def keyPressEvent(self, event):
-
         ### Move Keys
         if event.key() == Qt.Key_D:
             self.key_pressed.append('right')
@@ -157,17 +156,13 @@ class Game(QMainWindow,FilePaths):
             self.key_pressed.append('down')
 
         ### Game operation keys
-        # increase environment index
         elif event.key() == Qt.Key_N:
             self.new_scene_event()
-        
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
-
         elif event.key() == Qt.Key_B:
             self.prev_scene_event()
-        
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
             self.exit_game = True

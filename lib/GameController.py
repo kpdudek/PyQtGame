@@ -38,7 +38,6 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
 
-
 class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()
     prev_scene_signal = pyqtSignal()
