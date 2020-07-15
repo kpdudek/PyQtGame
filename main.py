@@ -22,7 +22,7 @@ from GameController import *
 class Game(QMainWindow,FilePaths):
     
     # Game window dimensions
-    width = 1920
+    width = 1820
     height = 900
 
     screen_width = 1920
@@ -39,7 +39,6 @@ class Game(QMainWindow,FilePaths):
     next_scene = False
     prev_scene = False
 
-    update_env = False
     exit_game = False
 
     load = None # If a game is being loaded, set True
@@ -93,9 +92,8 @@ class Game(QMainWindow,FilePaths):
     def update_player(self):
         tmp_player = self.player
 
-        if len(self.key_pressed) != 0:
-            self.player.update_position(self.key_pressed,self.width,self.height)
-            self.update_env = True
+        # if len(self.key_pressed) != 0:
+        self.player.update_position(self.key_pressed,self.width,self.height)
         
         player_bot = self.player.pose[1] + self.player.size[1]
         ground_top = self.environment.env_snapshot['ground']['origin'][1]
@@ -209,6 +207,7 @@ class Game(QMainWindow,FilePaths):
         # Update game loop tracking information
         self.loop_number += 1
         self.game_time += self.game_timer.interval() / 1000.0
+        self.environment.game_time = self.game_time
 
 def main():
     # create pyqt5 app 

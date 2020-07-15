@@ -11,10 +11,13 @@ from PaintUtils import *
 
 class Environment(QWidget,Colors,FilePaths):
     time_of_day = None
+    game_time = 0.0
 
     generate_env = True
+
     env_snapshot = {}
     game_snapshot = {}
+
     env_idx = 0
     env_create_count = 0
 
@@ -33,8 +36,8 @@ class Environment(QWidget,Colors,FilePaths):
         if self.load:
             self.load_game()
             self.generate_env = False
-            self.env_snapshot = self.game_snapshot[str(self.env_idx)]
             self.env_idx = len(self.game_snapshot)-1
+            self.env_snapshot = self.game_snapshot[str(self.env_idx)]
         else:
             self.time_of_day = time_of_day
 
@@ -118,6 +121,7 @@ class Environment(QWidget,Colors,FilePaths):
             painter.end()
 
             self.draw_stars()
+            self.draw_moon()
 
     def draw_clouds(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
@@ -301,11 +305,41 @@ class Environment(QWidget,Colors,FilePaths):
             radii = self.env_snapshot['sun']['radii']
         
         # Generate sun
-        painter.drawEllipse(QPoint(35,35),50,50)
+        painter.drawEllipse(QPoint(origin[0],origin[1]),radii[0],radii[1])
         painter.end()
 
         if self.generate_env:
             self.env_snapshot.update({'sun':sun})
+    
+    def draw_moon(self):
+        painter = QtGui.QPainter(self.main_frame.pixmap())
+
+        pen = QtGui.QPen()
+        pen.setWidth(3)
+        pen.setColor(QtGui.QColor(self.white['hex']))
+        painter.setPen(pen)
+
+        brush = QtGui.QBrush()
+        brush.setColor(QtGui.QColor(self.white['hex']))
+        brush.setStyle(Qt.SolidPattern)
+        painter.setBrush(brush)
+
+        if self.generate_env:
+            moon = {}
+            origin = [35,35]
+            radii = [50,50]
+
+            moon.update({'origin':origin,'radii':radii})
+        else:
+            origin = self.env_snapshot['moon']['origin']
+            radii = self.env_snapshot['moon']['radii']
+        
+        # Generate sun
+        painter.drawEllipse(QPoint(origin[0],origin[1]),radii[0],radii[1])
+        painter.end()
+
+        if self.generate_env:
+            self.env_snapshot.update({'moon':moon})
 
     def draw_player(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
