@@ -65,6 +65,10 @@ class WelcomeScreen(QWidget,FilePaths):
         self.load_button.clicked.connect(self.load_game)
         self.layout.addWidget(self.load_button)
 
+        self.delete_button = QPushButton('Delete')
+        self.delete_button.clicked.connect(self.delete_game_save)
+        self.layout.addWidget(self.delete_button)
+
     def find_save_files(self):
         if not os.path.exists(f'{self.user_path}saves/'):
             try:
@@ -98,3 +102,12 @@ class WelcomeScreen(QWidget,FilePaths):
             
         log(f'Loading game: {self.load_file_name}')
         self.load.emit(self.load_file_name)
+
+    def delete_game_save(self):
+        self.load_file_name = self.save_games.currentText()
+        save_filepath = self.user_path + 'saves/' 
+        os.remove(f'{save_filepath}{self.load_file_name}')
+
+        self.find_save_files()
+        self.save_games.clear()
+        self.save_games.addItems(self.file_names)

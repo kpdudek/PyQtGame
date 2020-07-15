@@ -10,13 +10,39 @@ from Utils import *
 from PaintUtils import *
 from Widgets import *
 
+class GameMenuOptions(QWidget,FilePaths,Colors):
+    save_scene_signal = pyqtSignal()
+    exit_game_signal = pyqtSignal()
 
-class GameController(QFrame,FilePaths,Colors):
+    def __init__(self):
+        super().__init__()
+
+        self.button_grid = QGridLayout()
+        self.setLayout(self.button_grid)
+
+        self.save_button = ControlButton('Save',fn=self.save_scene)
+        self.button_grid.addWidget(self.save_button,0,0)
+
+        self.exit_button = ControlButton('Exit Game',fn=self.exit_game)
+        self.button_grid.addWidget(self.exit_button,0,1)
+
+        self.show_controls_button = ControlButton('Controls',fn=self.show_controls)
+        self.button_grid.addWidget(self.show_controls_button,0,2)
+
+    def save_scene(self):
+        self.save_scene_signal.emit()
+    
+    def exit_game(self):
+        self.exit_game_signal.emit()
+    
+    def show_controls(self):
+        self.controls_window = KeyboardShortcuts()
+
+
+class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()
     prev_scene_signal = pyqtSignal()
     advance_scene_signal = pyqtSignal()
-    save_scene_signal = pyqtSignal()
-    exit_game_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -34,16 +60,6 @@ class GameController(QFrame,FilePaths,Colors):
         self.next_scene_button = ControlButton('End Turn',fn=self.new_scene)
         self.button_grid.addWidget(self.next_scene_button,0,1)
 
-        self.save_button = ControlButton('Save',fn=self.save_scene)
-        self.button_grid.addWidget(self.save_button,0,2)
-
-        self.exit_button = ControlButton('Exit Game',fn=self.exit_game)
-        self.button_grid.addWidget(self.exit_button,1,2)
-
-        self.show_controls_button = ControlButton('Controls',fn=self.show_controls)
-        self.button_grid.addWidget(self.show_controls_button,0,3)
-
-
     def new_scene(self):
         self.new_scene_signal.emit()
 
@@ -52,12 +68,3 @@ class GameController(QFrame,FilePaths,Colors):
 
     def advance_scene(self):
         self.advance_scene_signal.emit()
-
-    def save_scene(self):
-        self.save_scene_signal.emit()
-    
-    def exit_game(self):
-        self.exit_game_signal.emit()
-    
-    def show_controls(self):
-        self.controls_window = KeyboardShortcuts()

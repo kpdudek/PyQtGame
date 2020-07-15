@@ -117,6 +117,8 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
 
     def __init__(self,rect=None):
         super().__init__()
+        self.setWindowTitle('Keyboard Controls')
+        
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
 
@@ -133,11 +135,14 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.controls_list_layout = QHBoxLayout()
 
         self.controls_list = QListWidget()
-        self.controls_list.addItem('Control 1')
+        control_list = ['Up','Down','Left','Right','Save and exit','End turn','Previous scene','Advance scene']
+        self.controls_list.addItems(control_list)
         self.controls_list_layout.addWidget(self.controls_list)
+        self.controls_list.itemClicked.connect(self.link_lists)
 
         self.button_list = QListWidget()
-        self.button_list.addItem('Button 1')
+        control_buttons = 'W','S','A','D','ESC','N','B','M'
+        self.button_list.addItems(control_buttons)
         self.controls_list_layout.addWidget(self.button_list)
         
         self.layout.addLayout(self.controls_list_layout)
@@ -149,6 +154,11 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
 
         self.setLayout(self.layout)
         self.show()
+
+    def link_lists(self):
+        curr_row = self.controls_list.currentRow()
+        self.button_list.setCurrentRow(curr_row)
+
 
     def close_window(self):
         self.close()

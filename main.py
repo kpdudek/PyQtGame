@@ -21,8 +21,12 @@ from GameController import *
 
 class Game(QMainWindow,FilePaths):
     
-    width = 1600
-    height = 800
+    # Game window dimensions
+    width = 1920
+    height = 900
+
+    screen_width = 1920
+    screen_height = 1080
     
     fps = 45.0
     game_time = 0.0
@@ -46,11 +50,9 @@ class Game(QMainWindow,FilePaths):
         # setting title 
         self.setWindowTitle("Game Title")
 
-        screen_width = 1920
-        screen_height = 1080
         welcome_width = 800
         welcome_height = 500
-        self.setGeometry((screen_width-welcome_width)/2, (screen_height-welcome_height)/2, welcome_width, welcome_height) 
+        self.setGeometry((self.screen_width-welcome_width)/2, (self.screen_height-welcome_height)/2, welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
         self.main_widget = WelcomeScreen()
@@ -108,6 +110,11 @@ class Game(QMainWindow,FilePaths):
         self.game_widget.setLayout(self.game_layout)
         self.game_layout.setAlignment(Qt.AlignCenter)
 
+        self.game_menu_options = GameMenuOptions()
+        self.game_layout.addWidget(self.game_menu_options)
+        self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
+        self.game_menu_options.exit_game_signal.connect(self.end_game)
+
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.game_layout.addWidget(self.environment)
 
@@ -116,10 +123,8 @@ class Game(QMainWindow,FilePaths):
         self.game_controller.new_scene_signal.connect(self.new_scene_event)
         self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
         self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
-        self.game_controller.save_scene_signal.connect(self.save_scene_event)
-        self.game_controller.exit_game_signal.connect(self.end_game)
         
-        self.setGeometry(0, 0, self.width, self.height)
+        self.setGeometry(0, 0, self.screen_width, self.screen_height)
         self.setCentralWidget(self.game_widget)
 
     def new_scene_event(self):
