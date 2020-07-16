@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import random, sys, os, pwd, math, json, numpy
+import random, sys, os, math, json, numpy
 import time
 
 from Utils import *

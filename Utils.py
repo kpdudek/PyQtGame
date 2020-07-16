@@ -4,9 +4,13 @@ import os
 import sys
 import time
 import datetime as dt
-import pwd
 from threading import Thread
 import inspect
+
+# try:
+#     import pwd
+# except ImportError:
+#     import winpwd as pwd
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -15,7 +19,7 @@ from PyQt5.QtGui import *
 import pathlib
 
 class FilePaths(object):
-    user_name = pwd.getpwuid( os.getuid() ).pw_name
+    # user_name = pwd.getpwuid( os.getuid() ).pw_name
     user_path = str(pathlib.Path().absolute()) + '/'
 
 def log(text, color=None):

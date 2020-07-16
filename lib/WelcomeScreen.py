@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, pwd, math
+import random, sys, os, math
 
 from Utils import *
 from PaintUtils import *

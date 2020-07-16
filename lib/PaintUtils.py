@@ -4,7 +4,6 @@ import os
 import sys
 import time
 import datetime as dt
-import pwd
 from threading import Thread
 import inspect
 

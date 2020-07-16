@@ -4,8 +4,13 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, pwd, math
+import random, sys, os, math
 import pathlib
+
+# try:
+#     import pwd
+# except ImportError:
+#     import winpwd as pwd
 
 from Utils import *
 file_paths = FilePaths()
