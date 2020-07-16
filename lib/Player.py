@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, pwd, math
+import random, sys, os, pwd, math, numpy
 
 from Utils import *
 from PaintUtils import *
@@ -12,7 +12,7 @@ from Physics import *
 
 class Player(QWidget,Colors,FilePaths):
     speed = 8
-    gravity_accel = 6
+    grav_accel = 2
 
     mass = 1
     force = [0,0]
@@ -35,7 +35,7 @@ class Player(QWidget,Colors,FilePaths):
         self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
-        self.physics = Physics(20.0)
+        self.physics = Physics(15.0)
 
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
@@ -44,7 +44,7 @@ class Player(QWidget,Colors,FilePaths):
 
     def update_position(self,key_press,width,height):
         if len(key_press) == 0:
-            self.force = [0,0]
+            self.force = [0,self.grav_accel]
             # pass
             # return
         else:
@@ -59,12 +59,15 @@ class Player(QWidget,Colors,FilePaths):
                     self.geom = 'player_left.svg'
                 elif key == 'up':
                     # self.pose[1] -= 2*self.speed
-                    self.force[1] -= 1
+                    self.force[1] -= 4
                 elif key == 'down':
                     # self.pose[1] += 2*self.speed
                     self.force[1] += 1
                 else:
                     log('Player pose update. Key not recognized...',color='r')
+
+        # self.gravity()
+        self.drag()
 
         self.physics.accelerate(self.force)
         self.pose[0] += math.ceil(self.physics.velocity[0])
@@ -80,6 +83,9 @@ class Player(QWidget,Colors,FilePaths):
             self.pose[1] = 0
         elif self.pose[1]+self.size[1] > height:
             self.pose[1] = height-self.size[1]
+
+        if abs(self.physics.velocity[0]) < .1:
+            self.geom = 'player.svg'
         
         ### Updating player image
         if self.geom != self.prev_geom:
@@ -87,8 +93,15 @@ class Player(QWidget,Colors,FilePaths):
         self.prev_geom = self.geom
 
     def gravity(self):
-        self.pose[1] += 1*self.gravity_accel
+        # self.pose[1] += 1*self.gravity_accel
+        self.force[1] += self.grav_accel
         pass
+
+    def drag(self):
+        sign = -1 * numpy.sign(self.physics.velocity[0])
+        # print('{}'.format(sign * 0.6 * self.physics.velocity[0]))
+        self.force[0] += sign * 0.3 * abs(self.physics.velocity[0])
+
 
     def animate(self):
         pass

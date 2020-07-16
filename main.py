@@ -92,6 +92,7 @@ class Game(QMainWindow,FilePaths):
     def update_player(self):
         tmp_player = self.player
 
+        # self.player.drag()
         # if len(self.key_pressed) != 0:
         self.player.update_position(self.key_pressed,self.width,self.height)
         
@@ -99,6 +100,9 @@ class Game(QMainWindow,FilePaths):
         ground_top = self.environment.env_snapshot['ground']['origin'][1]
         if player_bot < ground_top:
             self.player.gravity()
+        elif player_bot >= ground_top:
+            self.player.pose[1] = ground_top - self.player.size[1]
+            self.player.physics.velocity[1] = 0
 
         #TODO: check for collisions
 

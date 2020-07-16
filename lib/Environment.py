@@ -275,7 +275,14 @@ class Environment(QWidget,Colors,FilePaths):
             size = self.env_snapshot['ground']['size']
     
         # Generate ground
-        painter.drawRect(QtCore.QRect(origin[0], origin[1], origin[0]+size[0], origin[1]+size[1]))
+        p = QPolygonF()
+        # for corner_idx in range(0,4):
+        p.append(QPointF(origin[0],origin[1]))
+        p.append(QPointF(origin[0]+size[0],origin[1]))
+        p.append(QPointF(origin[0]+size[0],origin[1]+size[1]))
+        p.append(QPointF(origin[0],origin[1]+size[1]))
+        # painter.drawRect(QtCore.QRect(origin[0], origin[1], origin[0]+size[0], origin[1]+size[1]))
+        painter.drawPolygon(p)
         painter.end()
 
         if self.generate_env:
