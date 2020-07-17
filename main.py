@@ -130,8 +130,10 @@ class Game(QMainWindow,FilePaths):
         self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
         self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
         
-        # self.setGeometry(15, 15, self.screen_width-30, self.screen_height-30)
-        self.showMaximized()
+        if sys.platform == 'win32':
+            self.showMaximized()
+        else:
+            self.setGeometry(0, 0, self.screen_width, self.screen_height)
         self.setCentralWidget(self.game_widget)
 
     def new_scene_event(self):
@@ -174,7 +176,7 @@ class Game(QMainWindow,FilePaths):
             log('Exit game called...',color='y')
             self.exit_game = True
         else:
-            log('Key not recognized...')
+            log('Key press not recognized...')
 
     def keyReleaseEvent(self, event):
         try:
@@ -186,6 +188,8 @@ class Game(QMainWindow,FilePaths):
                 self.key_pressed.remove('up')
             elif event.key() == Qt.Key_S:
                 self.key_pressed.remove('down')
+            else:
+                log('Key release not recognized...')
         except:
             pass
         

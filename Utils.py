@@ -56,7 +56,7 @@ def log(text, color=None):
     filepath = frame[0].f_code.co_filename
     if sys.platform == 'win32':
         filename = ' (%s)'%(filepath.split('\\')[-1].split('.')[0])
-    elif sys.platformk == 'linux':    
+    elif sys.platform == 'linux':    
         filename = ' (%s)'%(filepath.split('/')[-1].split('.')[0])
     else:
         filename = ''

@@ -7,11 +7,12 @@ from Utils import *
 
 class Physics(FilePaths):
     velocity = [0,0]
-    acceleration = 0.0
-    time = 1.0
-    max_vel = 5
+    acceleration = [0,0]
+    
+    max_vel = 8
 
-    grav_accel = 2
+    time = 1.0
+    grav_accel = 1
 
     def __init__(self,mass):
         super().__init__()
@@ -39,7 +40,9 @@ class Physics(FilePaths):
     def drag(self):
         sign = -1 * numpy.sign(self.velocity[0])
         # print('{}'.format(sign * 0.6 * self.physics.velocity[0]))
-        self.force[0] += sign * 0.3 * abs(self.velocity[0])
+        drag = sign * 0.1 * abs(self.velocity[0])
+        # if abs(self.force) < abs()
+        self.velocity[0] += drag
 
     def is_collision(self):
         pass
