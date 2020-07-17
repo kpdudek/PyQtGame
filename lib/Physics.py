@@ -11,12 +11,18 @@ class Physics(FilePaths):
     time = 1.0
     max_vel = 5
 
+    grav_accel = 2
+
     def __init__(self,mass):
         super().__init__()
         self.mass = mass
 
     def accelerate(self,force):
-        x,y = force
+        self.force = force
+        self.gravity()
+        self.drag()
+
+        x,y = self.force
         self.acceleration = [float(x) / float(self.mass),float(y) / float(self.mass)]
         self.velocity[0] += self.acceleration[0] * self.time
         self.velocity[1] += self.acceleration[1] * self.time
@@ -24,6 +30,16 @@ class Physics(FilePaths):
         for count,vel in enumerate(self.velocity):
             if abs(vel) > self.max_vel:
                 self.velocity[count] = numpy.sign(vel) * self.max_vel
+
+    def gravity(self):
+        # self.pose[1] += 1*self.gravity_accel
+        self.velocity[1] += self.grav_accel * self.time
+        pass
+
+    def drag(self):
+        sign = -1 * numpy.sign(self.velocity[0])
+        # print('{}'.format(sign * 0.6 * self.physics.velocity[0]))
+        self.force[0] += sign * 0.3 * abs(self.velocity[0])
 
     def is_collision(self):
         pass

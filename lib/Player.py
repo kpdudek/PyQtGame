@@ -12,7 +12,6 @@ from Physics import *
 
 class Player(QWidget,Colors,FilePaths):
     speed = 8
-    grav_accel = 2
 
     mass = 1
     force = [0,0]
@@ -43,11 +42,7 @@ class Player(QWidget,Colors,FilePaths):
         log('Player size: {}'.format(self.size))
 
     def update_position(self,key_press,width,height):
-        if len(key_press) == 0:
-            self.force = [0,self.grav_accel]
-            # pass
-            # return
-        else:
+        if len(key_press) != 0:
             for key in key_press:
                 if key == 'right':
                     # self.pose[0] += 1*self.speed
@@ -65,10 +60,7 @@ class Player(QWidget,Colors,FilePaths):
                     self.force[1] += 1
                 else:
                     log('Player pose update. Key not recognized...',color='r')
-
-        # self.gravity()
-        self.drag()
-
+        
         self.physics.accelerate(self.force)
         self.pose[0] += math.ceil(self.physics.velocity[0])
         self.pose[1] += math.ceil(self.physics.velocity[1])
@@ -91,17 +83,6 @@ class Player(QWidget,Colors,FilePaths):
         if self.geom != self.prev_geom:
             self.set_geometry(self.geom)
         self.prev_geom = self.geom
-
-    def gravity(self):
-        # self.pose[1] += 1*self.gravity_accel
-        self.force[1] += self.grav_accel
-        pass
-
-    def drag(self):
-        sign = -1 * numpy.sign(self.physics.velocity[0])
-        # print('{}'.format(sign * 0.6 * self.physics.velocity[0]))
-        self.force[0] += sign * 0.3 * abs(self.physics.velocity[0])
-
 
     def animate(self):
         pass

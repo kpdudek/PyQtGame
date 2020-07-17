@@ -102,9 +102,9 @@ class Game(QMainWindow,FilePaths):
         
         player_bot = self.player.pose[1] + self.player.size[1]
         ground_top = self.environment.env_snapshot['ground']['origin'][1]
-        if player_bot < ground_top:
-            self.player.gravity()
-        elif player_bot >= ground_top:
+        # if player_bot < ground_top:
+        #     self.player.gravity()
+        if player_bot >= ground_top:
             self.player.pose[1] = ground_top - self.player.size[1]
             self.player.physics.velocity[1] = 0
 
@@ -223,7 +223,9 @@ def main():
     if sys.platform == 'win32':
         QApplication.setStyle("fusion")
         dark_mode = True
+
     elif sys.platform == 'linux':   
+        QApplication.setStyle("fusion")
         dark_mode = True
 
     app = QApplication(sys.argv)
@@ -234,7 +236,7 @@ def main():
         palette = DarkColors().palette
         app.setPalette(palette)
     else:
-        palette = Colors().palette
+        palette = FusionColor().palette
         app.setPalette(palette)
     
     # create the instance of our Window 
