@@ -8,14 +8,17 @@ To run the game you need python3, pip3, PyQt, and the PyQt SVG package.
 
 #### Ubuntu 18.04
 ```
+sudo apt-get install git
+git clone https://github.com/kpdudek/PyQtGame.git
 sudo apt-get install python3-pip
 sudo apt-get install python3-pyqt5
 sudo apt-get install python3-pyqt5.qtsvg
 ```
 
 #### Windows 10
-Download python >3.7 from the Microsoft Store and then use pip3 to install PyQt5 and numpy.
+Download python >3.7 from the Microsoft Store and then use pip3 to install PyQt5 and numpy from PowerShell.
 ```
+git clone https://github.com/kpdudek/PyQtGame.git
 pip3 install PyQt5 
 pip3 install numpy
 ```
