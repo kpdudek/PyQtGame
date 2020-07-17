@@ -18,9 +18,20 @@ from PyQt5.QtGui import *
 
 import pathlib
 
+class Error(Exception):
+    pass
+
 class FilePaths(object):
     # user_name = pwd.getpwuid( os.getuid() ).pw_name
-    user_path = str(pathlib.Path().absolute()) + '/'
+
+    if sys.platform == 'win32':
+        user_path = str(pathlib.Path().absolute()) + '\\'
+        lib_path = user_path + 'lib\\'
+    elif sys.platform == 'linux':    
+        user_path = str(pathlib.Path().absolute()) + '/'
+        lib_path = user_path + 'lib/'
+    else:
+        raise Error('OS not recognized!')
 
 def log(text, color=None):
     '''
@@ -43,20 +54,30 @@ def log(text, color=None):
 
     frame = inspect.stack()[1]
     filepath = frame[0].f_code.co_filename
-    filename = ' (%s)'%(filepath.split('/')[-1].split('.')[0])
+    if sys.platform == 'win32':
+        filename = ' (%s)'%(filepath.split('\\')[-1].split('.')[0])
+    elif sys.platformk == 'linux':    
+        filename = ' (%s)'%(filepath.split('/')[-1].split('.')[0])
+    else:
+        filename = ''
 
     # Form log message
     log_msg = curr_time + filename + ' ' + text
 
     # Print to terminal in specified color
-    if color == 'g' or color == 'G':
-        print(GREEN + log_msg + RESET)
-    elif color == 'r' or color == 'R':
-        print(RED + log_msg + RESET)
-    elif color == 'y' or color == 'Y':
-        print(YELLOW + log_msg + RESET)
-    elif color == 'c' or color == 'C':
-        print(CYAN + log_msg + RESET)
+    if sys.platform == 'win32':
+        print(log_msg)
+    elif sys.platform == 'linux':    
+        if color == 'g' or color == 'G':
+            print(GREEN + log_msg + RESET)
+        elif color == 'r' or color == 'R':
+            print(RED + log_msg + RESET)
+        elif color == 'y' or color == 'Y':
+            print(YELLOW + log_msg + RESET)
+        elif color == 'c' or color == 'C':
+            print(CYAN + log_msg + RESET)
+        else:
+            print(log_msg)
     else:
         print(log_msg)
     

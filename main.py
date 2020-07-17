@@ -16,7 +16,7 @@ from Utils import *
 file_paths = FilePaths()
 # user_name = pwd.getpwuid( os.getuid() ).pw_name
 # user_path = str(pathlib.Path().absolute()) + '/lib/'
-sys.path.insert(1,file_paths.user_path+'lib/')
+sys.path.insert(1,file_paths.lib_path)
 
 from PaintUtils import *
 from Environment import *
@@ -25,13 +25,6 @@ from WelcomeScreen import *
 from GameController import *
 
 class Game(QMainWindow,FilePaths):
-    
-    # Game window dimensions
-    width = 1820
-    height = 900
-
-    screen_width = 1920
-    screen_height = 1080
     
     fps = 45.0
     game_time = 0.0
@@ -48,15 +41,21 @@ class Game(QMainWindow,FilePaths):
 
     load = None # If a game is being loaded, set True
 
-    def __init__(self):
+    def __init__(self,screen):
         super().__init__()
+            # Game window dimensions
+        self.width = 1600
+        self.height = 800
+
+        self.screen_width = screen.size().width()#1920
+        self.screen_height = screen.size().height()#1080
 
         # setting title 
         self.setWindowTitle("Game Title")
 
         welcome_width = 800
         welcome_height = 500
-        self.setGeometry((self.screen_width-welcome_width)/2, (self.screen_height-welcome_height)/2, welcome_width, welcome_height) 
+        self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
         self.main_widget = WelcomeScreen()
@@ -131,7 +130,8 @@ class Game(QMainWindow,FilePaths):
         self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
         self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
         
-        self.setGeometry(0, 0, self.screen_width, self.screen_height)
+        # self.setGeometry(15, 15, self.screen_width-30, self.screen_height-30)
+        self.showMaximized()
         self.setCentralWidget(self.game_widget)
 
     def new_scene_event(self):
@@ -219,18 +219,26 @@ class Game(QMainWindow,FilePaths):
         self.environment.game_time = self.game_time
 
 def main():
-    # create pyqt5 app 
-    app = QApplication(sys.argv) 
+    # create pyqt5 app
+    if sys.platform == 'win32':
+        QApplication.setStyle("windows")
+        dark_mode = True
+    elif sys.platform == 'linux':   
+        dark_mode = True
+
+    app = QApplication(sys.argv)
     log('Game started...',color='g')
 
-    # Now use a palette to switch to dark colors:
-    dark_mode = True
+    # Now use a palette to switch to dark colors
     if dark_mode:
+        palette = DarkColors().palette
+        app.setPalette(palette)
+    else:
         palette = Colors().palette
         app.setPalette(palette)
     
     # create the instance of our Window 
-    game_window = Game() 
+    game_window = Game(app.primaryScreen()) 
 
     # start the app 
     sys.exit(app.exec()) 

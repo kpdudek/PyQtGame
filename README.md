@@ -4,18 +4,26 @@ This game can be thought of as a mix between Terraria and Civilization. It is a 
 Players will have inventories, and will be able to craft items.
 
 ## Installation
-To run the game you need python3, PyQt, and the PyQt SVG package.
+To run the game you need python3, pip3, PyQt, and the PyQt SVG package.
 
 #### Ubuntu 18.04
 ```
+sudo apt-get install python3-pip
 sudo apt-get install python3-pyqt5
 sudo apt-get install python3-pyqt5.qtsvg
+```
+
+### Windows 10
+Download python >3.7 from the Microsoft Store and then use pip3 to install PyQt5 and numpy.
+```
+pip3 install PyQt5 
+pip3 install numpy
 ```
 
 ## Playing the Game
 Launch the game by navigating to the PyQtGame folder and then executing `main.py`
 ```
-user@computer:~/path/to/PyQtGame$ ./main.py
+user@computer:~/path/to/PyQtGame$ python3 main.py
 ```
 
 Your save files will populate in the `saves/` folder. 
