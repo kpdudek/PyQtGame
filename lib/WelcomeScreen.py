@@ -39,6 +39,7 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addLayout(self.game_name_form.form)
 
         self.start_button = QPushButton('Create')
+        self.start_button.setStyleSheet("font: 16px")
         self.start_button.clicked.connect(self.start_game)
         self.layout.addWidget(self.start_button)
 
@@ -51,21 +52,25 @@ class WelcomeScreen(QWidget,FilePaths):
         self.game_load_layout = QHBoxLayout()
 
         self.game_load_label = QLabel('Saved Games:')
+        self.game_load_label.setStyleSheet("font: 16px")
         self.game_load_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
         self.game_load_layout.addWidget(self.game_load_label,1)
 
         self.save_games = QComboBox()
         self.find_save_files()
         self.save_games.addItems(self.file_names)
+        self.save_games.setStyleSheet("font: 16px")
         self.game_load_layout.addWidget(self.save_games,3)
 
         self.layout.addLayout(self.game_load_layout)
 
         self.load_button = QPushButton('Load')
+        self.load_button.setStyleSheet("font: 16px")
         self.load_button.clicked.connect(self.load_game)
         self.layout.addWidget(self.load_button)
 
         self.delete_button = QPushButton('Delete')
+        self.delete_button.setStyleSheet("font: 16px")
         self.delete_button.clicked.connect(self.delete_game_save)
         self.layout.addWidget(self.delete_button)
 

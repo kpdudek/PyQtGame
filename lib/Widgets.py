@@ -52,10 +52,12 @@ class FormEntry():
 
         label_text = label_text + ':'
         self.form_line_label = QLabel(label_text)
+        self.form_line_label.setStyleSheet("font: 16px")
         self.form_line_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
         self.form.addWidget(self.form_line_label,1)
 
         self.form_line_edit = QLineEdit()
+        self.form_line_edit.setStyleSheet("font: 16px")
         self.form.addWidget(self.form_line_edit,3)
 
         if return_press:
@@ -88,6 +90,7 @@ class WarningPrompt(QWidget,Colors,FilePaths):
         self.layout.addWidget(self.label)
 
         self.ok_button = QPushButton('OK')
+        self.ok_button.setStyleSheet("font: 14px")
         self.ok_button.clicked.connect(self.close_window)
         self.ok_button.setDefault(True)
         self.layout.addWidget(self.ok_button)

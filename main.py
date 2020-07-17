@@ -44,8 +44,8 @@ class Game(QMainWindow,FilePaths):
     def __init__(self,screen):
         super().__init__()
             # Game window dimensions
-        self.width = 1600
-        self.height = 800
+        self.width = 1800
+        self.height = 850
 
         self.screen_width = screen.size().width()#1920
         self.screen_height = screen.size().height()#1080
@@ -221,7 +221,7 @@ class Game(QMainWindow,FilePaths):
 def main():
     # create pyqt5 app
     if sys.platform == 'win32':
-        QApplication.setStyle("windows")
+        QApplication.setStyle("fusion")
         dark_mode = True
     elif sys.platform == 'linux':   
         dark_mode = True
