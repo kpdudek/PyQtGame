@@ -8,7 +8,6 @@ To run the game you need python3, pip3, PyQt, and the PyQt SVG package.
 
 #### Ubuntu 18.04
 ```
-sudo apt-get install python3-pip
 sudo apt-get install python3-pyqt5
 sudo apt-get install python3-pyqt5.qtsvg
 ```
