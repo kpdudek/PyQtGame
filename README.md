@@ -13,7 +13,7 @@ sudo apt-get install python3-pyqt5
 sudo apt-get install python3-pyqt5.qtsvg
 ```
 
-### Windows 10
+#### Windows 10
 Download python >3.7 from the Microsoft Store and then use pip3 to install PyQt5 and numpy.
 ```
 pip3 install PyQt5 
