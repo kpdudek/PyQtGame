@@ -46,18 +46,14 @@ class Player(QWidget,Colors,FilePaths):
             self.force = [0,0]
             for key in key_press:
                 if key == 'right':
-                    # self.pose[0] += 1*self.speed
                     self.force[0] = self.key_force
                     self.geom = 'player_right.svg'            
                 elif key == 'left':
-                    # self.pose[0] -= 1*self.speed
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
                 elif key == 'up':
-                    # self.pose[1] -= 2*self.speed
                     self.force[1] = -3*self.key_force
                 elif key == 'down':
-                    # self.pose[1] += 2*self.speed
                     self.force[1] = self.key_force
                 else:
                     log('Player pose update. Key not recognized...',color='r')
@@ -65,9 +61,8 @@ class Player(QWidget,Colors,FilePaths):
             self.force = [0,0]
         
         self.physics.accelerate(self.force)
-        # print(f'force: {self.physics.force} | vel: {self.physics.velocity} | accel: {self.physics.acceleration}')
-        self.pose[0] += self.physics.velocity[0] #math.floor(self.physics.velocity[0])
-        self.pose[1] += self.physics.velocity[1] #math.floor(self.physics.velocity[1])
+        self.pose[0] += self.physics.velocity[0] 
+        self.pose[1] += self.physics.velocity[1] 
 
         ### Checking bounds of environment
         if self.pose[0]+self.size[0] > width:

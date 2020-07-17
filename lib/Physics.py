@@ -33,15 +33,11 @@ class Physics(FilePaths):
                 self.velocity[count] = numpy.sign(vel) * self.max_vel
 
     def gravity(self):
-        # self.pose[1] += 1*self.gravity_accel
         self.velocity[1] += self.grav_accel * self.time
-        pass
 
     def drag(self):
         sign = -1 * numpy.sign(self.velocity[0])
-        # print('{}'.format(sign * 0.6 * self.physics.velocity[0]))
         drag = sign * 0.1 * abs(self.velocity[0])
-        # if abs(self.force) < abs()
         self.velocity[0] += drag
 
     def is_collision(self):

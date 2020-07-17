@@ -103,6 +103,7 @@ class WelcomeScreen(QWidget,FilePaths):
             pose = QRect(600,400,200,200)
             self.warning = WarningPrompt('There is no save game selected!',rect=pose)
             self.warning.show()
+            log('There is no save game selected!',color='r')
             return
             
         log(f'Loading game: {self.load_file_name}')

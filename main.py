@@ -7,15 +7,9 @@ from PyQt5.QtCore import *
 import random, sys, os, math
 import pathlib
 
-# try:
-#     import pwd
-# except ImportError:
-#     import winpwd as pwd
-
 from Utils import *
+
 file_paths = FilePaths()
-# user_name = pwd.getpwuid( os.getuid() ).pw_name
-# user_path = str(pathlib.Path().absolute()) + '/lib/'
 sys.path.insert(1,file_paths.lib_path)
 
 from PaintUtils import *
@@ -96,19 +90,14 @@ class Game(QMainWindow,FilePaths):
     def update_player(self):
         tmp_player = self.player
 
-        # self.player.drag()
-        # if len(self.key_pressed) != 0:
         self.player.update_position(self.key_pressed,self.width,self.height)
         
         player_bot = self.player.pose[1] + self.player.size[1]
         ground_top = self.environment.env_snapshot['ground']['origin'][1]
-        # if player_bot < ground_top:
-        #     self.player.gravity()
+
         if player_bot >= ground_top:
             self.player.pose[1] = ground_top - self.player.size[1]
             self.player.physics.velocity[1] = 0
-
-        #TODO: check for collisions
 
     def display_environment(self):
         self.game_widget = QWidget()
