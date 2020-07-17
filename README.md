@@ -21,7 +21,7 @@ pip3 install numpy
 ```
 
 ## Playing the Game
-Launch the game by navigating to the PyQtGame folder and then executing `main.py`
+Launch the game by navigating to the PyQtGame folder in a terminal and then executing `main.py`
 ```
 user@computer:~/path/to/PyQtGame$ python3 main.py
 ```
