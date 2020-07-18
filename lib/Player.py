@@ -75,7 +75,7 @@ class Player(QWidget,Colors,FilePaths):
         elif self.pose[1]+self.size[1] > height:
             self.pose[1] = height-self.size[1]
 
-        if abs(self.physics.velocity[0]) < .1:
+        if abs(self.physics.velocity[0]) < .5:
             self.geom = 'player.svg'
         
         ### Updating player image

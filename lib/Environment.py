@@ -68,7 +68,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.save_game()
             self.env_create_count += 1
         else:
-            self.env_create_count = len(self.game_snapshot)
+            self.env_create_count = len(self.game_snapshot) - self.num_prefix
 
         self.generate_env = False
 
