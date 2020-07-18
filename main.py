@@ -35,6 +35,8 @@ class Game(QMainWindow,FilePaths):
 
     load = None # If a game is being loaded, set True
 
+    game_running = False
+
     def __init__(self,screen):
         super().__init__()
             # Game window dimensions
@@ -72,6 +74,8 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.setInterval(math.ceil((1.0/self.fps)*1000.0))
         self.game_timer.timeout.connect(self.game_loop)
         self.game_timer.start()
+
+        self.game_running = True
         
     def start_game(self,name):
         # Game Elements
@@ -86,6 +90,8 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.setInterval(math.ceil((1.0/self.fps)*1000.0))
         self.game_timer.timeout.connect(self.game_loop)
         self.game_timer.start()
+
+        self.game_running = True
     
     def update_player(self):
         tmp_player = self.player
@@ -111,6 +117,9 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.exit_game_signal.connect(self.end_game)
 
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
+        self.width = self.environment.width
+        self.height = self.environment.height
+
         self.game_layout.addWidget(self.environment)
 
         self.game_controller = GameController()
@@ -143,6 +152,9 @@ class Game(QMainWindow,FilePaths):
         self.close()
 
     def keyPressEvent(self, event):
+        if not self.game_running:
+            return
+        
         ### Move Keys
         if event.key() == Qt.Key_D:
             self.key_pressed.append('right')
@@ -168,6 +180,9 @@ class Game(QMainWindow,FilePaths):
             log('Key press not recognized...')
 
     def keyReleaseEvent(self, event):
+        if not self.game_running:
+            return
+        
         try:
             if event.key() == Qt.Key_D:
                 self.key_pressed.remove('right')

@@ -111,8 +111,12 @@ class WelcomeScreen(QWidget,FilePaths):
 
     def delete_game_save(self):
         self.load_file_name = self.save_games.currentText()
-        save_filepath = self.user_path + 'saves/' 
-        os.remove(f'{save_filepath}{self.load_file_name}')
+        save_filepath = self.user_path + 'saves/'
+        if self.load_file_name != '':
+            try:
+                os.remove(f'{save_filepath}{self.load_file_name}')
+            except:
+                log(f'Could not delete save file {self.load_file_name}',color='r')
 
         self.find_save_files()
         self.save_games.clear()

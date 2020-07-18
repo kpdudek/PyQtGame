@@ -28,17 +28,27 @@ class Environment(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.width = width
-        self.height = height
         self.player = player
         self.save_file = save_file
 
+        self.num_prefix = 3
         if self.load:
             self.load_game()
+            self.width = self.game_snapshot['width']
+            self.height = self.game_snapshot['height']
+            self.os = self.game_snapshot['os']
             self.generate_env = False
-            self.env_idx = len(self.game_snapshot)-1
+            self.env_idx = len(self.game_snapshot)-1 - self.num_prefix
             self.env_snapshot = self.game_snapshot[str(self.env_idx)]
         else:
+            self.width = width
+            self.height = height
+            self.os = sys.platform
+
+            self.game_snapshot.update({'width':self.width})
+            self.game_snapshot.update({'height':self.height})
+            self.game_snapshot.update({'os':self.os})
+
             self.time_of_day = time_of_day
 
         self.main_frame = QLabel()
@@ -399,7 +409,7 @@ class Environment(QWidget,Colors,FilePaths):
 
     def advance_scene(self):
         self.env_idx += 1
-        if self.env_idx > (len(self.game_snapshot) -1):
+        if self.env_idx > (len(self.game_snapshot) -1 - self.num_prefix):
             log('Reached end of environments...')
             self.env_idx -= 1
             return

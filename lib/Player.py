@@ -21,7 +21,7 @@ class Player(QWidget,Colors,FilePaths):
     acceleration = 4
 
     prev_direction = 0
-
+    
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout()
