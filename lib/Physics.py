@@ -37,7 +37,7 @@ class Physics(FilePaths):
 
     def drag(self):
         sign = -1 * numpy.sign(self.velocity[0])
-        drag = sign * 0.1 * abs(self.velocity[0])
+        drag = sign * 0.05 * abs(self.velocity[0])
         self.velocity[0] += drag
 
     def is_collision(self):
