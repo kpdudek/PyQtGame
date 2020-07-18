@@ -24,7 +24,7 @@ class Environment(QWidget,Colors,FilePaths):
     def __init__(self,width,height,player,save_file, load = True, time_of_day = None):
         super().__init__()
         self.load = load
-        
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 

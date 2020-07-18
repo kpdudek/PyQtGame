@@ -76,6 +76,8 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.start()
 
         self.game_running = True
+
+        self.player.info_signal.connect(self.display_info)
         
     def start_game(self,name):
         # Game Elements
@@ -92,6 +94,15 @@ class Game(QMainWindow,FilePaths):
         self.game_timer.start()
 
         self.game_running = True
+
+        self.player.info_signal.connect(self.display_info)
+    
+    def display_info(self,info):
+        # print(info)
+        try:
+            self.game_menu_options.physics_window.update(info)
+        except:
+            pass # No physics display exists
     
     def update_player(self):
         tmp_player = self.player
@@ -151,6 +162,7 @@ class Game(QMainWindow,FilePaths):
         self.environment.save_game()
         self.close()
 
+    # Qt method
     def keyPressEvent(self, event):
         if not self.game_running:
             return
@@ -179,6 +191,7 @@ class Game(QMainWindow,FilePaths):
         else:
             log('Key press not recognized...')
 
+    # Qt method
     def keyReleaseEvent(self, event):
         if not self.game_running:
             return

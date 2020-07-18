@@ -29,6 +29,9 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
         self.show_controls_button = ControlButton('Controls',fn=self.show_controls)
         self.button_grid.addWidget(self.show_controls_button,0,2)
 
+        self.show_physics_button = ControlButton('Physics',fn=self.show_physics)
+        self.button_grid.addWidget(self.show_physics_button,0,3)
+
     def save_scene(self):
         self.save_scene_signal.emit()
     
@@ -37,6 +40,9 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
+
+    def show_physics(self):
+        self.physics_window = PhysicsDisplay()
 
 class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()

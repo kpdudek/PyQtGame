@@ -120,7 +120,8 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
     def __init__(self,rect=None):
         super().__init__()
         self.setWindowTitle('Keyboard Controls')
-        
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
 
@@ -161,7 +162,28 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         curr_row = self.controls_list.currentRow()
         self.button_list.setCurrentRow(curr_row)
 
-
     def close_window(self):
         self.close()
+
+class PhysicsDisplay(QWidget,Colors,FilePaths):
+
+    def __init__(self,rect=None):
+        super().__init__()
+        self.setWindowTitle('Physics Stats')
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignCenter)
+
+        self.velocity_label = QLabel('Test')
+        self.layout.addWidget(self.velocity_label)
+
+        self.setGeometry(0,0,400,200)
+        self.setLayout(self.layout)
+        self.show()
+
+    def update(self,info):
+        # print('Connected!')
+        pass
+
     

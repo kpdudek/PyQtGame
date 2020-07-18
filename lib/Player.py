@@ -21,6 +21,8 @@ class Player(QWidget,Colors,FilePaths):
     acceleration = 4
 
     prev_direction = 0
+
+    info_signal = pyqtSignal(object)
     
     def __init__(self):
         super().__init__()
@@ -35,6 +37,10 @@ class Player(QWidget,Colors,FilePaths):
         self.prev_geom = self.geom
 
         self.physics = Physics(12.0)
+        self.physics.info_signal.connect(self.send_info)
+    
+    def send_info(self,info):
+        self.info_signal.emit(info)
 
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
@@ -52,7 +58,7 @@ class Player(QWidget,Colors,FilePaths):
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
                 elif key == 'up':
-                    self.force[1] = -3*self.key_force
+                    self.force[1] = -4*self.key_force
                 elif key == 'down':
                     self.force[1] = self.key_force
                 else:
@@ -75,7 +81,7 @@ class Player(QWidget,Colors,FilePaths):
         elif self.pose[1]+self.size[1] > height:
             self.pose[1] = height-self.size[1]
 
-        if abs(self.physics.velocity[0]) < .5:
+        if abs(self.physics.velocity[0]) < .7:
             self.geom = 'player.svg'
         
         ### Updating player image
