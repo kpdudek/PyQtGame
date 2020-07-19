@@ -58,7 +58,8 @@ class WelcomeScreen(QWidget,FilePaths):
 
         self.save_games = QComboBox()
         self.find_save_files()
-        self.save_games.addItems(self.file_names)
+        # self.save_games.addItems(self.file_names)
+        self.display_save_files()
         self.save_games.setStyleSheet("font: 16px")
         self.game_load_layout.addWidget(self.save_games,3)
 
@@ -83,6 +84,11 @@ class WelcomeScreen(QWidget,FilePaths):
                 log('Could not make save game folder!',color='r')
                     
         self.file_names = os.listdir(f'{self.user_path}saves/')
+    
+    def display_save_files(self):
+        for fname in self.file_names:
+            no_json = fname.split('.')[0]
+            self.save_games.addItem(no_json)
     
     def start_game(self):
         if len(self.game_name_form.form_line_edit.text()) == 0:
@@ -114,10 +120,11 @@ class WelcomeScreen(QWidget,FilePaths):
         save_filepath = self.user_path + 'saves/'
         if self.load_file_name != '':
             try:
-                os.remove(f'{save_filepath}{self.load_file_name}')
+                os.remove(f'{save_filepath}{self.load_file_name}.json')
             except:
                 log(f'Could not delete save file {self.load_file_name}',color='r')
 
         self.find_save_files()
         self.save_games.clear()
-        self.save_games.addItems(self.file_names)
+        # self.save_games.addItems(self.file_names)
+        self.display_save_files()

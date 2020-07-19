@@ -64,7 +64,7 @@ class Game(QMainWindow,FilePaths):
 
     def load_game(self,name):
         self.load = True
-        self.save_file_name = name
+        self.save_file_name = name + '.json'
         self.player = Player()
         log(f'Loading game called: {self.save_file_name}')
         self.display_environment()
