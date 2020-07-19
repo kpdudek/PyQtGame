@@ -58,7 +58,7 @@ class Player(QWidget,Colors,FilePaths):
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
                 elif key == 'up':
-                    self.force[1] = -4*self.key_force
+                    self.force[1] = -20*self.key_force
                 elif key == 'down':
                     self.force[1] = self.key_force
                 else:
@@ -81,8 +81,10 @@ class Player(QWidget,Colors,FilePaths):
         elif self.pose[1]+self.size[1] > height:
             self.pose[1] = height-self.size[1]
 
+        # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .7:
             self.geom = 'player.svg'
+            # self.physics.velocity[0] = 0.0
         
         ### Updating player image
         if self.geom != self.prev_geom:

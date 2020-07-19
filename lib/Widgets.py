@@ -175,15 +175,19 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
 
-        self.velocity_label = QLabel('Test')
-        self.layout.addWidget(self.velocity_label)
+        self.label = QLabel('...')
+        self.label.setStyleSheet(f"font:bold 16px")
+        self.layout.addWidget(self.label)
 
         self.setGeometry(0,0,400,200)
         self.setLayout(self.layout)
         self.show()
 
     def update(self,info):
-        # print('Connected!')
-        pass
+        # print(info)
+        info_str = ''
+        for key,val in list(info.physics_info.items()):
+            info_str = info_str + f'{key} | {val}\n'
+        self.label.setText(info_str)
 
     

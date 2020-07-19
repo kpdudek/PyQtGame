@@ -6,26 +6,27 @@ import time
 from Utils import *
 
 class PhysicsInfo(object):
-    velocity = None
-    acceleration = None
-    max_vel = None
-    grav_accel = None
-    drag = None
-    force = None
-    mass = None
-    touching_ground = None
+    # velocity = None
+    # acceleration = None
+    # max_vel = None
+    # grav_accel = None
+    # drag = None
+    # force = None
+    # mass = None
+    # touching_ground = None
+    physics_info = {'velocity':None,'acceleration':None,'max_vel':None,'grav_accel':None,'drag':None,'force':None,'mass':None,'touching_ground':None,}
 
     def __init__(self,mass,grav_accel,max_vel):
-        self.mass = mass
-        self.grav_accel = grav_accel
-        self.max_vel = max_vel
+        self.physics_info['mass'] = mass
+        self.physics_info['grav_accel'] = grav_accel
+        self.physics_info['max_vel'] = max_vel
     
     def assign(self,force,drag,acceleration,velocity,touching_ground):
-        self.force = force
-        self.drag = drag
-        self.acceleration = acceleration
-        self.velocity = velocity
-        self.touching_ground = touching_ground
+        self.physics_info['force'] = force
+        self.physics_info['drag'] = drag
+        self.physics_info['acceleration'] = acceleration
+        self.physics_info['velocity'] = velocity
+        self.physics_info['touching_ground'] = touching_ground
 
 class Physics(QWidget,FilePaths):
     velocity = [0,0]
@@ -37,7 +38,7 @@ class Physics(QWidget,FilePaths):
     grav_accel = 1.5
 
     touching_ground = False
-    
+
     info_signal = pyqtSignal(object)
 
     def __init__(self,mass):
@@ -49,7 +50,7 @@ class Physics(QWidget,FilePaths):
     def accelerate(self,force):
         self.force = force
         self.gravity()
-        self.drag()
+        self.compute_drag()
 
         x,y = self.force
         self.acceleration = [float(x) / float(self.mass),float(y) / float(self.mass)]
@@ -66,10 +67,10 @@ class Physics(QWidget,FilePaths):
     def gravity(self):
         self.velocity[1] += self.grav_accel * self.time
 
-    def drag(self):
+    def compute_drag(self):
         sign = -1 * numpy.sign(self.velocity[0])
-        drag = sign * 0.06 * abs(self.velocity[0])
-        self.velocity[0] += drag
+        self.drag = sign * 0.06 * abs(self.velocity[0])
+        self.velocity[0] += self.drag
 
     def is_collision(self):
         pass
