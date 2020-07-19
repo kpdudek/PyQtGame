@@ -10,6 +10,7 @@ import inspect
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5 import uic
 
 from Utils import *
 from PaintUtils import *
@@ -101,6 +102,13 @@ class WarningPrompt(QWidget,Colors,FilePaths):
     def close_window(self):
         self.close()
 
+class Prompt(QWidget,Colors,FilePaths):
+    def __init__(self,ui_file):
+        super().__init__()
+        uic.loadUi(f'{self.user_path}ui/{ui_file}', self)
+
+        self.show()
+    
 class ControlButton(QPushButton,Colors,FilePaths):
 
     def __init__(self,text,fn = None, default = False):
@@ -166,6 +174,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.close()
 
 class PhysicsDisplay(QWidget,Colors,FilePaths):
+    clear_keys = pyqtSignal()
 
     def __init__(self,rect=None):
         super().__init__()
@@ -181,15 +190,23 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
 
         self.setGeometry(0,0,500,200)
         self.setLayout(self.layout)
+
+        self.setFocusPolicy(Qt.NoFocus)
+        
         self.show()
 
-    def update(self,info):
+        self.clear_keys.emit()
+
+    def update(self,info,keys_pressed):
         info_str = ''
         for key,val in list(info.physics_info.items()):
             key = str(key)
             val = str(val)
             info_str = info_str + '%30s | %-50s\n'%(key,val)
+        info_str = info_str + 'Keys pressed | {}\n'.format(keys_pressed)
             
         self.label.setText(info_str)
+
+        self.clear_keys.emit()
 
     

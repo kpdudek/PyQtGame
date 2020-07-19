@@ -61,6 +61,8 @@ class Game(QMainWindow,FilePaths):
         self.main_widget.create.connect(self.start_game)
         self.setCentralWidget(self.main_widget)
 
+        self.setFocusPolicy(Qt.StrongFocus)
+
         # Show main window
         self.show()
 
@@ -101,12 +103,12 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info)
+            self.game_menu_options.physics_window.update(info,self.key_pressed)
         except:
             pass # No physics display exists
     
     def update_player(self):
-        tmp_player = self.player
+        # tmp_player = self.player
 
         self.player.update_position(self.key_pressed,self.width,self.height)
         
@@ -123,16 +125,19 @@ class Game(QMainWindow,FilePaths):
         self.game_widget.setLayout(self.game_layout)
         self.game_layout.setAlignment(Qt.AlignCenter)
 
+        self.prompt_manager = PromptManager()
+
         self.game_menu_options = GameMenuOptions()
         self.game_layout.addWidget(self.game_menu_options)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
+        self.game_menu_options.clear_keys.connect(self.set_env_focus)
+        self.game_menu_options.setFocusPolicy(Qt.NoFocus)
 
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.width = self.environment.width
         self.height = self.environment.height
-
         self.game_layout.addWidget(self.environment)
 
         self.game_controller = GameController()
@@ -166,6 +171,11 @@ class Game(QMainWindow,FilePaths):
         else:
             self.game_running = True
             self.key_pressed = []
+
+    def set_env_focus(self):
+        print('Setting focus!')
+        self.setFocus()
+        self.show()
     
     def end_game(self):
         try:
@@ -180,14 +190,21 @@ class Game(QMainWindow,FilePaths):
             return
         
         ### Move Keys
+        val = ''
         if event.key() == Qt.Key_D:
-            self.key_pressed.append('right')
+            # self.key_pressed.append('right')
+            val = 'right'
         elif event.key() == Qt.Key_A:
-            self.key_pressed.append('left')
+            # self.key_pressed.append('left')
+            val = 'left'
         elif event.key() == Qt.Key_W:
-            self.key_pressed.append('up')
+            # self.key_pressed.append('up')
+            val = 'up'
         elif event.key() == Qt.Key_S:
-            self.key_pressed.append('down')
+            # self.key_pressed.append('down')
+            val = 'down'
+        if not (val == ''):
+            self.key_pressed.append(val)
 
         ### Game operation keys
         elif event.key() == Qt.Key_N:
@@ -209,16 +226,23 @@ class Game(QMainWindow,FilePaths):
             return
         
         try:
+            val = ''
             if event.key() == Qt.Key_D:
-                self.key_pressed.remove('right')
+                val = 'right'
             elif event.key() == Qt.Key_A:
-                self.key_pressed.remove('left')
+                # self.key_pressed.remove('left')
+                val = 'left'
             elif event.key() == Qt.Key_W:
-                self.key_pressed.remove('up')
+                # self.key_pressed.remove('up')
+                val = 'up'
             elif event.key() == Qt.Key_S:
-                self.key_pressed.remove('down')
+                # self.key_pressed.remove('down')
+                val = 'down'
             else:
                 log('Key release not recognized...')
+
+            while val in self.key_pressed:
+                self.key_pressed.remove(val)
         except:
             pass
         
@@ -263,6 +287,8 @@ class Game(QMainWindow,FilePaths):
         
         # Set time information for next loop
         self.fps_time = curr_time
+
+        self.prompt_manager.check_prompts()
 
 def main():
     # create pyqt5 app

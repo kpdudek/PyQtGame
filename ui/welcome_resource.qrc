@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="wsad">
+    <file>../graphics/welcome_wsad.png</file>
+  </qresource>
+</RCC>

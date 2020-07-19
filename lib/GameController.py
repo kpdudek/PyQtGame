@@ -14,6 +14,7 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     save_scene_signal = pyqtSignal()
     exit_game_signal = pyqtSignal()
     pause_game_signal = pyqtSignal()
+    clear_keys = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -50,6 +51,10 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
 
     def show_physics(self):
         self.physics_window = PhysicsDisplay()
+        self.physics_window.clear_keys.connect(self.set_env_focus)
+
+    def set_env_focus(self):
+        self.clear_keys.emit()
 
 class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()
@@ -79,3 +84,13 @@ class GameController(QWidget,FilePaths,Colors):
 
     def advance_scene(self):
         self.advance_scene_signal.emit()
+
+class PromptManager(QWidget,Colors,FilePaths):
+    first_loop = True
+    def __init__(self):
+        self.ui_list = ['welcome_prompt.ui']
+
+    def check_prompts(self):
+        if self.first_loop:
+            self.welcome_prompt = Prompt(self.ui_list[0])
+            self.first_loop = False
