@@ -165,6 +165,7 @@ class Game(QMainWindow,FilePaths):
             self.game_running = False
         else:
             self.game_running = True
+            self.key_pressed = []
     
     def end_game(self):
         try:
