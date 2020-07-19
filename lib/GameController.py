@@ -13,6 +13,7 @@ from Widgets import *
 class GameMenuOptions(QWidget,FilePaths,Colors):
     save_scene_signal = pyqtSignal()
     exit_game_signal = pyqtSignal()
+    pause_game_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -26,17 +27,23 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
         self.exit_button = ControlButton('Exit Game',fn=self.exit_game)
         self.button_grid.addWidget(self.exit_button,0,1)
 
+        self.pause_button = ControlButton('Pause',fn=self.pause_game)
+        self.button_grid.addWidget(self.pause_button,0,2)
+
         self.show_controls_button = ControlButton('Controls',fn=self.show_controls)
-        self.button_grid.addWidget(self.show_controls_button,0,2)
+        self.button_grid.addWidget(self.show_controls_button,0,3)
 
         self.show_physics_button = ControlButton('Physics',fn=self.show_physics)
-        self.button_grid.addWidget(self.show_physics_button,0,3)
+        self.button_grid.addWidget(self.show_physics_button,0,4)
 
     def save_scene(self):
         self.save_scene_signal.emit()
     
     def exit_game(self):
         self.exit_game_signal.emit()
+
+    def pause_game(self):
+        self.pause_game_signal.emit()
     
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
@@ -52,7 +59,6 @@ class GameController(QWidget,FilePaths,Colors):
     def __init__(self):
         super().__init__()
 
-        # self.button_grid_widget = QWidget()
         self.button_grid = QGridLayout()
         self.setLayout(self.button_grid)
 

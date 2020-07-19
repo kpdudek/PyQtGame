@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, math
+import random, sys, os, math, time, numpy
 import pathlib
 
 from Utils import *
@@ -23,6 +23,8 @@ class Game(QMainWindow,FilePaths):
     fps = 45.0
     game_time = 0.0
     loop_number = 0
+    fps_time = time.time()
+    fps_log = []
 
     key_pressed = []
     tod = 'day'
@@ -98,7 +100,6 @@ class Game(QMainWindow,FilePaths):
         self.player.info_signal.connect(self.display_info)
     
     def display_info(self,info):
-        # print(info)
         try:
             self.game_menu_options.physics_window.update(info)
         except:
@@ -126,6 +127,7 @@ class Game(QMainWindow,FilePaths):
         self.game_layout.addWidget(self.game_menu_options)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
+        self.game_menu_options.pause_game_signal.connect(self.pause_game)
 
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.width = self.environment.width
@@ -157,9 +159,18 @@ class Game(QMainWindow,FilePaths):
     def save_scene_event(self):
         log('Save scene called...')
         self.environment.save_game()
+
+    def pause_game(self):
+        if self.game_running:
+            self.game_running = False
+        else:
+            self.game_running = True
     
     def end_game(self):
-        self.environment.save_game()
+        try:
+            self.environment.save_game()
+        except:
+            log('Failed to save the same on an end game call!',color='r')
         self.close()
 
     # Qt method
@@ -214,30 +225,43 @@ class Game(QMainWindow,FilePaths):
         # Exit game if flag is true
         if self.exit_game:
             self.end_game()
+        elif not self.game_running:
+            pass
+        else:
+            if self.new_env:
+                self.environment.new_environment()
+                self.new_env = False
+
+            elif self.prev_scene:
+                self.environment.previous_scene()
+                self.prev_scene = False
+            
+            elif self.next_scene:
+                self.environment.advance_scene()
+                self.next_scene = False
+
+            ### Update player pose and redraw environment
+            self.update_player()
+
+            ### recreate environment and repaint widget
+            self.environment.redraw_scene()
+            self.environment.repaint()
+
+            # Update game loop tracking information
+            self.loop_number += 1
+            self.game_time += self.game_timer.interval() / 1000.0
+            self.environment.game_time = self.game_time
+
+        curr_time = time.time()
+        self.fps_time = 1./((curr_time - self.fps_time))
+        self.fps_log.append(self.fps_time)
+        if len(self.fps_log) == 50:
+            average_fps = numpy.mean(self.fps_log)
+            log(f'Average fps: {average_fps}')
+            self.fps_log = []
         
-        elif self.new_env:
-            self.environment.new_environment()
-            self.new_env = False
-
-        elif self.prev_scene:
-            self.environment.previous_scene()
-            self.prev_scene = False
-        
-        elif self.next_scene:
-            self.environment.advance_scene()
-            self.next_scene = False
-
-        ### Update player pose and redraw environment
-        self.update_player()
-
-        ### recreate environment and repaint widget
-        self.environment.redraw_scene()
-        self.environment.repaint()
-
-        # Update game loop tracking information
-        self.loop_number += 1
-        self.game_time += self.game_timer.interval() / 1000.0
-        self.environment.game_time = self.game_time
+        # Set time information for next loop
+        self.fps_time = curr_time
 
 def main():
     # create pyqt5 app

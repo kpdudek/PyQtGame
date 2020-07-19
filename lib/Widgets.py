@@ -173,21 +173,23 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignCenter)
+        self.layout.setAlignment(Qt.AlignLeft)
 
         self.label = QLabel('...')
         self.label.setStyleSheet(f"font:bold 16px")
         self.layout.addWidget(self.label)
 
-        self.setGeometry(0,0,400,200)
+        self.setGeometry(0,0,500,200)
         self.setLayout(self.layout)
         self.show()
 
     def update(self,info):
-        # print(info)
         info_str = ''
         for key,val in list(info.physics_info.items()):
-            info_str = info_str + f'{key} | {val}\n'
+            key = str(key)
+            val = str(val)
+            info_str = info_str + '%30s | %-50s\n'%(key,val)
+            
         self.label.setText(info_str)
 
     

@@ -367,15 +367,21 @@ class Environment(QWidget,Colors,FilePaths):
         painter.end()
 
     def redraw_scene(self):
+        '''
+        Call all drawing functions. redraw_scene() should be followed by a
+        repaint call for the Environment class
+        '''
         self.set_sky()
         self.draw_ground()
         self.draw_player()
             
     def update_player(self):
+        '''
+        Wipe the canvas. Should be followed by a redraw_scene() call to regenerate
+        environment
+        '''
         self.canvas = QPixmap(self.width,self.height)
         self.main_frame.setPixmap(self.canvas)
-
-        self.redraw_scene()
 
     def new_environment(self):
         '''
