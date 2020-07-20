@@ -173,7 +173,7 @@ class Game(QMainWindow,FilePaths):
             self.key_pressed = []
 
     def set_env_focus(self):
-        print('Setting focus!')
+        # print('Setting focus!')
         self.setFocus()
         self.show()
     
