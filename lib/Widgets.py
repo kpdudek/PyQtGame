@@ -203,15 +203,20 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
             if type(val) == list:
                 key = str(key)
                 # val = str(val)
-                info_str = info_str + '%30s | '%(self.key)
+                info_str = info_str + '%30s | ['%(key)
                 for item in val:
                     item = float(item)
-                    info_str = info_str + '%-.2f\n'%(item)
-                info_str = info_str + '\n'
+                    info_str = info_str + '%-.2f '%(item)
+                info_str = info_str + ']\n'
             else:
                 key = str(key)
-                val = str(val)
-                info_str = info_str + '%30s | %-50s\n'%(key,val)
+                try:
+                    val = float(val)
+                    info_str = info_str + '%30s | %-.2f\n'%(key,val)
+                except:
+                    val = str(val)
+                    info_str = info_str + '%30s | %-30s\n'%(key,val)
+
         info_str = info_str + 'Keys pressed | {}\n'.format(keys_pressed)
             
         self.label.setText(info_str)

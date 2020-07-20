@@ -93,5 +93,6 @@ class PromptManager(QWidget,Colors,FilePaths):
     def check_prompts(self):
         if self.first_loop:
             self.welcome_prompt = Prompt(self.ui_list[0])
+            self.welcome_prompt.move(200,200)
             # self.welcome_prompt.setWindowFlags(Qt.WindowStaysOnTopHint)
             self.first_loop = False
