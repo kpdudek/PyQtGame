@@ -7,16 +7,22 @@ from PyQt5.QtCore import *
 import random, sys, os, math, time, numpy
 import pathlib
 
-from Utils import *
+if sys.platform == 'win32':
+        user_path = str(pathlib.Path().absolute()) + '\\'
+        lib_path = user_path + 'lib\\'
+elif sys.platform == 'linux':    
+    user_path = str(pathlib.Path().absolute()) + '/'
+    lib_path = user_path + 'lib/'
+else:
+    raise Error('OS not recognized!')
+sys.path.insert(1,lib_path)
 
-file_paths = FilePaths()
-sys.path.insert(1,file_paths.lib_path)
-
-from PaintUtils import *
-from Environment import *
-from Player import *
-from WelcomeScreen import *
-from GameController import *
+from lib.Utils import *
+from lib.PaintUtils import *
+from lib.Environment import *
+from lib.Player import *
+from lib.WelcomeScreen import *
+from lib.GameController import *
 
 class Game(QMainWindow,FilePaths):
     
@@ -125,15 +131,13 @@ class Game(QMainWindow,FilePaths):
         self.game_widget.setLayout(self.game_layout)
         self.game_layout.setAlignment(Qt.AlignCenter)
 
-        self.prompt_manager = PromptManager()
+        self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
 
         self.game_menu_options = GameMenuOptions()
         self.game_layout.addWidget(self.game_menu_options)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        self.game_menu_options.clear_keys.connect(self.set_env_focus)
-        self.game_menu_options.setFocusPolicy(Qt.NoFocus)
 
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.width = self.environment.width
@@ -171,11 +175,6 @@ class Game(QMainWindow,FilePaths):
         else:
             self.game_running = True
             self.key_pressed = []
-
-    def set_env_focus(self):
-        # print('Setting focus!')
-        self.setFocus()
-        self.show()
     
     def end_game(self):
         try:
@@ -187,6 +186,10 @@ class Game(QMainWindow,FilePaths):
     # Qt method
     def keyPressEvent(self, event):
         if not self.game_running:
+            if event.key() == Qt.Key_P:
+                self.game_running = True
+                self.key_pressed = []
+            # else:
             return
         
         ### Move Keys
@@ -203,9 +206,7 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_S:
             # self.key_pressed.append('down')
             val = 'down'
-        if not (val == ''):
-            self.key_pressed.append(val)
-
+        
         ### Game operation keys
         elif event.key() == Qt.Key_N:
             self.new_scene_event()
@@ -217,8 +218,17 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
             self.exit_game = True
+        elif event.key() == Qt.Key_P:
+            if self.game_running == False:
+                self.game_running = True
+            else:
+                self.game_running = False
         else:
             log('Key press not recognized...')
+
+        ### Append move key to pressed list
+        if not (val == ''):
+            self.key_pressed.append(val)
 
     # Qt method
     def keyReleaseEvent(self, event):
@@ -244,7 +254,7 @@ class Game(QMainWindow,FilePaths):
             while val in self.key_pressed:
                 self.key_pressed.remove(val)
         except:
-            pass
+            log('Key release event failed...',color='y')
         
     def game_loop(self):
         # Exit game if flag is true

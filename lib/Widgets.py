@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import time
+import os, sys, time, math
 import datetime as dt
 from threading import Thread
 import inspect
@@ -103,9 +101,15 @@ class WarningPrompt(QWidget,Colors,FilePaths):
         self.close()
 
 class Prompt(QWidget,Colors,FilePaths):
-    def __init__(self,ui_file):
+    def __init__(self,ui_file,screen_width,screen_height):
         super().__init__()
         uic.loadUi(f'{self.user_path}ui/{ui_file}', self)
+
+        width = self.geometry().width()
+        height = self.geometry().height()
+        self.move(math.floor((screen_width-width)/2), math.floor((screen_height-height)/2))
+
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         self.show()
     
@@ -174,7 +178,6 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.close()
 
 class PhysicsDisplay(QWidget,Colors,FilePaths):
-    clear_keys = pyqtSignal()
 
     def __init__(self,rect=None):
         super().__init__()
@@ -184,7 +187,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignLeft)
 
-        self.label = QLabel('...')
+        self.label = QLabel('Waiting for physics output...')
         self.label.setStyleSheet(f"font:bold 16px")
         self.layout.addWidget(self.label)
 
@@ -194,8 +197,6 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setFocusPolicy(Qt.NoFocus)
         
         self.show()
-
-        self.clear_keys.emit()
 
     def update(self,info,keys_pressed):
         info_str = ''
