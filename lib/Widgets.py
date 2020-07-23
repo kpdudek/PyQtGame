@@ -189,27 +189,21 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
 
         self.physics_layout = QHBoxLayout()
 
-        self.left_layout = QVBoxLayout()
-        self.left_layout.setAlignment(Qt.AlignRight)
-
-        self.right_layout = QVBoxLayout()
-        self.right_layout.setAlignment(Qt.AlignLeft)
-
         self.left_label = QLabel('...')
         self.left_label.setStyleSheet(f"font:bold 16px")
-        self.left_layout.addWidget(self.left_label)
+        self.left_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.physics_layout.addWidget(self.left_label)
 
         self.right_label = QLabel('...')
         self.right_label.setStyleSheet(f"font:bold 16px")
-        self.right_layout.addWidget(self.right_label)
+        self.right_label.setAlignment(Qt.AlignVCenter | Qt.AlignLeft)
+        self.physics_layout.addWidget(self.right_label)
 
         self.key_label = QLabel('...')
         self.key_label.setStyleSheet(f"font:bold 16px")
+        self.key_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
-        self.setGeometry(0,0,500,200)
-
-        self.physics_layout.addLayout(self.left_layout)
-        self.physics_layout.addLayout(self.right_layout)
+        self.setGeometry(0,0,400,200)
 
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
@@ -220,27 +214,40 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
     def update(self,info,keys_pressed):
         left_info_str = ''
         right_info_str = ''
+        str_len = 30
 
         for key,val in list(info.physics_info.items()):
-            left_info_str = left_info_str + '%s\n'%(key)
+            new_left_line = ''
+            new_right_line = ''
+
+            new_left_line = '%s'%(key)
+
             if type(val) == list:
-                right_info_str = '['
+                new_right_line += '['
                 for item in val:
                     item = float(item)
-                    right_info_str = right_info_str + '%-.2f '%(item)
-                right_info_str = right_info_str + ']\n'
+                    new_right_line += '%-.2f '%(item)
+                new_right_line += ']'
             else:
                 try:
                     val = float(val)
-                    right_info_str = right_info_str + '%s\n'%(val)
+                    new_right_line += '%-.2f'%(val)
                 except:
                     val = str(val)
-                    right_info_str = right_info_str + '%s\n'%(val)
-            print(f'{key} {val}')
+                    new_right_line += '%s'%(val)
+            
+            if len(new_left_line) < str_len:
+                new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
+            if len(new_right_line) < str_len:
+                new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
+            
+            new_left_line += '\n'
+            new_right_line += '\n'
 
-        key_str = info_str + 'Keys pressed | {}\n'.format(keys_pressed)
+            left_info_str += new_left_line
+            right_info_str += new_right_line 
 
-        print(f'{left_info_str} {right_info_str}')
+        key_str = 'Keys pressed | {}\n'.format(keys_pressed)
             
         self.left_label.setText(left_info_str)
         self.right_label.setText(right_info_str)
