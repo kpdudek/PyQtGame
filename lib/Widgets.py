@@ -185,43 +185,66 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignLeft)
+        self.layout.setAlignment(Qt.AlignCenter)
 
-        self.label = QLabel('Waiting for physics output...')
-        self.label.setStyleSheet(f"font:bold 16px")
-        self.layout.addWidget(self.label)
+        self.physics_layout = QHBoxLayout()
+
+        self.left_layout = QVBoxLayout()
+        self.left_layout.setAlignment(Qt.AlignRight)
+
+        self.right_layout = QVBoxLayout()
+        self.right_layout.setAlignment(Qt.AlignLeft)
+
+        self.left_label = QLabel('...')
+        self.left_label.setStyleSheet(f"font:bold 16px")
+        self.left_layout.addWidget(self.left_label)
+
+        self.right_label = QLabel('...')
+        self.right_label.setStyleSheet(f"font:bold 16px")
+        self.right_layout.addWidget(self.right_label)
+
+        self.key_label = QLabel('...')
+        self.key_label.setStyleSheet(f"font:bold 16px")
 
         self.setGeometry(0,0,500,200)
-        self.setLayout(self.layout)
 
-        self.setFocusPolicy(Qt.NoFocus)
+        self.physics_layout.addLayout(self.left_layout)
+        self.physics_layout.addLayout(self.right_layout)
+
+        self.layout.addLayout(self.physics_layout)
+        self.layout.addWidget(self.key_label)
+        self.setLayout(self.layout)
         
         self.show()
 
     def update(self,info,keys_pressed):
-        info_str = ''
+        left_info_str = ''
+        right_info_str = ''
+
         for key,val in list(info.physics_info.items()):
+            left_info_str = left_info_str + '%s\n'%(key)
             if type(val) == list:
-                key = str(key)
-                # val = str(val)
-                info_str = info_str + '%30s | ['%(key)
+                right_info_str = '['
                 for item in val:
                     item = float(item)
-                    info_str = info_str + '%-.2f '%(item)
-                info_str = info_str + ']\n'
+                    right_info_str = right_info_str + '%-.2f '%(item)
+                right_info_str = right_info_str + ']\n'
             else:
-                key = str(key)
                 try:
                     val = float(val)
-                    info_str = info_str + '%30s | %-.2f\n'%(key,val)
+                    right_info_str = right_info_str + '%s\n'%(val)
                 except:
                     val = str(val)
-                    info_str = info_str + '%30s | %-30s\n'%(key,val)
+                    right_info_str = right_info_str + '%s\n'%(val)
+            print(f'{key} {val}')
 
-        info_str = info_str + 'Keys pressed | {}\n'.format(keys_pressed)
+        key_str = info_str + 'Keys pressed | {}\n'.format(keys_pressed)
+
+        print(f'{left_info_str} {right_info_str}')
             
-        self.label.setText(info_str)
+        self.left_label.setText(left_info_str)
+        self.right_label.setText(right_info_str)
+        self.key_label.setText(key_str)
 
-        self.clear_keys.emit()
 
     

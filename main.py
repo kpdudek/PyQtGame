@@ -182,6 +182,10 @@ class Game(QMainWindow,FilePaths):
         except:
             log('Failed to save the same on an end game call!',color='r')
         self.close()
+        try:
+            self.game_menu_options.physics_window.close()
+        except:
+            pass
 
     # Qt method
     def keyPressEvent(self, event):
