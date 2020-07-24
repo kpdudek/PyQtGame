@@ -14,6 +14,7 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     save_scene_signal = pyqtSignal()
     exit_game_signal = pyqtSignal()
     pause_game_signal = pyqtSignal()
+    clear_keys_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -47,9 +48,11 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
+        self.clear_keys_signal.emit()
 
     def show_physics(self):
         self.physics_window = PhysicsDisplay()
+        self.clear_keys_signal.emit()
 
 class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()

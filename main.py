@@ -135,6 +135,7 @@ class Game(QMainWindow,FilePaths):
 
         self.game_menu_options = GameMenuOptions()
         self.game_layout.addWidget(self.game_menu_options)
+        self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
@@ -169,12 +170,15 @@ class Game(QMainWindow,FilePaths):
         log('Save scene called...')
         self.environment.save_game()
 
+    def clear_keys(self):
+        self.key_pressed = []
+
     def pause_game(self):
         if self.game_running:
             self.game_running = False
         else:
             self.game_running = True
-            self.key_pressed = []
+            self.clear_keys()
     
     def end_game(self):
         try:
@@ -197,7 +201,7 @@ class Game(QMainWindow,FilePaths):
         if not self.game_running:
             if event.key() == Qt.Key_P:
                 self.game_running = True
-                self.key_pressed = []
+                self.clear_keys()
             # else:
             return
         

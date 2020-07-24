@@ -185,7 +185,17 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignCenter)
+        # self.layout.setAlignment(Qt.AlignCenter)
+
+        self.title_label = QLabel('Game Physics Output')
+        self.title_label.setStyleSheet(f"font:bold italic 28px; color: {self.divider_color}")
+        self.title_label.setAlignment(Qt.AlignBottom | Qt.AlignCenter)
+        self.layout.addWidget(self.title_label)
+
+        self.divider = QLabel('')
+        self.divider.setStyleSheet(f"background-color: {self.white['hex']}")
+        self.divider.setFixedHeight(2)
+        self.layout.addWidget(self.divider)
 
         self.physics_layout = QHBoxLayout()
 
@@ -214,7 +224,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
     def update(self,info,keys_pressed):
         left_info_str = ''
         right_info_str = ''
-        str_len = 30
+        str_len = 15
 
         for key,val in list(info.physics_info.items()):
             new_left_line = ''
