@@ -18,6 +18,7 @@ class Environment(QWidget,Colors,FilePaths):
 
     env_snapshot = {}
     game_snapshot = {}
+    game_save = {}
 
     env_idx = 0
     env_create_count = 0
@@ -32,24 +33,36 @@ class Environment(QWidget,Colors,FilePaths):
         self.player = player
         self.save_file = save_file
 
-        self.num_prefix = 3
         if self.load:
             self.load_game()
-            self.width = self.game_snapshot['width']
-            self.height = self.game_snapshot['height']
-            self.os = self.game_snapshot['os']
+            self.width = self.game_save['width']
+            self.height = self.game_save['height']
+            self.os = self.game_save['os']
+            self.launch_count = self.game_save['launch_count']
+
+            log(f'Game created using OS: {self.os}')
+            log(f'Game created with screen size: {self.width}x{self.height}')
+            log(f'Game launch count: {self.launch_count}')
+
             self.generate_env = False
-            self.env_idx = len(self.game_snapshot)-1 - self.num_prefix
+            self.env_idx = len(self.game_snapshot)-1
             self.env_snapshot = self.game_snapshot[str(self.env_idx)]
+            self.launch_count += 1
+            self.game_save['launch_count'] = self.launch_count
+
         else:
             self.width = width
             self.height = height
             self.os = sys.platform
+            self.launch_count = 1
+            log(f'Game created using OS: {self.os}')
+            log(f'Game created with screen size: {self.width}x{self.height}')
 
-            self.game_snapshot.update({'width':self.width})
-            self.game_snapshot.update({'height':self.height})
-            self.game_snapshot.update({'os':self.os})
-
+            self.game_save.update({'width':self.width})
+            self.game_save.update({'height':self.height})
+            self.game_save.update({'os':self.os})
+            self.game_save.update({'launch_count':self.launch_count})
+            
             self.time_of_day = time_of_day
 
         self.main_frame = QLabel()
@@ -63,13 +76,15 @@ class Environment(QWidget,Colors,FilePaths):
         self.draw_ground()
         self.draw_player()
 
-        if not self.load:
+        if self.load:
+            self.env_create_count = len(self.game_snapshot)
+            
+        else:
             log('Saving new game for the first time...')
             self.game_snapshot.update({str(self.env_create_count):self.env_snapshot})
+            self.game_save.update({'game_snapshot':self.game_snapshot})
             self.save_game()
             self.env_create_count += 1
-        else:
-            self.env_create_count = len(self.game_snapshot) - self.num_prefix
 
         self.generate_env = False
 
@@ -79,14 +94,16 @@ class Environment(QWidget,Colors,FilePaths):
     def load_game(self):
         with open(f'{self.user_path}saves/{self.save_file}') as fp:
             game = json.load(fp)
-        self.game_snapshot = game
+        
+        self.game_save = game
+        self.game_snapshot = game['game_snapshot']
 
         log(f'Environment keys: {self.game_snapshot.keys()}')
     
     def save_game(self):
         try:
             fp = open(f'{self.user_path}saves/{self.save_file}','w')
-            json.dump(self.game_snapshot,fp)
+            json.dump(self.game_save,fp)
             fp.close()
             log('Save game returned sucessfully!',color='g')
         except:
@@ -416,7 +433,7 @@ class Environment(QWidget,Colors,FilePaths):
 
     def advance_scene(self):
         self.env_idx += 1
-        if self.env_idx > (len(self.game_snapshot) -1 - self.num_prefix):
+        if self.env_idx > (len(self.game_snapshot) -1):
             log('Reached end of environments...')
             self.env_idx -= 1
             return
