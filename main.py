@@ -38,6 +38,10 @@ class Game(QMainWindow,FilePaths):
     new_env = False
     next_scene = False
     prev_scene = False
+    
+    clear_key_list = False
+    clear_key_count = 0
+    clear_key_limit = 10
 
     exit_game = False
 
@@ -135,10 +139,10 @@ class Game(QMainWindow,FilePaths):
 
         self.game_menu_options = GameMenuOptions()
         self.game_layout.addWidget(self.game_menu_options)
-        self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
+        self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
 
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
         self.width = self.environment.width
@@ -172,6 +176,8 @@ class Game(QMainWindow,FilePaths):
 
     def clear_keys(self):
         self.key_pressed = []
+        self.clear_key_list = True
+        log('Called clear_keys...')
 
     def pause_game(self):
         if self.game_running:
@@ -288,6 +294,14 @@ class Game(QMainWindow,FilePaths):
                 self.environment.advance_scene()
                 self.next_scene = False
 
+            if self.clear_key_list:
+                self.key_pressed = []
+                self.clear_key_count += 1
+                if self.clear_key_count == self.clear_key_limit:
+                    self.clear_key_list = False
+                    self.clear_key_count = 0
+                # self.clear_key_list = False
+            
             ### Update player pose and redraw environment
             self.update_player()
 
