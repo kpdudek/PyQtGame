@@ -23,7 +23,6 @@ class Error(Exception):
 
 class FilePaths(object):
     # user_name = pwd.getpwuid( os.getuid() ).pw_name
-
     if sys.platform == 'win32':
         user_path = str(pathlib.Path().absolute()) + '\\'
         lib_path = user_path + 'lib\\'

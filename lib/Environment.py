@@ -8,6 +8,7 @@ import random, sys, os, math, json
 
 from Utils import *
 from PaintUtils import *
+from Geometry import *
 
 class Environment(QWidget,Colors,FilePaths):
     time_of_day = None
