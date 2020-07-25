@@ -64,27 +64,33 @@ def on_segment(p1, p2, p):
     return min(p1[0], p2[0]) <= p[0] <= max(p1[0], p2[0]) and min(p1[1], p2[1]) <= p[1] <= max(p1[1], p2[1])
 
 # checks if line segment p1p2 and p3p4 intersect
-def edge_is_collision(p1, p2, p3, p4):
+def edge_is_collision(edge1,edge2,endpoint_collision=False):
+    p1 = edge1[:,0]
+    p2 = edge1[:,1]
+    p3 = edge2[:,0]
+    p4 = edge2[:,1]
+
     d1 = direction(p3, p4, p1)
     d2 = direction(p3, p4, p2)
     d3 = direction(p1, p2, p3)
     d4 = direction(p1, p2, p4)
 
+    if endpoint_collision:
+        if d1 == 0 and on_segment(p3, p4, p1):
+            return True
+        elif d2 == 0 and on_segment(p3, p4, p2):
+            return True
+        elif d3 == 0 and on_segment(p1, p2, p3):
+            return True
+        elif d4 == 0 and on_segment(p1, p2, p4):
+            return True
+
+    # Overlap collision
     if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
         ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
         return True
-
-    elif d1 == 0 and on_segment(p3, p4, p1):
-        return True
-    elif d2 == 0 and on_segment(p3, p4, p2):
-        return True
-    elif d3 == 0 and on_segment(p1, p2, p3):
-        return True
-    elif d4 == 0 and on_segment(p1, p2, p4):
-        return True
     else:
         return False
-
 
 class Polygon(object):
     def __init__(self,poly_type=None,*argv):
@@ -99,10 +105,111 @@ class Polygon(object):
         bottom_left = np.array([ top_left[0],bottom_right[1] ])
         self.verticies = [top_left,top_right,bottom_right,bottom_left]
 
-def polygon_is_filled(polygon):
-    vec_sec = np.zeros((2,len(polygon.verticies)))
-    sub_vec = np.zeros((2,len(polygon.verticies)))
+def polygon_is_self_occluded(vertex,vertexPrev,vertexNext,point):
+    '''
+    Determines if a set of test points are Self Occluded, or non-intersecting but within a polygon 
+    Inputs are three [2 x 1] vectors that represent a vertex on a polygon,
+    the vertex that preceeded it, and the vertex that follows in
+    construction, and a [2 x N] matrix of test points of the form [x1..xn; y1...yn].
+    Function handles both counterclockwise or filled-in polygons and clockwise or
+    hollow polygons. Output is [1 x N] boolean array where true is a self
+    occluded test point.
+    '''
+    results = np.zeros(len(point[0,:]),dtype=bool)
 
-    vec_set[:,0]
-    for point in polygon.verticies:
-        pass
+    for iPoints in range(0,len(point[0,:])):
+        angleNext = atan2(vertexNext[1]-vertex[1],vertexNext[0]-vertex[0])
+        anglePrev = atan2(vertexPrev[1]-vertex[1],vertexPrev[0]-vertex[0])
+        anglePoint = atan2(point[1,iPoints]-vertex[1],point[0,iPoints]-vertex[0])
+        
+        #maintaining the vertices gives a consistent relationship of what
+        #angles constitue self-occlusion for both counterclockwise and
+        #clockwise objects, but is dependent on whether the previous angle
+        #was greater or less than the next angle.
+        if anglePrev > angleNext:
+            if anglePoint < anglePrev and anglePoint > angleNext:
+                results[iPoints]=True
+            else:
+                results[iPoints]=False
+        else:
+            if anglePoint < anglePrev or anglePoint > angleNext:
+                results[iPoints]=True
+            else:
+                results[iPoints]=False
+    return results
+
+def polygon_is_visible(vertices,indexVertex,points):
+    # Determines if a set of test points are visible by a paticular vertex of a polygon
+    # Inputs are a [2 x N] set of vertices that define a polygon of the form
+    # [x1..xn; y1..yn], an integer index to indicate which vertex to test,
+    # and a [2 x N] set of coordinates that are test points of the form [x; y].
+    # The function combines the output of two helper functions, to determine 
+    # if the test point is invisible to the vertex by either self-occlusion
+    # or collision with an edge of the polygon. Output is a [1 x N] boolean 
+    # array where true means the test point is visible.
+    
+    # Error handling for indexVertex
+    if indexVertex > len(vertices[0,:])-1 or indexVertex < 0:
+        log('IndexVertex must be a valid column index of "vertices" between 1 and size(vertices,2)')
+        return
+    
+    #Converting inputs to inputs for polygon_isSelfOccluded() and handling
+    #the roll-over cases for the indexVertex input
+    vertex = vertices[:,indexVertex].reshape((2,1))
+    if indexVertex == 0:
+        vertexPrev = vertices[:,-1]
+    else:
+        vertexPrev=vertices[:,indexVertex-1]
+
+    if indexVertex == len(vertices[0,:])-1:
+        vertexNext=vertices[:,0]
+    else:
+        vertexNext=vertices[:,indexVertex+1]
+    selfOccludedPoints = polygon_is_self_occluded(vertex,vertexPrev,vertexNext,points)
+    
+    # Running edge_isCollision for each test point against every edge of the
+    # polygon. 'Break' is added to stop checking once the first collision is
+    # found
+    # edgeCollisionPoints=false(1,size(points,2))
+    edgeCollisionPoints = np.zeros(len(points[0,:]),dtype=bool)
+    for iPoints in range(0,len(points[0,:])): #1:size(points,2)
+        # The first of the two lines to check collision for is always the
+        # line from the test point to inputed vertex
+        # sightLine = np.array([ vertex , points[:,iPoints] ])
+        # print(vertex.shape)
+        sightLine = np.concatenate((vertex,points[:,iPoints].reshape(2,1)),axis=1)
+        for jEdges in range(0,len(vertices[0,:])): #=1:size(vertices,2)
+            if jEdges == len(vertices[0,:])-1:
+                # edge = np.array([ vertices[:,jEdges] , vertices[:,0] ])
+                edge = np.concatenate((vertices[:,jEdges].reshape(2,1),vertices[:,0].reshape(2,1)),axis=1)
+            else:
+                # edge = np.array([ vertices[:,jEdges] , vertices[:,jEdges+1] ])
+                edge = np.concatenate((vertices[:,jEdges].reshape(2,1),vertices[:,jEdges+1].reshape(2,1)),axis=1)
+            
+            # print(f'sightline:{sightLine} \n\n edge:{edge}')
+            if edge_is_collision(sightLine,edge) == True:
+                # print('edge_is_collision')
+                edgeCollisionPoints[iPoints]=True
+                break
+    # helper functions return 'is invisible'; invert results for 'visible'
+    # print(f'{selfOccludedPoints}  {edgeCollisionPoints}')
+    return not (selfOccludedPoints.any() or edgeCollisionPoints.any())
+
+def polygon_is_collision():
+    pass
+
+def polygon_is_filled():
+    pass
+
+def reshape_for_patch(vertices):
+    '''
+    This shape takes verticies of a polygon with shape [2,N]
+    and returns the same vertices with shape [N,2]
+    '''
+    r,c = vertices.shape
+    out = np.zeros(vertices.size)
+    out = np.reshape(out,(c,r))
+    for i in range(0,c):
+        for j in range(0,r):
+            out[i,j] = vertices[j,i]
+    return out

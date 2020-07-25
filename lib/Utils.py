@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import time
+import os, sys, time
 import datetime as dt
 from threading import Thread
 import inspect
-
-# try:
-#     import pwd
-# except ImportError:
-#     import winpwd as pwd
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -22,7 +15,6 @@ class Error(Exception):
     pass
 
 class FilePaths(object):
-    # user_name = pwd.getpwuid( os.getuid() ).pw_name
     if sys.platform == 'win32':
         user_path = str(pathlib.Path().absolute()) + '\\'
         lib_path = user_path + 'lib\\'
@@ -103,5 +95,3 @@ def hide_all_widgets(layout):
             item.hide()
         except:
             pass
-
-    
