@@ -175,24 +175,17 @@ def polygon_is_visible(vertices,indexVertex,points):
     for iPoints in range(0,len(points[0,:])): #1:size(points,2)
         # The first of the two lines to check collision for is always the
         # line from the test point to inputed vertex
-        # sightLine = np.array([ vertex , points[:,iPoints] ])
-        # print(vertex.shape)
         sightLine = np.concatenate((vertex,points[:,iPoints].reshape(2,1)),axis=1)
         for jEdges in range(0,len(vertices[0,:])): #=1:size(vertices,2)
             if jEdges == len(vertices[0,:])-1:
-                # edge = np.array([ vertices[:,jEdges] , vertices[:,0] ])
                 edge = np.concatenate((vertices[:,jEdges].reshape(2,1),vertices[:,0].reshape(2,1)),axis=1)
             else:
-                # edge = np.array([ vertices[:,jEdges] , vertices[:,jEdges+1] ])
                 edge = np.concatenate((vertices[:,jEdges].reshape(2,1),vertices[:,jEdges+1].reshape(2,1)),axis=1)
             
-            # print(f'sightline:{sightLine} \n\n edge:{edge}')
             if edge_is_collision(sightLine,edge) == True:
-                # print('edge_is_collision')
                 edgeCollisionPoints[iPoints]=True
                 break
     # helper functions return 'is invisible'; invert results for 'visible'
-    # print(f'{selfOccludedPoints}  {edgeCollisionPoints}')
     return not (selfOccludedPoints.any() or edgeCollisionPoints.any())
 
 def polygon_is_collision():
