@@ -3,6 +3,8 @@
 import os, sys, time
 import datetime as dt
 from threading import Thread
+from matplotlib import pyplot as plt
+from matplotlib import patches
 from math import sin,cos,atan2
 import numpy as np
 
@@ -186,7 +188,7 @@ def polygon_is_visible(vertices,indexVertex,points):
                 edgeCollisionPoints[iPoints]=True
                 break
     # helper functions return 'is invisible'; invert results for 'visible'
-    return not (selfOccludedPoints.any() or edgeCollisionPoints.any())
+    return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
 def polygon_is_collision(vertices,points):
     '''
@@ -199,9 +201,10 @@ def polygon_is_collision(vertices,points):
     a [1 X N] boolean array where true means the point is colliding. 
     '''
     results = np.ones(len(points[0,:]),dtype=bool)#flagPoints=true(1,size(points,2))
+    # print(results)
     for iVertices in range(0,len(vertices[0,:])): #=1:size(vertices,2)
         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
-        results = results.any() and (not flagPointVertex)
+        results = np.logical_and(results, np.logical_not(flagPointVertex))
     return results
 
 def polygon_is_filled():
@@ -219,3 +222,21 @@ def reshape_for_patch(vertices):
         for j in range(0,r):
             out[i,j] = vertices[j,i]
     return out
+
+def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A Plot'):
+    _,ax = plt.subplots(1)
+    ax.set_ylim(-lim, lim)
+    ax.set_xlim(-lim, lim)
+    vertices = reshape_for_patch(vertices)
+    patch = patches.Polygon(vertices, facecolor=color, fill=True)
+    ax.add_patch(patch)
+    try: 
+        ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
+    except:
+        pass # No point array passed
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.grid(color='k', linestyle='-', linewidth=.5)
+    plt.title(f'{title}')
+
+    Thread(target=plt.show, daemon=True)
+    # plt.show()
