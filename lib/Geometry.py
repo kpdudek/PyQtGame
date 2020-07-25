@@ -85,7 +85,7 @@ def edge_is_collision(edge1,edge2,endpoint_collision=False):
         elif d4 == 0 and on_segment(p1, p2, p4):
             return True
 
-    # Overlap collision
+    # Overlap collision check
     if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
         ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
         return True
@@ -188,8 +188,21 @@ def polygon_is_visible(vertices,indexVertex,points):
     # helper functions return 'is invisible'; invert results for 'visible'
     return not (selfOccludedPoints.any() or edgeCollisionPoints.any())
 
-def polygon_is_collision():
-    pass
+def polygon_is_collision(vertices,points):
+    '''
+    Determines if a set of points lies inside or outside of a given polygon
+    Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
+    a [2 x N] set of test points of the same form. Uses lower level
+    function polygon_isVisible to determine if test point is visible to any
+    vertex of the polygon, and thus inside or outside. Note: for a hollow
+    polygon, 'outside' or non-collision is inside the polygon. Output is
+    a [1 X N] boolean array where true means the point is colliding. 
+    '''
+    results = np.ones(len(points[0,:]),dtype=bool)#flagPoints=true(1,size(points,2))
+    for iVertices in range(0,len(vertices[0,:])): #=1:size(vertices,2)
+        flagPointVertex = polygon_is_visible(vertices,iVertices,points)
+        results = results.any() and (not flagPointVertex)
+    return results
 
 def polygon_is_filled():
     pass
