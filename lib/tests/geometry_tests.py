@@ -10,6 +10,8 @@ sys.path.insert(1,os.path.dirname(path))
 from Utils import *
 from Geometry import *
 
+print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+
 print('/////////////////////////////////////////////////////////////////////')
 print('/ Edge Angle Tests')
 print('/////////////////////////////////////////////////////////////////////')
@@ -88,24 +90,28 @@ print(f'\nExpected: False\nResults: {self_occluded}')
 print('\n/////////////////////////////////////////////////////////////////////')
 print('/ Polygon is Visible')
 print('/////////////////////////////////////////////////////////////////////')
+
+lim = 5
+
 ####### Visible Test #########
 print('VISIBLE TEST')
 vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
 points = np.array([ [-1.] , [1.] ])
 
 is_visible = polygon_is_visible(vertices,0,points)
-print(f'\nExpected: True\nResults: {is_visible}')
+print(f'Expected: True\nResults: {is_visible}')
 
 # Plot values
 _,ax = plt.subplots(1)
-ax.set_ylim(-10, 10)
-ax.set_xlim(-10, 10)
+ax.set_ylim(-lim, lim)
+ax.set_xlim(-lim, lim)
 vertices = reshape_for_patch(vertices)
 patch = patches.Polygon(vertices, facecolor='g', fill=True)
 ax.add_patch(patch)
 ax.plot(points[0],points[1],'bo', markersize=3)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(color='k', linestyle='-', linewidth=.5)
+plt.title(f'Visible | Expected: True\nResults: {is_visible}')
 
 ####### InVisible Test #########
 print('\nINVISIBLE TEST')
@@ -113,37 +119,51 @@ vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
 points = np.array([ [1.] , [0.2] ])
 
 is_visible = polygon_is_visible(vertices,0,points)
-print(f'\nExpected: False\nResults: {is_visible}')
+print(f'Expected: False\nResults: {is_visible}')
 # Plot values
 _,ax = plt.subplots(1)
-ax.set_ylim(-10, 10)
-ax.set_xlim(-10, 10)
+ax.set_ylim(-lim, lim)
+ax.set_xlim(-lim, lim)
 vertices = reshape_for_patch(vertices)
 patch = patches.Polygon(vertices, facecolor='g', fill=True)
 ax.add_patch(patch)
 ax.plot(points[0],points[1],'bo', markersize=3)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(color='k', linestyle='-', linewidth=.5)
+plt.title(f'InVisible | Expected: False\nResults: {is_visible}')
 
-####### InVisible Test - On Edge #########
-print('\nINVISIBLE TEST')
+####### On Edge #########
+print('\nON EDGE TEST')
 vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
 points = np.array([ [0.] , [0.] ])
 
 is_visible = polygon_is_visible(vertices,0,points)
-print(f'\nExpected: True\nResults: {is_visible}')
+print(f'Expected: True\nResults: {is_visible}')
 # Plot values
 _,ax = plt.subplots(1)
-ax.set_ylim(-10, 10)
-ax.set_xlim(-10, 10)
+ax.set_ylim(-lim, lim)
+ax.set_xlim(-lim, lim)
 vertices = reshape_for_patch(vertices)
 patch = patches.Polygon(vertices, facecolor='g', fill=True)
 ax.add_patch(patch)
 ax.plot(points[0],points[1],'bo', markersize=3)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(color='k', linestyle='-', linewidth=.5)
+plt.title(f'Visible On Edge | Expected: True\nResults: {is_visible}')
 
-# Display plot
+
+print('\n/////////////////////////////////////////////////////////////////////')
+print('/ Polygon is Collision Test')
+print('/////////////////////////////////////////////////////////////////////')
+
+print('In collision test:')
+vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
+points = np.array([ [1.] , [0.2] ])
+
+result = polygon_is_collision(vertices,points)
+print(f'Expected: True | Result: {result}')
+
+
+
+# Display plots
 plt.show()
-
-    
