@@ -126,8 +126,20 @@ print('In collision test:')
 vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
 points = np.array([ [1.,2.] , [0.2,2.] ])
 
+start = time.time()
 result = polygon_is_collision(vertices,points)
+end = time.time()
 print(f'Expected: True | Result: {result}')
+print(f'Collision checking took {(end-start)/2.} seconds per point.')
+polygon_plot(vertices,points=points,title=f'Results: {result}')
+
+vertices = np.array([[0,0,1800,1800], [800,850,850,800]])
+points = np.array([[ 790.54550038,790.54550038,815.54550038,815.54550038],[ 800.,850.,850.,800.]])
+start = time.time()
+result = polygon_is_collision(vertices,points)
+end = time.time()
+print(f'Expected: True | Result: {result}')
+print(f'Collision checking took {(end-start)/2.} seconds per point.')
 polygon_plot(vertices,points=points,title=f'Results: {result}')
 
 print('\n/////////////////////////////////////////////////////////////////////')
@@ -144,5 +156,5 @@ vertices = np.flip(np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ]),1)
 res = polygon_is_filled(vertices)
 print(f'Expected: False | Result: {res}')
 
-# Display plots
-plt.show()
+#### Display plots
+# plt.show()
