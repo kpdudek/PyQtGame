@@ -212,41 +212,38 @@ def polygon_is_filled(vertices):
     Checks the ordering of the vertices, and returns whether the polygon is filled
     in or not.
     '''
-    r_num,c_num = size(vertices.shape)
+    r_num,c_num = vertices.shape
     
-    VecSet=zeros(r_num,c_num) #memory allocation to store vectors between two consecutive vertices.
-    SubVec=zeros(r_num,c_num) #memory allocation to store subsequent vectors.
+    VecSet = np.zeros(vertices.size).reshape((r_num,c_num))
+    SubVec = np.zeros(vertices.size).reshape((r_num,c_num))
 
     #Assignment for vectors.
-    VecSet(:,1:c_num-1)=vertices(:,2:c_num)
-    VecSet(:,c_num)=vertices(:,1)
-    VecSet=VecSet-vertices
+    VecSet[:,0:c_num-2] = vertices[:,1:c_num-1]
+    VecSet[:,c_num-1] = vertices[:,0]
+    VecSet = VecSet-vertices
 
-    SubVec(:,1:c_num-1)=VecSet(:,2:c_num)
-    SubVec(:,c_num)=VecSet(:,1)
+    SubVec[:,0:c_num-2] = VecSet[:,1:c_num-1]
+    SubVec[:,c_num-1] = VecSet[:,0]
 
-    angleSum=0# variable that records the sum of angles line segments rotated.
+    angleSum = 0
 
     # compute the sum of angle that line segments rotate.
-    for index=1:c_num:
+    for index in range(0,c_num):#1:c_num:
         # compute the rotation angle between two consecutive vectors, and
         # perform angle summation.
-        angleSum=angleSum+edge_angle([0;0],VecSet(:,index),SubVec(:,index),'signed')
+        angleSum += edge_angle('verticies',np.array([[0],[0]]),VecSet[:,index],SubVec[:,index])
 
     #judge the sign of the angle summation.
     if angleSum>0:
-        %positive angle summation indicates that the vertices are placed in
-        %counterclockwise order.
-        flag=true
-        return
+        #positive angle summation indicates that the vertices are placed in
+        #counterclockwise order.
+        return True
     elif angleSum<0:
         # negative angle summation indicates that the vertices are placed in
         # clockwise order.
-        flag=false
-        return
-    else
-        flag=None
-        return
+        return False
+    else:
+        return None
 
 def reshape_for_patch(vertices):
     '''
@@ -261,12 +258,12 @@ def reshape_for_patch(vertices):
             out[i,j] = vertices[j,i]
     return out
 
-def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A Plot'):
+def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A Plot',poly_fill=True):
     _,ax = plt.subplots(1)
     ax.set_ylim(-lim, lim)
     ax.set_xlim(-lim, lim)
     vertices = reshape_for_patch(vertices)
-    patch = patches.Polygon(vertices, facecolor=color, fill=True)
+    patch = patches.Polygon(vertices, facecolor=color, fill=poly_fill)
     ax.add_patch(patch)
     try: 
         ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
@@ -275,6 +272,3 @@ def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A P
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
-
-    Thread(target=plt.show, daemon=True)
-    # plt.show()

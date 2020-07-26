@@ -130,5 +130,19 @@ result = polygon_is_collision(vertices,points)
 print(f'Expected: True | Result: {result}')
 polygon_plot(vertices,points=points,title=f'Results: {result}')
 
+print('\n/////////////////////////////////////////////////////////////////////')
+print('/ Polygon filled check')
+print('/////////////////////////////////////////////////////////////////////')
+
+print('Counter-Clockwise:')
+vertices = np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ])
+res = polygon_is_filled(vertices)
+print(f'Expected: True | Result: {res}')
+
+print('\nClockwise:')
+vertices = np.flip(np.array([ [0.,5.,5.,0.] , [-1.,-0.5,0.5,1.] ]),1)
+res = polygon_is_filled(vertices)
+print(f'Expected: False | Result: {res}')
+
 # Display plots
 plt.show()
