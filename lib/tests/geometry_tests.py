@@ -178,7 +178,8 @@ polygon_plot(vertices,lim=None,points=points,title=f'Results: {result}')
 
 
 print('\nGame Output Test')
-points = np.array([ [600.,600.,625.,625.] , [59.5,9.5,9.5,59.5] ])
+
+points = np.array([ [868.20,868.20, 893.2, 893.2] , [510.6,460.6,460.6,510.66] ])
 vertices = np.array([ [0.,0.,1800.,1800.] , [50.,0.,0.,50.] ])
 
 start = time.time()

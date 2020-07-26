@@ -85,6 +85,7 @@ class Game(QMainWindow,FilePaths):
     def start_game(self,name):
         # Game Elements
         self.player = Player()
+        self.player.pause_signal.connect(self.pause_game)
         self.save_file_name = name + '.json'
         self.load = False
         log(f'Creating game called: {self.save_file_name}')

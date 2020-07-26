@@ -35,7 +35,7 @@ class Physics(QWidget,FilePaths):
     max_vel = 8
 
     time = 1.0
-    grav_accel = 1.5
+    grav_accel = 8
 
     touching_ground = False
 
@@ -49,7 +49,7 @@ class Physics(QWidget,FilePaths):
 
     def accelerate(self,force):
         self.force = force
-        self.gravity()
+        # self.gravity()
         self.compute_drag()
 
         x,y = self.force
@@ -65,7 +65,8 @@ class Physics(QWidget,FilePaths):
         self.info_signal.emit(self.info)
 
     def gravity(self):
-        self.velocity[1] += self.grav_accel * self.time
+        # self.velocity[1] += self.grav_accel * self.time
+        self.accelerate([0,self.grav_accel])
 
     def compute_drag(self):
         sign = -1 * numpy.sign(self.velocity[0])

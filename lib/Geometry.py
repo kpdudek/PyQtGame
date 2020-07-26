@@ -177,7 +177,7 @@ def polygon_is_visible(vertices,indexVertex,points):
     # helper functions return 'is invisible'; invert results for 'visible'
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
-def polygon_is_collision(vertices,points,frame=None):
+def polygon_is_collision(vertices,points):
     '''
     Determines if a set of points lies inside or outside of a given polygon
     Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
