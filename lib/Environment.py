@@ -302,8 +302,8 @@ class Environment(QWidget,Colors,FilePaths):
             origin = self.env_snapshot['ground']['origin']
             size = self.env_snapshot['ground']['size']
 
-        top_left = np.array([[origin[0]],[origin[1]]])
-        bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]])
+        top_left = np.array([[origin[0]],[origin[1]]],dtype=float)
+        bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]],dtype=float)
         self.ground_poly = Polygon(top_left,bottom_right,poly_type='rect')
         
         # Generate ground

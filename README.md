@@ -33,9 +33,10 @@ Your save files will populate in the `saves/` folder.
 If you'd like to clear the saves folder, you can do so by running the `delete_saves.py` file. It will print the existing save files, and ask for permission to continue.
 
 ## Developing
-If you're developing, install matplotlib for plotting the geometric functions.
+If you're developing, install matplotlib for plotting the geometric functions as well as the PyQt tools like Qt Designer.
 ```
 pip3 install matplotlib
+pip3 install pyqt5-tools
 ```
 The `Game` class in `main.py` is where the main window is created as well as the game loop. Within `lib/`, the player class, environment class, welcome screen class, and some utilities can be found.
 

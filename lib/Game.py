@@ -107,24 +107,8 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_player(self):
-        tmp_player_pose = self.player.pose
-        tmp_player_size = self.player.size
-
-        self.player.update_position(self.key_pressed,self.width,self.height)
-        
-        player_bot = self.player.pose[1] + self.player.size[1]
-        ground_top = self.environment.env_snapshot['ground']['origin'][1]
-
-        # if player_bot >= ground_top:
-        #     self.player.pose[1] = ground_top - self.player.size[1]
-        #     self.player.physics.velocity[1] = 0
-        # print(self.player.vertices)
-        print(self.player.vertices)
-        print(self.environment.ground_poly.vertices)
-        if polygon_is_collision(self.player.vertices,self.environment.ground_poly.vertices).any():
-            print('collision')
-            self.player.pose = tmp_player_pose
-            self.player.size = tmp_player_size
+        obstacles = [self.environment.ground_poly.vertices]
+        self.player.update_position(self.key_pressed,self.width,self.height,obstacles)
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -322,4 +306,4 @@ class Game(QMainWindow,FilePaths):
         # Set time information for next loop
         self.fps_time = curr_time
 
-        self.prompt_manager.check_prompts()
+        # self.prompt_manager.check_prompts()

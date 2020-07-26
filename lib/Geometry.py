@@ -177,7 +177,7 @@ def polygon_is_visible(vertices,indexVertex,points):
     # helper functions return 'is invisible'; invert results for 'visible'
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
-def polygon_is_collision(vertices,points):
+def polygon_is_collision(vertices,points,frame=None):
     '''
     Determines if a set of points lies inside or outside of a given polygon
     Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
@@ -245,10 +245,28 @@ def reshape_for_patch(vertices):
             out[i,j] = vertices[j,i]
     return out
 
+def transform(frame,*argv,translate=None):
+    
+    if frame == 'img':
+        assert(translate!=None)
+        transform_entities = []
+        for arg in argv:
+            arg[1,:] = -1 * arg[1,:]
+            arg[1,:] = arg[1,:] + translate
+            transform_entities.append(arg)
+
+        if len(transform_entities) == 1:
+            transform_entities = transform_entities[0]
+        # print(f'Transformed Vertices:\n{transform_entities}')
+        return transform_entities
+    else:
+        return argv
+
 def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A Plot',poly_fill=True):
     _,ax = plt.subplots(1)
-    ax.set_ylim(-lim, lim)
-    ax.set_xlim(-lim, lim)
+    if lim != None:
+        ax.set_ylim(-lim, lim)
+        ax.set_xlim(-lim, lim)
     vertices = reshape_for_patch(vertices)
     patch = patches.Polygon(vertices, facecolor=color, fill=poly_fill)
     ax.add_patch(patch)
@@ -270,6 +288,6 @@ class Polygon(object):
             self.rectangle(argv[0],argv[1])
 
     def rectangle(self,top_left,bottom_right):
-        top_right = np.array([ bottom_right[0] , top_left[1] ])
-        bottom_left = np.array([ top_left[0],bottom_right[1] ])
+        top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
+        bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
         self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
