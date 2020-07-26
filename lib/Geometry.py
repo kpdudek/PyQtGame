@@ -13,7 +13,7 @@ from Utils import *
 def edge_angle(ang_type,*argv):
     '''
     The edge angle is found using unit vectors. This function can be passed two angles defined counter clowise from 0 being horizontal, or
-    a set of three verticies.
+    a set of three vertices.
     '''
     # This function finds the signed shortest distance between two vectors
     if ang_type == 'angle':
@@ -24,7 +24,7 @@ def edge_angle(ang_type,*argv):
         vertex0 = [0.0,0.0]
         vertex1 = [cos(ang1),sin(ang1)]
         vertex2 = [cos(ang2),sin(ang2)]
-    elif ang_type == 'verticies':
+    elif ang_type == 'vertices':
         assert(len(argv)==3)
 
         vertex0 = argv[0]
@@ -93,19 +93,6 @@ def edge_is_collision(edge1,edge2,endpoint_collision=False):
         return True
     else:
         return False
-
-class Polygon(object):
-    def __init__(self,poly_type=None,*argv):
-        self.verticies = []
-
-        if poly_type == 'rect':
-            assert(len(argv)==2)
-            self.rectangle(argv[0],argv[1])
-
-    def rectangle(self,top_left,bottom_right):
-        top_right = np.array([ [bottom_right[0]] , [top_left[1]] ])
-        bottom_left = np.array([ top_left[0],bottom_right[1] ])
-        self.verticies = [top_left,top_right,bottom_right,bottom_left]
 
 def polygon_is_self_occluded(vertex,vertexPrev,vertexNext,point):
     '''
@@ -231,14 +218,14 @@ def polygon_is_filled(vertices):
     for index in range(0,c_num):#1:c_num:
         # compute the rotation angle between two consecutive vectors, and
         # perform angle summation.
-        angleSum += edge_angle('verticies',np.array([[0],[0]]),VecSet[:,index],SubVec[:,index])
+        angleSum += edge_angle('vertices',np.array([[0],[0]]),VecSet[:,index],SubVec[:,index])
 
     #judge the sign of the angle summation.
-    if angleSum>0:
+    if angleSum > 0:
         #positive angle summation indicates that the vertices are placed in
         #counterclockwise order.
         return True
-    elif angleSum<0:
+    elif angleSum < 0:
         # negative angle summation indicates that the vertices are placed in
         # clockwise order.
         return False
@@ -247,7 +234,7 @@ def polygon_is_filled(vertices):
 
 def reshape_for_patch(vertices):
     '''
-    This shape takes verticies of a polygon with shape [2,N]
+    This shape takes vertices of a polygon with shape [2,N]
     and returns the same vertices with shape [N,2]
     '''
     r,c = vertices.shape
@@ -272,3 +259,17 @@ def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A P
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
+
+
+class Polygon(object):
+    def __init__(self,*argv,poly_type=None):
+        self.vertices = None
+
+        if poly_type == 'rect':
+            assert(len(argv)==2)
+            self.rectangle(argv[0],argv[1])
+
+    def rectangle(self,top_left,bottom_right):
+        top_right = np.array([ bottom_right[0] , top_left[1] ])
+        bottom_left = np.array([ top_left[0],bottom_right[1] ])
+        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)

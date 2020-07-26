@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, math, numpy
+import random, sys, os, math
+import numpy as np
 
 from Utils import *
 from PaintUtils import *
@@ -47,6 +48,12 @@ class Player(QWidget,Colors,FilePaths):
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
         log('Player size: {}'.format(self.size))
 
+        top_left = np.array([[self.pose[0]],[self.pose[1]]],dtype=float)
+        top_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]]],dtype=float)
+        bottom_left = np.array([[self.pose[0]],[self.pose[1]+self.size[1]]],dtype=float)
+        bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
+        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+
     def update_position(self,key_press,width,height):
         if len(key_press) != 0:
             self.force = [0,0]
@@ -84,12 +91,17 @@ class Player(QWidget,Colors,FilePaths):
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .7:
             self.geom = 'player.svg'
-            # self.physics.velocity[0] = 0.0
         
         ### Updating player image
         if self.geom != self.prev_geom:
             self.set_geometry(self.geom)
         self.prev_geom = self.geom
+
+        top_left = np.array([[self.pose[0]],[self.pose[1]]],dtype=float)
+        top_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]]],dtype=float)
+        bottom_left = np.array([[self.pose[0]],[self.pose[1]+self.size[1]]],dtype=float)
+        bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
+        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
 
     def animate(self):
         pass
