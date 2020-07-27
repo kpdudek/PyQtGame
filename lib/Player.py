@@ -84,8 +84,8 @@ class Player(QWidget,Colors,FilePaths):
             self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
-        self.physics.accelerate(self.force)
         self.physics.gravity()
+        self.physics.accelerate(self.force)
 
         # Execute turn position move
         pose = self.pose.copy()
@@ -98,11 +98,6 @@ class Player(QWidget,Colors,FilePaths):
             pose[0] = width-self.size[0]
         elif pose[0] < 0:
             pose[0] = 0
-    
-        # if pose[1] < 0:
-        #     pose[1] = 0
-        # elif pose[1]+self.size[1] > height:
-        #     pose[1] = height-self.size[1]
 
         # Check if that pose would be in collision
         top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
@@ -121,10 +116,10 @@ class Player(QWidget,Colors,FilePaths):
             obstacle = transform('img',obstacle,translate=height)
             # obstacles = np.flip(obstacle,1)
             # print(f'Vertices: \n{vertices}\nObstacle {obs_count}: \n{obstacle}')
-            print(f'-------X----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
-            fill1 = polygon_is_filled(vertices_transformed)
-            fill2 = polygon_is_filled(obstacle)
-            print(f'Fills: {fill1} {fill2}')
+            # print(f'-------X----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
+            # fill1 = polygon_is_filled(vertices_transformed)
+            # fill2 = polygon_is_filled(obstacle)
+            # print(f'Fills: {fill1} {fill2}')
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 # print('x collision')
@@ -134,22 +129,12 @@ class Player(QWidget,Colors,FilePaths):
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices)
-
         else:
-            # # Execute turn position move
+            # Execute turn position move
             pose = self.pose.copy()
-            # pose[0] -= self.physics.velocity[0]
 
-        # self.physics.accelerate(self.force)
-        # self.physics.gravity()
         # pose[0] = self.pose[0] + self.physics.velocity[0] 
         pose[1] += self.physics.velocity[1] 
-
-        ### Checking bounds of environment
-        # if pose[0]+self.size[0] > width:
-        #     pose[0] = width-self.size[0]
-        # elif pose[0] < 0:
-        #     pose[0] = 0
     
         if pose[1] < 0:
             pose[1] = 0
@@ -173,13 +158,13 @@ class Player(QWidget,Colors,FilePaths):
             # obstacle = transform('img',obstacle,translate=height)
             # obstacles = np.flip(obstacle,1)
             # print(f'Vertices: \n{vertices}\nObstacle {obs_count}: \n{obstacle}')
-            print(f'------------y-----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
-            fill1 = polygon_is_filled(vertices_transformed)
-            fill2 = polygon_is_filled(obstacle)
-            print(f'Fills: {fill1} {fill2}')
+            # print(f'------------y-----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
+            # fill1 = polygon_is_filled(vertices_transformed)
+            # fill2 = polygon_is_filled(obstacle)
+            # print(f'Fills: {fill1} {fill2}')
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
-                print('y collision')
+                # print('y collision')
                 break
         
         # print(f'In Collision: {collision}')
