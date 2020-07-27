@@ -88,7 +88,7 @@ class Player(QWidget,Colors,FilePaths):
         self.physics.accelerate(self.force)
 
         # Execute turn position move
-        pose = self.pose.copy()
+        pose = list(self.pose)
 
         pose[0] += self.physics.velocity[0] 
         # pose[1] += self.physics.velocity[1] 
