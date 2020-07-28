@@ -6,6 +6,7 @@ from threading import Thread
 from matplotlib import pyplot as plt
 from matplotlib import patches
 from math import sin,cos,atan2
+import math
 import numpy as np
 
 from Utils import *
@@ -286,8 +287,20 @@ class Polygon(object):
         if poly_type == 'rect':
             assert(len(argv)==2)
             self.rectangle(argv[0],argv[1])
+        elif poly_type == 'peak':
+            assert(len(argv)==3)
+            self.peak(argv[0],argv[1],argv[2])
+        else:
+            log('Polygon type not recognized!',color='r')
 
     def rectangle(self,top_left,bottom_right):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
         bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
         self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+    
+    def peak(self,top_left,bottom_right,rise):
+        top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
+        bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
+        center_high = np.array([ [math.floor((top_right[0]-top_left[0])/2.)] , [top_left[1]-rise] ])
+        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right,center_high),axis=1)
+

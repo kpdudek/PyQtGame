@@ -23,9 +23,10 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,player,save_file, load = True, time_of_day = None):
+    def __init__(self,width,height,player,save_file, load = True, time_of_day = None,env_type=None):
         super().__init__()
         self.load = load
+        self.env_type = env_type
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -298,13 +299,20 @@ class Environment(QWidget,Colors,FilePaths):
             origin = [0,self.height-50]
             size = [self.width,50]
             ground = {'origin':origin,'size':size}
+            if self.env_type:
+                env_type = self.env_type
+                ground.update({'type':self.env_type})
+            else:
+                env_type = 'rect'
+                ground.update({'type':self.env_type})
         else:
             origin = self.env_snapshot['ground']['origin']
             size = self.env_snapshot['ground']['size']
+            env_type = self.env_snapshot['ground']['type']
 
         top_left = np.array([[origin[0]],[origin[1]]],dtype=float)
         bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]],dtype=float)
-        self.ground_poly = Polygon(top_left,bottom_right,poly_type='rect')
+        self.ground_poly = Polygon(top_left,bottom_right,100,poly_type=env_type)
         
         # Generate ground
         p = QPolygonF()

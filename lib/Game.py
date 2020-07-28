@@ -23,6 +23,7 @@ class Game(QMainWindow,FilePaths):
 
     key_pressed = []
     tod = 'day'
+    collision_str = ''
 
     new_env = False
     next_scene = False
@@ -69,6 +70,8 @@ class Game(QMainWindow,FilePaths):
         self.load = True
         self.save_file_name = name + '.json'
         self.player = Player()
+        self.player.pause_signal.connect(self.pause_game)
+        self.player.collision_signal.connect(self.update_collision_str)
         log(f'Loading game called: {self.save_file_name}')
         self.display_environment()
 
@@ -86,6 +89,7 @@ class Game(QMainWindow,FilePaths):
         # Game Elements
         self.player = Player()
         self.player.pause_signal.connect(self.pause_game)
+        self.player.collision_signal.connect(self.update_collision_str)
         self.save_file_name = name + '.json'
         self.load = False
         log(f'Creating game called: {self.save_file_name}')
@@ -103,7 +107,7 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed)
+            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str)
         except:
             pass # No physics display exists
     
@@ -126,7 +130,7 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
         self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
 
-        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod)
+        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod,env_type='peak')
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)
@@ -167,6 +171,9 @@ class Game(QMainWindow,FilePaths):
         else:
             self.game_running = True
             self.clear_keys()
+
+    def update_collision_str(self,string):
+        self.collision_str = string
     
     def end_game(self):
         try:

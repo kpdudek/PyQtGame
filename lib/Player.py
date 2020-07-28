@@ -15,17 +15,12 @@ from Geometry import *
 class Player(QWidget,Colors,FilePaths):
     key_force = 8
 
-    mass = 1
     force = [0,0]
-    drag = 2
-
     velocity = 0
-    acceleration = 4
-
-    prev_direction = 0
 
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
+    collision_signal = pyqtSignal(str)
     
     def __init__(self):
         super().__init__()
@@ -51,10 +46,8 @@ class Player(QWidget,Colors,FilePaths):
         log('Player size: {}'.format(self.size))
 
         top_left = np.array([[self.pose[0]],[self.pose[1]]],dtype=float)
-        top_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]]],dtype=float)
-        bottom_left = np.array([[self.pose[0]],[self.pose[1]+self.size[1]]],dtype=float)
         bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
-        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+        self.vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
     def update_position(self,key_press,width,height,obstacles):
         if len(key_press) != 0:
@@ -67,7 +60,7 @@ class Player(QWidget,Colors,FilePaths):
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
                 elif key == 'up':
-                    self.force[1] = -20*self.key_force
+                    self.force[1] = -5*self.key_force
                 elif key == 'down':
                     self.force[1] = self.key_force
                 else:
@@ -89,9 +82,10 @@ class Player(QWidget,Colors,FilePaths):
 
         # Execute turn position move
         pose = list(self.pose)
-
+        collision_str = ''
+        
+        ########### Check X Axis Collision ###########
         pose[0] += self.physics.velocity[0] 
-        # pose[1] += self.physics.velocity[1] 
 
         ### Checking bounds of environment
         if pose[0]+self.size[0] > width:
@@ -101,11 +95,8 @@ class Player(QWidget,Colors,FilePaths):
 
         # Check if that pose would be in collision
         top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
-        top_right = np.array([[pose[0]+self.size[0]],[pose[1]]],dtype=float)
-        bottom_left = np.array([[pose[0]],[pose[1]+self.size[1]]],dtype=float)
-        #TODO: use polygon class
         bottom_right = np.array([[pose[0]+self.size[0]],[pose[1]+self.size[1]]],dtype=float)
-        vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+        vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
         collision = False
         obs_count = 0
@@ -114,26 +105,17 @@ class Player(QWidget,Colors,FilePaths):
         for obstacle in obstacles.copy():
             obs_count += 1
             obstacle = transform('img',obstacle,translate=height)
-            # obstacles = np.flip(obstacle,1)
-            # print(f'Vertices: \n{vertices}\nObstacle {obs_count}: \n{obstacle}')
-            # print(f'-------X----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
-            # fill1 = polygon_is_filled(vertices_transformed)
-            # fill2 = polygon_is_filled(obstacle)
-            # print(f'Fills: {fill1} {fill2}')
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
-                # print('x collision')
                 break
-        
-        # print(f'In Collision: {collision}')
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices)
         else:
-            # Execute turn position move
             pose = self.pose.copy()
+            collision_str += 'X '
 
-        # pose[0] = self.pose[0] + self.physics.velocity[0] 
+        ########### Check Y Axis Collision ###########
         pose[1] += self.physics.velocity[1] 
     
         if pose[1] < 0:
@@ -143,36 +125,25 @@ class Player(QWidget,Colors,FilePaths):
 
         # Check if that pose would be in collision
         top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
-        top_right = np.array([[pose[0]+self.size[0]],[pose[1]]],dtype=float)
-        bottom_left = np.array([[pose[0]],[pose[1]+self.size[1]]],dtype=float)
-        #TODO: use polygon class
         bottom_right = np.array([[pose[0]+self.size[0]],[pose[1]+self.size[1]]],dtype=float)
-        vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+        vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
         collision = False
         obs_count = 0
         vertices_transformed = transform('img',vertices,translate=height)
-        # vertices_flipped = np.flip(vertices,1)
         for obstacle in obstacles.copy():
             obs_count += 1
-            # obstacle = transform('img',obstacle,translate=height)
-            # obstacles = np.flip(obstacle,1)
-            # print(f'Vertices: \n{vertices}\nObstacle {obs_count}: \n{obstacle}')
-            # print(f'------------y-----------\nCalling collision check on:\n{vertices_transformed}\n{obstacle}')
-            # fill1 = polygon_is_filled(vertices_transformed)
-            # fill2 = polygon_is_filled(obstacle)
-            # print(f'Fills: {fill1} {fill2}')
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
-                # print('y collision')
                 break
-        
-        # print(f'In Collision: {collision}')
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices)
         else:
             pose[1] -= self.physics.velocity[1]
+            collision_str += 'Y'
+
+        self.collision_signal.emit(collision_str)
 
     def execute_move(self,pose,vertices):
         self.pose = pose

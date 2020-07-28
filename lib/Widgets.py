@@ -218,15 +218,20 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.key_label.setStyleSheet(f"font:bold 16px")
         self.key_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
+        self.collision_label = QLabel('...')
+        self.collision_label.setStyleSheet(f"font:bold 16px")
+        self.collision_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+
         self.setGeometry(0,0,400,200)
 
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
+        self.layout.addWidget(self.collision_label)
         self.setLayout(self.layout)
         
         self.show()
 
-    def update(self,info,keys_pressed):
+    def update(self,info,keys_pressed,collision):
         left_info_str = ''
         right_info_str = ''
         str_len = 15
@@ -263,10 +268,12 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
             right_info_str += new_right_line 
 
         key_str = 'Keys pressed | {}\n'.format(keys_pressed)
+        collision_str = 'Collision: {}'.format(collision.split(' '))
             
         self.left_label.setText(left_info_str)
         self.right_label.setText(right_info_str)
         self.key_label.setText(key_str)
+        self.collision_label.setText(collision_str)
 
 
     
