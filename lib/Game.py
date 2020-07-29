@@ -24,6 +24,7 @@ class Game(QMainWindow,FilePaths):
     key_pressed = []
     tod = 'day'
     collision_str = ''
+    params = {}
 
     new_env = False
     next_scene = False
@@ -57,8 +58,9 @@ class Game(QMainWindow,FilePaths):
 
         # Set main widget as main windows central widget
         self.main_widget = WelcomeScreen()
-        self.main_widget.load.connect(self.load_game)
+        self.main_widget.env_params.connect(self.set_params)
         self.main_widget.create.connect(self.start_game)
+        self.main_widget.load.connect(self.load_game)
         self.setCentralWidget(self.main_widget)
 
         self.setFocusPolicy(Qt.StrongFocus)
@@ -104,6 +106,9 @@ class Game(QMainWindow,FilePaths):
         self.game_running = True
 
         self.player.info_signal.connect(self.display_info)
+
+    def set_params(self,param_dict):
+        self.params = param_dict
     
     def display_info(self,info):
         try:
@@ -130,7 +135,9 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
         self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
 
-        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,load = self.load,time_of_day = self.tod,env_type='peak')
+        # params = {'env_type':'peak','time_of_day':'day'}
+        # params = {}
+        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,self.params,load = self.load)#,time_of_day = self.tod,env_type='peak')
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)

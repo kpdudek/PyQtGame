@@ -27,7 +27,7 @@ class Player(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.pose = [600,600]
+        self.pose = [20,20]
         self.player_pixmap = None
 
         self.geom = 'player.svg'
@@ -79,6 +79,7 @@ class Player(QWidget,Colors,FilePaths):
 
         self.physics.gravity()
         self.physics.accelerate(self.force)
+        #TODO: make accelerate not write a velocity change if there is a collision
 
         # Execute turn position move
         pose = list(self.pose)

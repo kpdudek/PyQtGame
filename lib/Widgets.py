@@ -45,7 +45,7 @@ class Divider(QWidget,Colors,FilePaths):
 
 class FormEntry(): 
 
-    def __init__(self,label_text,return_press = None):
+    def __init__(self,label_text,return_press = None,line_edit_text = None):
         super().__init__()
         self.form = QHBoxLayout()
 
@@ -56,6 +56,8 @@ class FormEntry():
         self.form.addWidget(self.form_line_label,1)
 
         self.form_line_edit = QLineEdit()
+        if line_edit_text:
+            self.form_line_edit.setText(line_edit_text)
         self.form_line_edit.setStyleSheet("font: 16px")
         self.form.addWidget(self.form_line_edit,3)
 
@@ -64,6 +66,23 @@ class FormEntry():
         
     def connect_return(self,fn):
         self.form_line_edit.returnPressed.connect(fn)
+
+class ComboEntry(): 
+
+    def __init__(self,label_text,combo_list):
+        super().__init__()
+        self.form = QHBoxLayout()
+
+        label_text = label_text + ':'
+        self.form_line_label = QLabel(label_text)
+        self.form_line_label.setStyleSheet("font: 16px")
+        self.form_line_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.form.addWidget(self.form_line_label,1)
+
+        self.form_combo = QComboBox()
+        self.form_combo.addItems(combo_list)
+        self.form_combo.setStyleSheet("font: 16px")
+        self.form.addWidget(self.form_combo,3)
         
 class WarningPrompt(QWidget,Colors,FilePaths):
 

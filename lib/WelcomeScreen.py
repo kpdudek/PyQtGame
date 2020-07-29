@@ -14,8 +14,10 @@ from Widgets import *
 class WelcomeScreen(QWidget,FilePaths):
     create = pyqtSignal(str)
     load = pyqtSignal(str)
+    env_params = pyqtSignal(dict)
 
     save_files = None
+    params = {}
 
     divider_color = '#ff9955'
 
@@ -37,6 +39,17 @@ class WelcomeScreen(QWidget,FilePaths):
 
         self.game_name_form = FormEntry('Enter name',return_press = self.start_game)
         self.layout.addLayout(self.game_name_form.form)
+
+        env_types = ['rect','peak']
+        self.env_type_selector = ComboEntry('Environment Type:',env_types)
+        self.layout.addLayout(self.env_type_selector.form)
+
+        self.peak_height_selector = FormEntry('Rise Height',line_edit_text='100')
+        self.layout.addLayout(self.peak_height_selector.form)
+
+        time_types = ['day','night']
+        self.tod_selector = ComboEntry('Time of Day',time_types)
+        self.layout.addLayout(self.tod_selector.form)
 
         self.start_button = QPushButton('Create')
         self.start_button.setStyleSheet("font: 16px")
@@ -100,6 +113,12 @@ class WelcomeScreen(QWidget,FilePaths):
             return
         else:
             log(f'Creating game: {self.game_name_form.form_line_edit.text()}')
+
+            self.params.update({'env_type':self.env_type_selector.form_combo.currentText()})
+            self.params.update({'time_of_day':self.tod_selector.form_combo.currentText()})
+            self.params.update({'rise_height':self.peak_height_selector.form_line_edit.text()})
+            self.env_params.emit(self.params)
+
             self.create.emit(self.game_name_form.form_line_edit.text())
 
     def load_game(self):

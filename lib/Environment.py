@@ -23,10 +23,10 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,player,save_file, load = True, time_of_day = None,env_type=None):
+    def __init__(self,width,height,player,save_file, params, load = True):#time_of_day = None,env_type=None):
         super().__init__()
         self.load = load
-        self.env_type = env_type
+        self.params = params
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -52,6 +52,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.game_save['launch_count'] = self.launch_count
 
         else:
+            self.env_type = params['env_type']
             self.width = width
             self.height = height
             self.os = sys.platform
@@ -64,7 +65,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.game_save.update({'os':self.os})
             self.game_save.update({'launch_count':self.launch_count})
             
-            self.time_of_day = time_of_day
+            self.time_of_day = params['time_of_day']
 
         self.main_frame = QLabel()
         self.layout.addWidget(self.main_frame)
@@ -305,14 +306,21 @@ class Environment(QWidget,Colors,FilePaths):
             else:
                 env_type = 'rect'
                 ground.update({'type':self.env_type})
+            rise_height = self.params['rise_height']
+            ground.update({'rise_height':rise_height})
         else:
             origin = self.env_snapshot['ground']['origin']
             size = self.env_snapshot['ground']['size']
             env_type = self.env_snapshot['ground']['type']
+            rise_height = self.env_snapshot['ground']['rise_height']
 
         top_left = np.array([[origin[0]],[origin[1]]],dtype=float)
         bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]],dtype=float)
-        self.ground_poly = Polygon(top_left,bottom_right,100,poly_type=env_type)
+
+        if env_type == 'rect':
+            self.ground_poly = Polygon(top_left,bottom_right,poly_type=env_type)
+        elif env_type == 'peak':
+            self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=env_type)
         
         # Generate ground
         p = QPolygonF()
