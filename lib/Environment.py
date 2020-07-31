@@ -300,27 +300,34 @@ class Environment(QWidget,Colors,FilePaths):
             origin = [0,self.height-50]
             size = [self.width,50]
             ground = {'origin':origin,'size':size}
-            if self.env_type:
-                env_type = self.env_type
+            
+            if self.env_type == 'rect':
                 ground.update({'type':self.env_type})
+            
+            elif self.env_type == 'peak':
+                ground.update({'type':self.env_type})
+                rise_height = self.params['rise_height']
+                ground.update({'rise_height':rise_height})
+
             else:
-                env_type = 'rect'
+                self.env_type = 'rect'
                 ground.update({'type':self.env_type})
-            rise_height = self.params['rise_height']
-            ground.update({'rise_height':rise_height})
+                log('No environment type found!',color='r')
+                ground.update({'type':self.env_type})
         else:
             origin = self.env_snapshot['ground']['origin']
             size = self.env_snapshot['ground']['size']
-            env_type = self.env_snapshot['ground']['type']
-            rise_height = self.env_snapshot['ground']['rise_height']
+            self.env_type = self.env_snapshot['ground']['type']
+            if self.env_type == 'peak':
+                rise_height = self.env_snapshot['ground']['rise_height']
 
         top_left = np.array([[origin[0]],[origin[1]]],dtype=float)
         bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]],dtype=float)
 
-        if env_type == 'rect':
-            self.ground_poly = Polygon(top_left,bottom_right,poly_type=env_type)
-        elif env_type == 'peak':
-            self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=env_type)
+        if self.env_type == 'rect':
+            self.ground_poly = Polygon(top_left,bottom_right,poly_type=self.env_type)
+        elif self.env_type == 'peak':
+            self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=self.env_type)
         
         # Generate ground
         p = QPolygonF()

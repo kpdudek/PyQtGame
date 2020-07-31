@@ -23,21 +23,16 @@ class Divider(QWidget,Colors,FilePaths):
         if top_spacer:
             # Spacer 1
             self.spacer1 = QLabel()
-            # self.spacer1.setStyleSheet()
-            # self.spacer1.setFixedHeight(3)
             self.layout.addWidget(self.spacer1)
 
         # Divider
         self.divider = QLabel(f'{text}:')
         self.divider.setStyleSheet(f"font:bold italic 24px; color: {self.background_color}; background-color: {self.divider_color}")
-        # self.divider.setFixedHeight(3)
         self.layout.addWidget(self.divider)
 
         if bottom_spacer:
             # Spacer 2
             self.spacer2 = QLabel()
-            # self.spacer2.setStyleSheet()
-            # self.spacer1.setFixedHeight(3)
             self.layout.addWidget(self.spacer2)
 
         # Set widget layout
@@ -47,6 +42,7 @@ class FormEntry():
 
     def __init__(self,label_text,return_press = None,line_edit_text = None):
         super().__init__()
+        self.widget = QWidget()
         self.form = QHBoxLayout()
 
         label_text = label_text + ':'
@@ -61,6 +57,8 @@ class FormEntry():
         self.form_line_edit.setStyleSheet("font: 16px")
         self.form.addWidget(self.form_line_edit,3)
 
+        self.widget.setLayout(self.form)
+
         if return_press:
             self.connect_return(return_press)
         
@@ -69,8 +67,9 @@ class FormEntry():
 
 class ComboEntry(): 
 
-    def __init__(self,label_text,combo_list):
+    def __init__(self,label_text,combo_list,fn = None):
         super().__init__()
+        self.widget = QWidget()
         self.form = QHBoxLayout()
 
         label_text = label_text + ':'
@@ -83,6 +82,14 @@ class ComboEntry():
         self.form_combo.addItems(combo_list)
         self.form_combo.setStyleSheet("font: 16px")
         self.form.addWidget(self.form_combo,3)
+
+        self.widget.setLayout(self.form)
+
+        if fn:
+            self.connect_fn(fn)
+
+    def connect_fn(self,fn):
+        self.form_combo.activated[str].connect(fn)
         
 class WarningPrompt(QWidget,Colors,FilePaths):
 
