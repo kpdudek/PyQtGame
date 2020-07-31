@@ -134,9 +134,8 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
         self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
+        self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
-        # params = {'env_type':'peak','time_of_day':'day'}
-        # params = {}
         self.environment = Environment(self.width,self.height,self.player,self.save_file_name,self.params,load = self.load)#,time_of_day = self.tod,env_type='peak')
         self.width = self.environment.width
         self.height = self.environment.height
@@ -181,7 +180,14 @@ class Game(QMainWindow,FilePaths):
 
     def update_collision_str(self,string):
         self.collision_str = string
-    
+
+    def show_dock_widget(self,dock_widget):
+        self.dock = QDockWidget(self) 
+        self.dock.setWidget(dock_widget) 
+        self.dock.setGeometry(dock_widget.geometry())
+        self.dock.setAutoFillBackground(dock_widget.auto_fill_background)
+        self.dock.show()
+
     def end_game(self):
         try:
             self.environment.save_game()

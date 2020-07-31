@@ -45,9 +45,6 @@ def edge_angle(ang_type,*argv):
     edge_angle = atan2(sin_theta,cosine_theta)
     return edge_angle
 
-def subtract(a,b):
-    return np.array([ [a[0]-b[0]] , [a[1]-b[1]] ])
-
 # calculates the cross product of vector p1 and p2
 # if p1 is clockwise from p2 wrt origin then it returns +ve value
 # if p2 is anti-clockwise from p2 wrt origin then it returns -ve value
@@ -60,7 +57,7 @@ def cross_product(p1, p2):
 # if p1p3 is anti-clockwise from p1p2 it returns -ve value
 # if p1 p2 and p3 are collinear it returns 0
 def direction(p1, p2, p3):
-	return  cross_product(subtract(p3,p1), subtract(p2,p1))
+    return  cross_product(p3-p1, p2-p1)
 
 # checks if p lies on the segment p1p2
 def on_segment(p1, p2, p):
@@ -301,6 +298,6 @@ class Polygon(object):
     def peak(self,top_left,bottom_right,rise):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
         bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
-        center_high = np.array([ [math.floor((top_right[0]-top_left[0])/2.)] , [top_left[1]-rise] ])
+        center_high = np.array([ (top_right[0]-top_left[0])/2. , top_left[1]-rise ])
         self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right,center_high),axis=1)
 

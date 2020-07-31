@@ -153,6 +153,8 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.setWindowTitle('Keyboard Controls')
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
+        self.auto_fill_background = True
+
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
 
@@ -188,7 +190,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.layout.addWidget(self.ok_button)
 
         self.setLayout(self.layout)
-        self.show()
+        # self.show()
 
     def link_lists(self):
         curr_row = self.controls_list.currentRow()
@@ -207,6 +209,11 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         super().__init__()
         self.setWindowTitle('Physics Stats')
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
+
+        self.auto_fill_background = False
+        # self.setStyleSheet(f"background-color: {self.divider_color}")
+        # self.setAttribute(Qt.WA_TranslucentBackground)
+        # self.setGeometry(0,0,400,600)
 
         self.layout = QVBoxLayout()
         # self.layout.setAlignment(Qt.AlignCenter)
@@ -248,7 +255,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.layout.addWidget(self.collision_label)
         self.setLayout(self.layout)
         
-        self.show()
+        # self.show()
 
     def update(self,info,keys_pressed,collision):
         left_info_str = ''
