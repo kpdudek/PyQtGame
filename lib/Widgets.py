@@ -91,6 +91,28 @@ class ComboEntry():
 
     def connect_fn(self,fn):
         self.form_combo.activated[str].connect(fn)
+
+class SpinEntry(): 
+
+    def __init__(self,label_text):
+        super().__init__()
+        self.widget = QWidget()
+        self.form = QHBoxLayout()
+
+        label_text = label_text + ':'
+        self.form_line_label = QLabel(label_text)
+        self.form_line_label.setStyleSheet("font: 16px")
+        self.form_line_label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.form.addWidget(self.form_line_label,1)
+
+        self.form_spin = QSpinBox()
+        self.form_spin.setRange(-800,800)
+        self.form_spin.setSingleStep(10)
+        # self.form_spin.addItems(combo_list)
+        self.form_spin.setStyleSheet("font: 16px")
+        self.form.addWidget(self.form_spin,3)
+
+        self.widget.setLayout(self.form)
         
 class WarningPrompt(QWidget,Colors,FilePaths):
 

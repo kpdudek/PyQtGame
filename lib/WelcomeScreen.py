@@ -41,7 +41,7 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addWidget(self.game_name_form.widget)
 
         env_types = ['rect','peak']
-        self.env_type_selector = ComboEntry('Environment Type:',env_types,fn=self.display_env_options)
+        self.env_type_selector = ComboEntry('Environment Type',env_types,fn=self.display_env_options)
         self.layout.addWidget(self.env_type_selector.widget)
 
         self.env_options_layout = QVBoxLayout()
@@ -89,9 +89,6 @@ class WelcomeScreen(QWidget,FilePaths):
         self.layout.addWidget(self.delete_button)
 
     def display_env_options(self,text):
-        # print(text)
-        # for widget in reversed(range(self.env_options_layout.count())): 
-        #     self.env_options_layout.itemAt(widget).widget().deleteLater()
 
         items = (self.env_options_layout.itemAt(i) for i in range(self.env_options_layout.count())) 
         for item in items:
@@ -100,7 +97,7 @@ class WelcomeScreen(QWidget,FilePaths):
             item.deleteLater()
 
         if text == 'peak':
-            self.peak_height_selector = FormEntry('Rise Height',line_edit_text='100')
+            self.peak_height_selector = SpinEntry('Rise Height')
             self.env_options_layout.addWidget(self.peak_height_selector.widget)
 
     def find_save_files(self):
@@ -131,8 +128,10 @@ class WelcomeScreen(QWidget,FilePaths):
 
             self.params.update({'env_type':self.env_type_selector.form_combo.currentText()})
             self.params.update({'time_of_day':self.tod_selector.form_combo.currentText()})
+
             if self.env_type_selector.form_combo.currentText() == 'peak':
-                self.params.update({'rise_height':self.peak_height_selector.form_line_edit.text()})
+                self.params.update({'rise_height':self.peak_height_selector.form_spin.value()})
+
             self.env_params.emit(self.params)
 
             self.create.emit(self.game_name_form.form_line_edit.text())

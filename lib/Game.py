@@ -203,7 +203,8 @@ class Game(QMainWindow,FilePaths):
         try:
             self.environment.save_game()
         except:
-            log('Failed to save the same on an end game call!',color='r')
+            if not self.game_main_window:
+                log('Failed to save the same on an end game call!',color='r')
         self.close()
 
         try:
@@ -218,6 +219,8 @@ class Game(QMainWindow,FilePaths):
     # Qt method
     def keyPressEvent(self, event):
         if self.game_main_window:
+            if event.key() == Qt.Key_Escape:
+                self.end_game()
             return
         
         ### Move Keys
