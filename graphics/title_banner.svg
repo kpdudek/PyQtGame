@@ -7,42 +7,42 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="400"
-   height="120"
-   viewBox="0 0 105.83333 31.750002"
-   version="1.1"
-   id="svg8"
+   sodipodi:docname="title_banner.svg"
    inkscape:version="1.0 (6e3e5246a0, 2020-05-07)"
-   sodipodi:docname="title_banner.svg">
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 105.83333 31.750002"
+   height="120"
+   width="400">
   <defs
      id="defs2">
     <rect
-       x="72.51609"
-       y="39.428925"
-       width="39.603081"
+       id="rect859"
        height="14.955231"
-       id="rect859" />
+       width="39.603081"
+       y="39.428925"
+       x="72.51609" />
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2.8552184"
-     inkscape:cx="210.36359"
-     inkscape:cy="110.89358"
-     inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
-     inkscape:document-rotation="0"
-     showgrid="false"
-     units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1016"
-     inkscape:window-x="0"
+     inkscape:window-maximized="1"
      inkscape:window-y="27"
-     inkscape:window-maximized="1" />
+     inkscape:window-x="0"
+     inkscape:window-height="1016"
+     inkscape:window-width="1920"
+     units="px"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="110.89358"
+     inkscape:cx="232.39885"
+     inkscape:zoom="2.8552184"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -51,46 +51,46 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
+     id="layer1"
      inkscape:groupmode="layer"
-     id="layer1">
+     inkscape:label="Layer 1">
     <rect
-       style="fill:#000080;fill-opacity:1;stroke:#000000;stroke-width:0.0705383;stroke-opacity:1"
-       id="rect18"
-       width="105.7628"
-       height="31.679462"
+       y="0.035269052"
        x="0.035269052"
-       y="0.035269052" />
+       height="31.679462"
+       width="105.7628"
+       id="rect18"
+       style="fill:#000080;fill-opacity:1;stroke:#000000;stroke-width:0.0705383;stroke-opacity:1" />
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:9.59471px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.239869"
-       x="52.929184"
-       y="12.986534"
-       id="text853"><tspan
-         sodipodi:role="line"
-         x="52.929184"
-         y="12.986534"
-         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15.3516px;font-family:KacstPen;-inkscape-font-specification:'KacstPen Italic';text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.239869"
-         id="tspan855">Something</tspan></text>
+       id="text853"
+       y="13.777805"
+       x="51.72855"
+       style="font-style:normal;font-weight:normal;font-size:14.5521px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.239869"
+       xml:space="preserve"><tspan
+         id="tspan855"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.5521px;font-family:KacstPen;-inkscape-font-specification:'KacstPen Italic';text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.239869"
+         y="13.777805"
+         x="51.72855"
+         sodipodi:role="line">Oregon Trail</tspan></text>
     <text
-       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect859);fill:#000000;fill-opacity:1;stroke:none;"
        id="text857"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect859);fill:#000000;fill-opacity:1;stroke:none;" />
+       xml:space="preserve" />
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.4462px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.261155"
-       x="31.032633"
-       y="30.21414"
-       id="text903"><tspan
-         sodipodi:role="line"
-         id="tspan901"
-         x="31.032633"
-         y="30.21414"
-         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.714px;font-family:KacstArt;-inkscape-font-specification:KacstArt;fill:#ffffff;stroke-width:0.261155">Trail</tspan></text>
+       id="text903"
+       y="28.878126"
+       x="34.392254"
+       style="font-style:normal;font-weight:normal;font-size:13.2292px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.261155"
+       xml:space="preserve"><tspan
+         id="tspan900"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.2292px;font-family:KacstArt;-inkscape-font-specification:KacstArt;fill:#ffffff;stroke-width:0.261155"
+         y="28.878126"
+         x="34.392254"
+         sodipodi:role="line">2020</tspan></text>
   </g>
 </svg>

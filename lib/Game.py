@@ -46,14 +46,14 @@ class Game(QMainWindow,FilePaths):
         self.width = 1800
         self.height = 850
 
-        self.screen_width = screen.size().width()#1920
-        self.screen_height = screen.size().height()#1080
+        self.screen_height = screen.size().height()
+        self.screen_width = screen.size().width()
 
         # setting title 
         self.setWindowTitle("Game Title")
 
-        welcome_width = 800
-        welcome_height = 500
+        welcome_width = 1200
+        welcome_height = 800
         self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
@@ -172,11 +172,17 @@ class Game(QMainWindow,FilePaths):
         log('Called clear_keys...')
 
     def pause_game(self):
-        if self.game_running:
+        print('entering pause function')
+        if self.game_running == True:
+            log('Pausing game...')
             self.game_running = False
-        else:
+
+        elif self.game_running == False:
+            log('Resuming game...')
             self.game_running = True
             self.clear_keys()
+        else:
+            log('Game running state not recognized...')
 
     def update_collision_str(self,string):
         self.collision_str = string
@@ -240,10 +246,11 @@ class Game(QMainWindow,FilePaths):
             log('Exit game called...',color='y')
             self.exit_game = True
         elif event.key() == Qt.Key_P:
-            if self.game_running == False:
-                self.game_running = True
-            else:
-                self.game_running = False
+            # if self.game_running == False:
+            #     self.game_running = True
+            # else:
+            #     self.game_running = False
+            self.pause_game()
         else:
             log('Key press not recognized...')
 

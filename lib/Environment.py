@@ -40,6 +40,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.height = self.game_save['height']
             self.os = self.game_save['os']
             self.launch_count = self.game_save['launch_count']
+            self.params = self.game_save['params']
 
             log(f'Game created using OS: {self.os}')
             log(f'Game created with screen size: {self.width}x{self.height}')
@@ -64,6 +65,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.game_save.update({'height':self.height})
             self.game_save.update({'os':self.os})
             self.game_save.update({'launch_count':self.launch_count})
+            self.game_save.update({'params':params})
             
             self.time_of_day = params['time_of_day']
 
