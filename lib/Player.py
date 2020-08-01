@@ -15,7 +15,7 @@ from Geometry import *
 class Player(QWidget,Colors,FilePaths):
     key_force = 3.
     boost = 15.
-    max_vel = 10.
+    max_vel = 8.
     mass = 12.
 
     force = np.array([ [0.] , [0.] ])

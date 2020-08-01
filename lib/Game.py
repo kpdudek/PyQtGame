@@ -112,7 +112,7 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running)
+            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.pose)
         except:
             pass # No physics display exists
     
@@ -334,7 +334,7 @@ class Game(QMainWindow,FilePaths):
         curr_time = time.time()
         self.fps_time = 1./((curr_time - self.fps_time))
         self.fps_log.append(self.fps_time)
-        if len(self.fps_log) == 100:
+        if len(self.fps_log) == 300:
             average_fps = np.mean(self.fps_log)
             log(f'Average fps: {average_fps}')
             self.fps_log = []

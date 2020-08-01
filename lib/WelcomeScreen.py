@@ -51,6 +51,15 @@ class WelcomeScreen(QWidget,FilePaths):
         self.tod_selector = ComboEntry('Time of Day',time_types)
         self.layout.addWidget(self.tod_selector.widget)
 
+        self.check_box_grid = QHBoxLayout()
+        self.check_box_grid.addStretch()
+        self.player_debug_check = QCheckBox('Player Debug Mode')
+        self.player_debug_check.setStyleSheet("font: 16px")
+        self.check_box_grid.addWidget(self.player_debug_check)
+
+        self.check_box_grid.addStretch()
+        self.layout.addLayout(self.check_box_grid)
+
         self.start_button = QPushButton('Create')
         self.start_button.setStyleSheet("font: 16px")
         self.start_button.clicked.connect(self.start_game)
@@ -132,6 +141,7 @@ class WelcomeScreen(QWidget,FilePaths):
             if self.env_type_selector.form_combo.currentText() == 'peak':
                 self.params.update({'rise_height':self.peak_height_selector.form_spin.value()})
 
+            self.params.update({'player_debug':self.player_debug_check.isChecked()})
             self.env_params.emit(self.params)
 
             self.create.emit(self.game_name_form.form_line_edit.text())

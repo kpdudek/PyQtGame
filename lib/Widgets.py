@@ -292,7 +292,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         
         # self.show()
 
-    def update(self,info,keys_pressed,collision,state):
+    def update(self,info,keys_pressed,collision,state,pose):
         left_info_str = ''
         right_info_str = ''
         str_len = 15
@@ -325,23 +325,20 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
                     except:
                         val = str(val)
                         new_right_line += '%s'%(val)
-                
-                # if len(new_left_line) < str_len:
-                #     new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
-                # if len(new_right_line) < str_len:
-                #     new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
-                
+
                 new_left_line += '\n'
                 new_right_line += '\n'
 
                 left_info_str += new_left_line
                 right_info_str += new_right_line 
+            left_info_str += 'Pose\n'
+            right_info_str += '[%-.2f %-.2f]\n'%(pose[0],pose[1])
 
-                self.left_label.setText(left_info_str)
-                self.right_label.setText(right_info_str)
+            self.left_label.setText(left_info_str)
+            self.right_label.setText(right_info_str)
 
         key_str = 'Keys pressed | {}\n'.format(keys_pressed)
-        collision_str = 'Collision: {}'.format(collision)
+        collision_str = f'Collision: [{collision[0]} {collision[1]}]'
 
         if state == True:
             state_str = 'Game is: Running'

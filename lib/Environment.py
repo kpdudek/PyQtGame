@@ -43,6 +43,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.os = self.game_save['os']
             self.launch_count = self.game_save['launch_count']
             self.params = self.game_save['params']
+            self.player_debug = self.params['player_debug']
 
             log(f'Game created using OS: {self.os}')
             log(f'Game created with screen size: {self.width}x{self.height}')
@@ -60,6 +61,8 @@ class Environment(QWidget,Colors,FilePaths):
             self.height = height
             self.os = sys.platform
             self.launch_count = 1
+            self.player_debug = params['player_debug']
+            
             log(f'Game created using OS: {self.os}')
             log(f'Game created with screen size: {self.width}x{self.height}')
 
@@ -406,9 +409,18 @@ class Environment(QWidget,Colors,FilePaths):
 
     def draw_player(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
+
+        pen = QtGui.QPen()
+        pen.setWidth(2)
+        pen.setColor(QtGui.QColor(self.divider_color))
+        painter.setPen(pen)
         
         pose = QPoint(float(self.player.pose[0]),float(self.player.pose[1]))
         painter.drawPixmap(pose,self.player.player_pixmap)
+
+        if self.player_debug:
+            rec = QRect(self.player.pose[0],self.player.pose[1],self.player.size[0],self.player.size[1])
+            painter.drawRect(rec)
         
         painter.end()
 
