@@ -23,7 +23,7 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,player,save_file, params, load = True)
+    def __init__(self,width,height,player,save_file, params, load = True):
         super().__init__()
         self.load = load
         self.params = params

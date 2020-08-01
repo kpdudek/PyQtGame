@@ -13,7 +13,7 @@ from Physics import *
 from Geometry import *
 
 class Player(QWidget,Colors,FilePaths):
-    key_force = 35
+    key_force = 25
 
     force = np.array([ [0.] , [0.] ])
     velocity = 0
@@ -27,7 +27,7 @@ class Player(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.pose = [20,20]
+        self.pose = np.array([ [20.] , [20.] ])
         self.player_pixmap = None
 
         self.geom = 'player.svg'
@@ -43,7 +43,7 @@ class Player(QWidget,Colors,FilePaths):
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
-        log('Player size: {}'.format(self.size))
+        log('Player graphic: {}, size: {}'.format(img,self.size))
 
         top_left = np.array([[self.pose[0]],[self.pose[1]]],dtype=float)
         bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
@@ -59,12 +59,11 @@ class Player(QWidget,Colors,FilePaths):
                 elif key == 'left':
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
-                elif key == 'up':
-                    self.force[1] = -5*self.key_force
-                elif key == 'down':
-                    self.force[1] = self.key_force
-                else:
-                    log('Player pose update. Key not recognized...',color='r')
+                if 'Y' in self.collision_str:
+                    if key == 'up':
+                        self.force[1] = -9*self.key_force
+                    elif key == 'down':
+                        self.force[1] = self.key_force
         else:
             self.force = np.array([ [0.] , [0.] ])
 
@@ -81,8 +80,8 @@ class Player(QWidget,Colors,FilePaths):
         self.physics.accelerate(self.force)
 
         # Execute turn position move
-        pose = list(self.pose)
-        collision_str = ''
+        pose = self.pose.copy()
+        self.collision_str = ''
         
         ########### Check X Axis Collision ###########
         pose[0] += self.physics.velocity[0] 
@@ -112,7 +111,7 @@ class Player(QWidget,Colors,FilePaths):
             self.execute_move(pose,vertices)
         else:
             pose = self.pose.copy()
-            collision_str += 'X '
+            self.collision_str += 'X '
 
         ########### Check Y Axis Collision ###########
         pose[1] += self.physics.velocity[1] 
@@ -140,9 +139,9 @@ class Player(QWidget,Colors,FilePaths):
             self.execute_move(pose,vertices)
         else:
             pose[1] -= self.physics.velocity[1]
-            collision_str += 'Y'
+            self.collision_str += 'Y'
 
-        self.collision_signal.emit(collision_str)
+        self.collision_signal.emit(self.collision_str)
 
     def execute_move(self,pose,vertices):
         self.pose = pose

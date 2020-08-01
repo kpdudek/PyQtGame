@@ -41,13 +41,9 @@ class Physics(QWidget,FilePaths):
 
     def accelerate(self,force):
         self.force = force
-        # self.gravity()
         self.compute_drag()
 
-        # x,y = self.force
-        self.acceleration = self.force/self.mass#[float(x) / float(self.mass),float(y) / float(self.mass)]
-        # self.velocity[0] += self.acceleration[0] * self.time
-        # self.velocity[1] += self.acceleration[1] * self.time
+        self.acceleration = self.force/self.mass
         self.velocity += self.acceleration*self.time
 
         for count,vel in enumerate(self.velocity):
@@ -58,7 +54,6 @@ class Physics(QWidget,FilePaths):
         self.info_signal.emit(self.info)
 
     def gravity(self):
-        # self.velocity[1] += self.grav_accel * self.time
         self.accelerate(self.grav_accel)
 
     def compute_drag(self):
