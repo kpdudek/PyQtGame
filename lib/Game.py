@@ -174,7 +174,6 @@ class Game(QMainWindow,FilePaths):
         log('Called clear_keys...')
 
     def pause_game(self):
-        print('entering pause function')
         if self.game_running == True:
             log('Pausing game...')
             self.game_running = False
@@ -214,11 +213,20 @@ class Game(QMainWindow,FilePaths):
             self.prompt_manager.welcome_prompt.close()
         except:
             pass
-
+    
+    # Qt method
     def mousePressEvent(self,e):
-        # print(f'X: {e.x()} Y: {e.y()}')
-        self.mouse_pos = np.array([[float(e.x())],[float(e.y())]])
-        log(f'<Mouse Press> X: {e.x()} Y: {e.y()}')
+        env_x = self.environment.main_frame.geometry().width()
+        env_y = self.environment.main_frame.geometry().height()
+        
+        canvas_x = self.environment.geometry().x()+self.environment.main_frame.geometry().x()
+        canvas_y = self.environment.geometry().y()+self.environment.main_frame.geometry().y()
+
+        mouse_x = e.x() - canvas_x
+        mouse_y = e.y() - canvas_y
+
+        self.mouse_pos = np.array([[float(mouse_x)],[float(mouse_y)]])
+        log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
     
     # Qt method
     def keyPressEvent(self, event):
@@ -334,4 +342,4 @@ class Game(QMainWindow,FilePaths):
         # Set time information for next loop
         self.fps_time = curr_time
 
-        # self.prompt_manager.check_prompts()
+        self.prompt_manager.check_prompts()

@@ -24,8 +24,7 @@ class PhysicsInfo(object):
 class Physics(QWidget,FilePaths):
     velocity = np.array([ [0.] , [0.] ])
     acceleration = np.array([ [0.] , [0.] ])
-    
-    max_vel = 13.
+
     c_d = 0.06
     drag = 0.
     time = 1.0
@@ -34,9 +33,10 @@ class Physics(QWidget,FilePaths):
     touching_ground = False
     info_signal = pyqtSignal(object)
 
-    def __init__(self,mass):
+    def __init__(self,mass,max_vel):
         super().__init__()
         self.mass = mass
+        self.max_vel = max_vel
 
         self.info = PhysicsInfo(self.mass,self.grav_accel,self.max_vel)
 
@@ -51,18 +51,22 @@ class Physics(QWidget,FilePaths):
             if abs(vel) > self.max_vel:
                 self.velocity[count] = np.sign(vel) * self.max_vel
 
-        self.info.assign(self.force,self.drag,self.acceleration,self.velocity,self.touching_ground)
-        self.info_signal.emit(self.info)
+        self.send_info()
 
     def gravity(self):
         self.accelerate(self.grav_accel)
 
     def compute_drag(self):
         if abs(np.sum(self.force)) > 0.01:
+            self.drag = 0.
             return
         sign = -1 * np.sign(self.velocity[0])
         self.drag = sign * self.c_d * abs(self.velocity[0])
         self.velocity[0] += self.drag
+
+    def send_info(self):
+        self.info.assign(self.force,self.drag,self.acceleration,self.velocity,self.touching_ground)
+        self.info_signal.emit(self.info)
 
     def is_collision(self):
         pass

@@ -191,7 +191,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         if rect:
             self.setGeometry(rect)
         else:
-            self.setGeometry(200,200,600,600)
+            self.setGeometry(0,0,600,600)
 
         self.controls_label = QLabel('Controls:')
         self.controls_label.setStyleSheet(f"font:bold italic 24px")

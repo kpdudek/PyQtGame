@@ -31,6 +31,8 @@ class Environment(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
+        self.setFixedSize(width,height)
+
         self.player = player
         self.save_file = save_file
 

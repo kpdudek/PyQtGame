@@ -13,7 +13,10 @@ from Physics import *
 from Geometry import *
 
 class Player(QWidget,Colors,FilePaths):
-    key_force = 10.
+    key_force = 3.
+    boost = 15.
+    max_vel = 10.
+    mass = 12.
 
     force = np.array([ [0.] , [0.] ])
     velocity = 0.
@@ -35,7 +38,7 @@ class Player(QWidget,Colors,FilePaths):
         self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
-        self.physics = Physics(12.0)
+        self.physics = Physics(self.mass,self.max_vel)
         self.physics.info_signal.connect(self.send_info)
     
     def send_info(self,info):
@@ -65,7 +68,7 @@ class Player(QWidget,Colors,FilePaths):
                 # print(self.collision_str)
                 if self.collision_str[1] == 1:
                     if key == 'up':
-                        self.force[1] = -6*self.key_force
+                        self.force[1] = -self.boost*self.key_force
                     elif key == 'down':
                         self.force[1] = self.key_force
         else:
@@ -84,12 +87,6 @@ class Player(QWidget,Colors,FilePaths):
 
 
         self.collision_str = np.zeros(2).reshape(2,1)
-
-        # self.physics.accelerate(self.force)
-        # # Execute turn position move
-        # pose = self.pose.copy()
-        # # self.collision_str = ''
-        # self.check_collison(pose,width,height,obstacles)
 
         for count,obstacle in enumerate(obstacles):
             obstacle = transform('img',obstacle,translate=height)
