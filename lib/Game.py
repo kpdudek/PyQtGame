@@ -50,7 +50,7 @@ class Game(QMainWindow,FilePaths):
         self.screen_width = screen.size().width()
 
         # setting title 
-        self.setWindowTitle("Game Title")
+        self.setWindowTitle("Oregon Trail 2020")
 
         welcome_width = 1200
         welcome_height = 800
