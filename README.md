@@ -17,6 +17,7 @@ pip3 install numpy
 
 #### Windows 10
 Download python >3.7 from the Microsoft Store and then use pip3 to install PyQt5 and numpy from PowerShell.
+Install git as described [here](https://www.computerhope.com/issues/ch001927.htm#:~:text=How%20to%20install%20and%20use%20Git%20on%20Windows,or%20fetching%20updates%20from%20the%20remote%20repository.%20)
 ```
 git clone https://github.com/kpdudek/PyQtGame.git
 pip3 install PyQt5 
