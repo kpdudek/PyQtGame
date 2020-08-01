@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
 
-import random, sys, os, math, json, numpy
+import random, sys, os, math, json
+import numpy as np
 import time
 
 from Utils import *
 
 class PhysicsInfo(object):
-    # velocity = None
-    # acceleration = None
-    # max_vel = None
-    # grav_accel = None
-    # drag = None
-    # force = None
-    # mass = None
-    # touching_ground = None
     physics_info = {'velocity':None,'acceleration':None,'max_vel':None,'grav_accel':None,'drag':None,'force':None,'mass':None,'touching_ground':None,}
 
     def __init__(self,mass,grav_accel,max_vel):
@@ -29,16 +22,15 @@ class PhysicsInfo(object):
         self.physics_info['touching_ground'] = touching_ground
 
 class Physics(QWidget,FilePaths):
-    velocity = [0,0]
-    acceleration = [0,0]
+    velocity = np.array([ [0.] , [0.] ])
+    acceleration = np.array([ [0.] , [0.] ])
     
-    max_vel = 8
-
+    max_vel = 18
+    c_d = 0.06
     time = 1.0
-    grav_accel = 8
+    grav_accel = np.array([ [0.] , [13.] ])
 
     touching_ground = False
-
     info_signal = pyqtSignal(object)
 
     def __init__(self,mass):
@@ -52,25 +44,28 @@ class Physics(QWidget,FilePaths):
         # self.gravity()
         self.compute_drag()
 
-        x,y = self.force
-        self.acceleration = [float(x) / float(self.mass),float(y) / float(self.mass)]
-        self.velocity[0] += self.acceleration[0] * self.time
-        self.velocity[1] += self.acceleration[1] * self.time
+        # x,y = self.force
+        self.acceleration = self.force/self.mass#[float(x) / float(self.mass),float(y) / float(self.mass)]
+        # self.velocity[0] += self.acceleration[0] * self.time
+        # self.velocity[1] += self.acceleration[1] * self.time
+        self.velocity += self.acceleration*self.time
 
         for count,vel in enumerate(self.velocity):
             if abs(vel) > self.max_vel:
-                self.velocity[count] = numpy.sign(vel) * self.max_vel
+                self.velocity[count] = np.sign(vel) * self.max_vel
 
         self.info.assign(self.force,self.drag,self.acceleration,self.velocity,self.touching_ground)
         self.info_signal.emit(self.info)
 
     def gravity(self):
         # self.velocity[1] += self.grav_accel * self.time
-        self.accelerate([0,self.grav_accel])
+        self.accelerate(self.grav_accel)
 
     def compute_drag(self):
-        sign = -1 * numpy.sign(self.velocity[0])
-        self.drag = sign * 0.06 * abs(self.velocity[0])
+        if np.sum(self.force) < 0.01:
+            return
+        sign = -1 * np.sign(self.velocity[0])
+        self.drag = sign * self.c_d * abs(self.velocity[0])
         self.velocity[0] += self.drag
 
     def is_collision(self):

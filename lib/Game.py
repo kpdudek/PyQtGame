@@ -92,7 +92,6 @@ class Game(QMainWindow,FilePaths):
         # Game Elements
         self.player = Player()
         self.player.pause_signal.connect(self.pause_game)
-        self.player.collision_signal.connect(self.update_collision_str)
         self.save_file_name = name + '.json'
         self.load = False
         log(f'Creating game called: {self.save_file_name}')
@@ -106,6 +105,7 @@ class Game(QMainWindow,FilePaths):
 
         self.game_running = True
 
+        self.player.collision_signal.connect(self.update_collision_str)
         self.player.info_signal.connect(self.display_info)
 
     def set_params(self,param_dict):
@@ -113,7 +113,7 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str)
+            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running)
         except:
             pass # No physics display exists
     
@@ -186,6 +186,8 @@ class Game(QMainWindow,FilePaths):
             self.clear_keys()
         else:
             log('Game running state not recognized...')
+
+        self.display_info('')
 
     def update_collision_str(self,string):
         self.collision_str = string

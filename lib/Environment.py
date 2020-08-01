@@ -23,7 +23,7 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,player,save_file, params, load = True):#time_of_day = None,env_type=None):
+    def __init__(self,width,height,player,save_file, params, load = True)
         super().__init__()
         self.load = load
         self.params = params
@@ -405,7 +405,7 @@ class Environment(QWidget,Colors,FilePaths):
     def draw_player(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
         
-        pose = QPoint(self.player.pose[0],self.player.pose[1])
+        pose = QPoint(float(self.player.pose[0]),float(self.player.pose[1]))
         painter.drawPixmap(pose,self.player.player_pixmap)
         
         painter.end()

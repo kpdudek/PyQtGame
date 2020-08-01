@@ -13,9 +13,9 @@ from Physics import *
 from Geometry import *
 
 class Player(QWidget,Colors,FilePaths):
-    key_force = 8
+    key_force = 35
 
-    force = [0,0]
+    force = np.array([ [0.] , [0.] ])
     velocity = 0
 
     info_signal = pyqtSignal(object)
@@ -51,7 +51,7 @@ class Player(QWidget,Colors,FilePaths):
 
     def update_position(self,key_press,width,height,obstacles):
         if len(key_press) != 0:
-            self.force = [0,0]
+            self.force = np.array([ [0.] , [0.] ])
             for key in key_press:
                 if key == 'right':
                     self.force[0] = self.key_force
@@ -66,7 +66,7 @@ class Player(QWidget,Colors,FilePaths):
                 else:
                     log('Player pose update. Key not recognized...',color='r')
         else:
-            self.force = [0,0]
+            self.force = np.array([ [0.] , [0.] ])
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .7:
@@ -79,7 +79,6 @@ class Player(QWidget,Colors,FilePaths):
 
         self.physics.gravity()
         self.physics.accelerate(self.force)
-        #TODO: make accelerate not write a velocity change if there is a collision
 
         # Execute turn position move
         pose = list(self.pose)
@@ -102,7 +101,6 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
         obs_count = 0
         vertices_transformed = transform('img',vertices,translate=height)
-        # vertices_flipped = np.flip(vertices,1)
         for obstacle in obstacles.copy():
             obs_count += 1
             obstacle = transform('img',obstacle,translate=height)

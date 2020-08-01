@@ -255,58 +255,71 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.collision_label.setStyleSheet(f"font:bold 16px")
         self.collision_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
+        self.state_label = QLabel('...')
+        self.state_label.setStyleSheet(f"font:bold 16px")
+        self.state_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+
         self.setGeometry(0,0,400,200)
 
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
         self.layout.addWidget(self.collision_label)
+        self.layout.addWidget(self.state_label)
         self.setLayout(self.layout)
         
         # self.show()
 
-    def update(self,info,keys_pressed,collision):
+    def update(self,info,keys_pressed,collision,state):
         left_info_str = ''
         right_info_str = ''
         str_len = 15
 
-        for key,val in list(info.physics_info.items()):
-            new_left_line = ''
-            new_right_line = ''
+        if info != '':
+            for key,val in list(info.physics_info.items()):
+                new_left_line = ''
+                new_right_line = ''
 
-            new_left_line = '%s'%(key)
+                new_left_line = '%s'%(key)
 
-            if type(val) == list:
-                new_right_line += '['
-                for item in val:
-                    item = float(item)
-                    new_right_line += '%-.2f '%(item)
-                new_right_line += ']'
-            else:
-                try:
-                    val = float(val)
-                    new_right_line += '%-.2f'%(val)
-                except:
-                    val = str(val)
-                    new_right_line += '%s'%(val)
-            
-            if len(new_left_line) < str_len:
-                new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
-            if len(new_right_line) < str_len:
-                new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
-            
-            new_left_line += '\n'
-            new_right_line += '\n'
+                if type(val) == list:
+                    new_right_line += '['
+                    for item in val:
+                        item = float(item)
+                        new_right_line += '%-.2f '%(item)
+                    new_right_line += ']'
+                else:
+                    try:
+                        val = float(val)
+                        new_right_line += '%-.2f'%(val)
+                    except:
+                        val = str(val)
+                        new_right_line += '%s'%(val)
+                
+                if len(new_left_line) < str_len:
+                    new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
+                if len(new_right_line) < str_len:
+                    new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
+                
+                new_left_line += '\n'
+                new_right_line += '\n'
 
-            left_info_str += new_left_line
-            right_info_str += new_right_line 
+                left_info_str += new_left_line
+                right_info_str += new_right_line 
+
+                self.left_label.setText(left_info_str)
+                self.right_label.setText(right_info_str)
 
         key_str = 'Keys pressed | {}\n'.format(keys_pressed)
         collision_str = 'Collision: {}'.format(collision.split(' '))
+
+        if state == True:
+            state_str = 'Game is: Running'
+        else:
+            state_str = 'Game is: Paused'
             
-        self.left_label.setText(left_info_str)
-        self.right_label.setText(right_info_str)
         self.key_label.setText(key_str)
         self.collision_label.setText(collision_str)
+        self.state_label.setText(state_str)
 
 
     
