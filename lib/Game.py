@@ -23,7 +23,7 @@ class Game(QMainWindow,FilePaths):
 
     key_pressed = []
     tod = 'day'
-    collision_str = ''
+    collision_str = None
     params = {}
 
     new_env = False
@@ -118,7 +118,7 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_player(self):
-        obstacles = [self.environment.ground_poly.vertices]
+        obstacles = [self.environment.ground_poly.vertices.copy()]
         self.player.update_position(self.key_pressed,self.width,self.height,obstacles)
 
     def display_environment(self):

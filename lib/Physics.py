@@ -25,8 +25,9 @@ class Physics(QWidget,FilePaths):
     velocity = np.array([ [0.] , [0.] ])
     acceleration = np.array([ [0.] , [0.] ])
     
-    max_vel = 18
+    max_vel = 13.
     c_d = 0.06
+    drag = 0.
     time = 1.0
     grav_accel = np.array([ [0.] , [13.] ])
 

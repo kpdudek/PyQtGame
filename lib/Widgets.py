@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, time, math
+import numpy as np
 import datetime as dt
 from threading import Thread
 import inspect
@@ -274,19 +275,27 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         right_info_str = ''
         str_len = 15
 
+        # print(info.physics_info)
         if info != '':
-            for key,val in list(info.physics_info.items()):
+            for key,val in info.physics_info.items():
                 new_left_line = ''
                 new_right_line = ''
 
                 new_left_line = '%s'%(key)
-
                 if type(val) == list:
                     new_right_line += '['
                     for item in val:
                         item = float(item)
                         new_right_line += '%-.2f '%(item)
                     new_right_line += ']'
+                
+                elif type(val) == np.ndarray:
+                    new_right_line += '['
+                    for item in val:
+                        item = float(item)
+                        new_right_line += '%-.2f '%(item)
+                    new_right_line += ']'
+
                 else:
                     try:
                         val = float(val)
@@ -295,10 +304,10 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
                         val = str(val)
                         new_right_line += '%s'%(val)
                 
-                if len(new_left_line) < str_len:
-                    new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
-                if len(new_right_line) < str_len:
-                    new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
+                # if len(new_left_line) < str_len:
+                #     new_left_line = (' '*(str_len-len(new_left_line))) + new_left_line
+                # if len(new_right_line) < str_len:
+                #     new_right_line = new_right_line + (' '*(str_len-len(new_right_line)))
                 
                 new_left_line += '\n'
                 new_right_line += '\n'
@@ -310,7 +319,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
                 self.right_label.setText(right_info_str)
 
         key_str = 'Keys pressed | {}\n'.format(keys_pressed)
-        collision_str = 'Collision: {}'.format(collision.split(' '))
+        collision_str = 'Collision: {}'.format(collision)
 
         if state == True:
             state_str = 'Game is: Running'
