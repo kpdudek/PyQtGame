@@ -62,6 +62,7 @@ class Game(QMainWindow,FilePaths):
         self.main_widget.create.connect(self.start_game)
         self.main_widget.load.connect(self.load_game)
         self.setCentralWidget(self.main_widget)
+        self.game_main_window = True
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -136,7 +137,7 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
-        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,self.params,load = self.load)#,time_of_day = self.tod,env_type='peak')
+        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,self.params,load = self.load)
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)
@@ -151,6 +152,8 @@ class Game(QMainWindow,FilePaths):
             self.showMaximized()
         else:
             self.setGeometry(0, 0, self.screen_width, self.screen_height)
+
+        self.game_main_window = False
         self.setCentralWidget(self.game_widget)
 
     def new_scene_event(self):
@@ -212,11 +215,7 @@ class Game(QMainWindow,FilePaths):
 
     # Qt method
     def keyPressEvent(self, event):
-        if not self.game_running:
-            if event.key() == Qt.Key_P:
-                self.game_running = True
-                self.clear_keys()
-            # else:
+        if self.game_main_window:
             return
         
         ### Move Keys
@@ -244,12 +243,10 @@ class Game(QMainWindow,FilePaths):
             self.prev_scene_event()
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
-            self.exit_game = True
+            # self.exit_game = True
+            self.end_game()
+
         elif event.key() == Qt.Key_P:
-            # if self.game_running == False:
-            #     self.game_running = True
-            # else:
-            #     self.game_running = False
             self.pause_game()
         else:
             log('Key press not recognized...')
@@ -260,7 +257,7 @@ class Game(QMainWindow,FilePaths):
 
     # Qt method
     def keyReleaseEvent(self, event):
-        if not self.game_running:
+        if self.game_main_window:
             return
         
         try:
@@ -285,12 +282,7 @@ class Game(QMainWindow,FilePaths):
             log('Key release event failed...',color='y')
         
     def game_loop(self):
-        # Exit game if flag is true
-        if self.exit_game:
-            self.end_game()
-        elif not self.game_running:
-            pass
-        else:
+        if self.game_running:
             if self.new_env:
                 self.environment.new_environment()
                 self.new_env = False
@@ -309,7 +301,6 @@ class Game(QMainWindow,FilePaths):
                 if self.clear_key_count == self.clear_key_limit:
                     self.clear_key_list = False
                     self.clear_key_count = 0
-                # self.clear_key_list = False
             
             ### Update player pose and redraw environment
             self.update_player()

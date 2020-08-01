@@ -276,7 +276,6 @@ def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A P
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
 
-
 class Polygon(object):
     def __init__(self,*argv,poly_type=None):
         self.vertices = None
