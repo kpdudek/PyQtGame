@@ -58,7 +58,7 @@ class Physics(QWidget,FilePaths):
         self.accelerate(self.grav_accel)
 
     def compute_drag(self):
-        if np.sum(self.force) < 0.01:
+        if abs(np.sum(self.force)) > 0.01:
             return
         sign = -1 * np.sign(self.velocity[0])
         self.drag = sign * self.c_d * abs(self.velocity[0])

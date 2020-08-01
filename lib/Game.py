@@ -4,8 +4,9 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
-import random, sys, os, math, time, numpy
-
+import random, sys, os, math, time
+import numpy as np
+ 
 from Utils import *
 from PaintUtils import *
 from Environment import *
@@ -14,7 +15,6 @@ from WelcomeScreen import *
 from GameController import *
 
 class Game(QMainWindow,FilePaths):
-    
     fps = 45.0
     game_time = 0.0
     loop_number = 0
@@ -22,6 +22,7 @@ class Game(QMainWindow,FilePaths):
     fps_log = []
 
     key_pressed = []
+    mouse_pos = np.zeros(2).reshape(2,1)
     tod = 'day'
     collision_str = None
     params = {}
@@ -35,14 +36,12 @@ class Game(QMainWindow,FilePaths):
     clear_key_limit = 10
 
     exit_game = False
-
     load = None # If a game is being loaded, set True
-
     game_running = False
 
     def __init__(self,screen):
         super().__init__()
-            # Game window dimensions
+        
         self.width = 1800
         self.height = 850
 
@@ -119,7 +118,7 @@ class Game(QMainWindow,FilePaths):
     
     def update_player(self):
         obstacles = [self.environment.ground_poly.vertices.copy()]
-        self.player.update_position(self.key_pressed,self.width,self.height,obstacles)
+        self.player.update_position(self.key_pressed,self.mouse_pos,self.width,self.height,obstacles)
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -216,6 +215,11 @@ class Game(QMainWindow,FilePaths):
         except:
             pass
 
+    def mousePressEvent(self,e):
+        # print(f'X: {e.x()} Y: {e.y()}')
+        self.mouse_pos = np.array([[float(e.x())],[float(e.y())]])
+        log(f'<Mouse Press> X: {e.x()} Y: {e.y()}')
+    
     # Qt method
     def keyPressEvent(self, event):
         if self.game_main_window:
@@ -322,8 +326,8 @@ class Game(QMainWindow,FilePaths):
         curr_time = time.time()
         self.fps_time = 1./((curr_time - self.fps_time))
         self.fps_log.append(self.fps_time)
-        if len(self.fps_log) == 50:
-            average_fps = numpy.mean(self.fps_log)
+        if len(self.fps_log) == 100:
+            average_fps = np.mean(self.fps_log)
             log(f'Average fps: {average_fps}')
             self.fps_log = []
         

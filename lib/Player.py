@@ -50,7 +50,7 @@ class Player(QWidget,Colors,FilePaths):
         bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
         self.vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
-    def update_position(self,key_press,width,height,obstacles):
+    def update_position(self,key_press,mouse_pos,width,height,obstacles):
         if len(key_press) != 0:
             self.force = np.array([ [0.] , [0.] ])
 
@@ -70,6 +70,8 @@ class Player(QWidget,Colors,FilePaths):
                         self.force[1] = self.key_force
         else:
             self.force = np.array([ [0.] , [0.] ])
+
+        # print(f'X: {mouse_pos[0]}    Y: {mouse_pos[1]} ')
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .3:
