@@ -217,9 +217,6 @@ class Game(QMainWindow,FilePaths):
     # Qt method
     def mousePressEvent(self,e):
         try:
-            env_x = self.environment.main_frame.geometry().width()
-            env_y = self.environment.main_frame.geometry().height()
-            
             canvas_x = self.environment.geometry().x()+self.environment.main_frame.geometry().x()
             canvas_y = self.environment.geometry().y()+self.environment.main_frame.geometry().y()
 
@@ -230,6 +227,9 @@ class Game(QMainWindow,FilePaths):
             log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
         except:
             log('Could not convert mouse press into canvas coordinate...',color='y')
+
+    def mouseReleaseEvent(self,e):
+        self.mouse_pos = np.zeros(2).reshape(2,1)
     
     # Qt method
     def keyPressEvent(self, event):

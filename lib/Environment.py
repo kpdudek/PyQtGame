@@ -31,24 +31,13 @@ class Environment(QWidget,Colors,FilePaths):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.setFixedSize(width,height)
+        # self.setFixedSize(width,height)
 
         self.player = player
         self.save_file = save_file
 
         if self.load:
             self.load_game()
-            self.width = self.game_save['width']
-            self.height = self.game_save['height']
-            self.os = self.game_save['os']
-            self.launch_count = self.game_save['launch_count']
-            self.params = self.game_save['params']
-            self.player_debug = self.params['player_debug']
-
-            log(f'Game created using OS: {self.os}')
-            log(f'Game created with screen size: {self.width}x{self.height}')
-            log(f'Game launch count: {self.launch_count}')
-
             self.generate_env = False
             self.env_idx = len(self.game_snapshot)-1
             self.env_snapshot = self.game_snapshot[str(self.env_idx)]
@@ -62,6 +51,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.os = sys.platform
             self.launch_count = 1
             self.player_debug = params['player_debug']
+            self.pixel_width = params['pixel_width']
 
             log(f'Game created using OS: {self.os}')
             log(f'Game created with screen size: {self.width}x{self.height}')
@@ -75,6 +65,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.time_of_day = params['time_of_day']
 
         self.main_frame = QLabel()
+        self.main_frame.setFixedSize(width,height)
         self.layout.addWidget(self.main_frame)
 
         self.canvas = QPixmap(self.width,self.height)
@@ -105,6 +96,17 @@ class Environment(QWidget,Colors,FilePaths):
         self.game_save = game
         self.game_snapshot = game['game_snapshot']
 
+        self.width = self.game_save['width']
+        self.height = self.game_save['height']
+        self.os = self.game_save['os']
+        self.launch_count = self.game_save['launch_count']
+        self.params = self.game_save['params']
+        self.player_debug = self.params['player_debug']
+        self.pixel_width = self.params['pixel_width']
+
+        log(f'Game created using OS: {self.os}')
+        log(f'Game created with screen size: {self.width}x{self.height}')
+        log(f'Game launch count: {self.launch_count}')
         log(f'Environment keys: {self.game_snapshot.keys()}')
     
     def save_game(self):
@@ -126,7 +128,7 @@ class Environment(QWidget,Colors,FilePaths):
         
         if self.time_of_day == 'day':
             pen = QtGui.QPen()
-            pen.setWidth(3)
+            pen.setWidth(self.pixel_width)
             pen.setColor(QtGui.QColor(self.sky_blue['hex']))
             painter.setPen(pen)
 
@@ -143,7 +145,7 @@ class Environment(QWidget,Colors,FilePaths):
 
         elif self.time_of_day == 'night':
             pen = QtGui.QPen()
-            pen.setWidth(3)
+            pen.setWidth(self.pixel_width)
             pen.setColor(QtGui.QColor(self.midnight_blue['hex']))
             painter.setPen(pen)
 
@@ -162,7 +164,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         pen = QtGui.QPen()
-        pen.setWidth(3)
+        pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.white['hex']))
         painter.setPen(pen)
 
@@ -291,7 +293,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         pen = QtGui.QPen()
-        pen.setWidth(3)
+        pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.brown['hex']))
         painter.setPen(pen)
 
@@ -348,7 +350,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         pen = QtGui.QPen()
-        pen.setWidth(3)
+        pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.star_gold['hex']))
         painter.setPen(pen)
 
@@ -378,7 +380,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         pen = QtGui.QPen()
-        pen.setWidth(3)
+        pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.white['hex']))
         painter.setPen(pen)
 
@@ -408,7 +410,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         brown_pen = QtGui.QPen()
-        brown_pen.setWidth(3)
+        brown_pen.setWidth(self.pixel_width)
         brown_pen.setColor(QtGui.QColor(self.brown['hex']))
         
         brown_brush = QtGui.QBrush()
@@ -425,6 +427,8 @@ class Environment(QWidget,Colors,FilePaths):
             trees = self.env_snapshot['trees']
         
         # Generate sun
+        # painter.drawPoint(QPoint(500,300))
+        # painter.drawPoint(QPoint(300,300))
         painter.end()
 
         if self.generate_env:
@@ -444,6 +448,10 @@ class Environment(QWidget,Colors,FilePaths):
         if self.player_debug:
             rec = QRect(float(self.player.pose[0]),float(self.player.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
             painter.drawRect(rec)
+
+            pen.setWidth(5)
+            painter.setPen(pen)
+            painter.drawPoint(QPoint(float(self.player.mouse_pos[0]),float(self.player.mouse_pos[1])))
         
         painter.end()
 

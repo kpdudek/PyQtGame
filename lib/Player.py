@@ -21,6 +21,7 @@ class Player(QWidget,Colors,FilePaths):
     force = np.array([ [0.] , [0.] ])
     velocity = 0.
     collision_str = np.zeros(2).reshape(2,1)
+    mouse_pos = np.zeros(2).reshape(2,1)
 
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
@@ -75,6 +76,13 @@ class Player(QWidget,Colors,FilePaths):
             self.force = np.array([ [0.] , [0.] ])
 
         # print(f'X: {mouse_pos[0]}    Y: {mouse_pos[1]} ')
+        self.mouse_pos = mouse_pos
+
+        player_vert = np.fliplr(transform('img',self.vertices.copy(),translate=height))
+        mouse_vert = transform('img',mouse_pos,translate=height)
+        # print(f'{player_vert}\n{mouse_vert}')
+        if polygon_is_collision(player_vert,mouse_vert).any():
+            log('Mouse click collided with player...')
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .3:
