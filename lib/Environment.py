@@ -62,7 +62,7 @@ class Environment(QWidget,Colors,FilePaths):
             self.os = sys.platform
             self.launch_count = 1
             self.player_debug = params['player_debug']
-            
+
             log(f'Game created using OS: {self.os}')
             log(f'Game created with screen size: {self.width}x{self.height}')
 
@@ -81,9 +81,7 @@ class Environment(QWidget,Colors,FilePaths):
         self.main_frame.setPixmap(self.canvas)
 
         # Display environment components
-        self.set_sky()
-        self.draw_ground()
-        self.draw_player()
+        self.redraw_scene()
 
         if self.load:
             self.env_create_count = len(self.game_snapshot)
@@ -187,7 +185,6 @@ class Environment(QWidget,Colors,FilePaths):
         else:
             self.num_clouds = self.env_snapshot['num_clouds']
         
-
         ### Draw clouds using number of clouds, and range to generate random pose if generating new environment
         for cloud_idx in range(0,self.num_clouds):
             
@@ -407,6 +404,32 @@ class Environment(QWidget,Colors,FilePaths):
         if self.generate_env:
             self.env_snapshot.update({'moon':moon})
 
+    def draw_trees(self):
+        painter = QtGui.QPainter(self.main_frame.pixmap())
+
+        brown_pen = QtGui.QPen()
+        brown_pen.setWidth(3)
+        brown_pen.setColor(QtGui.QColor(self.brown['hex']))
+        
+        brown_brush = QtGui.QBrush()
+        brown_brush.setColor(QtGui.QColor(self.brown['hex']))
+        brown_brush.setStyle(Qt.SolidPattern)
+
+        painter.setPen(brown_pen)
+        painter.setBrush(brown_brush)
+
+        if self.generate_env:
+            trees = []
+
+        else:
+            trees = self.env_snapshot['trees']
+        
+        # Generate sun
+        painter.end()
+
+        if self.generate_env:
+            self.env_snapshot.update({'trees':trees})
+
     def draw_player(self):
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
@@ -431,15 +454,8 @@ class Environment(QWidget,Colors,FilePaths):
         '''
         self.set_sky()
         self.draw_ground()
+        self.draw_trees()
         self.draw_player()
-            
-    def update_player(self):
-        '''
-        Wipe the canvas. Should be followed by a redraw_scene() call to regenerate
-        environment
-        '''
-        self.canvas = QPixmap(self.width,self.height)
-        self.main_frame.setPixmap(self.canvas)
 
     def new_environment(self):
         '''

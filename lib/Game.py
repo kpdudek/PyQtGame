@@ -342,4 +342,4 @@ class Game(QMainWindow,FilePaths):
         # Set time information for next loop
         self.fps_time = curr_time
 
-        self.prompt_manager.check_prompts()
+        # self.prompt_manager.check_prompts()

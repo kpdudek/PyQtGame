@@ -20,6 +20,7 @@ class ElementColors():
     midnight_blue = {'hex':'#051962','rgb':[5,25,98]}
     star_gold = {'hex':'#F7D31E','rgb':[247, 211, 30]}
     white = {'hex':'#FFFFFF','rgb':[255,255,255]}
+    forest_green = {'hex':'#38690E','rgb':[56,105,14]}
 
     ###################################################
     # Welcome Screen Colors

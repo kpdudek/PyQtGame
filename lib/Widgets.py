@@ -220,7 +220,6 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.layout.addWidget(self.ok_button)
 
         self.setLayout(self.layout)
-        # self.show()
 
     def link_lists(self):
         curr_row = self.controls_list.currentRow()
@@ -239,14 +238,11 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         super().__init__()
         self.setWindowTitle('Physics Stats')
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setGeometry(0,0,400,200)
 
         self.auto_fill_background = False
-        # self.setStyleSheet(f"background-color: {self.divider_color}")
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.setGeometry(0,0,400,600)
 
         self.layout = QVBoxLayout()
-        # self.layout.setAlignment(Qt.AlignCenter)
 
         self.title_label = QLabel('Game Physics Output')
         self.title_label.setStyleSheet(f"font:bold italic 28px; color: {self.divider_color}")
@@ -282,20 +278,15 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.state_label.setStyleSheet(f"font:bold 16px")
         self.state_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
-        self.setGeometry(0,0,400,200)
-
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
         self.layout.addWidget(self.collision_label)
         self.layout.addWidget(self.state_label)
         self.setLayout(self.layout)
-        
-        # self.show()
 
     def update(self,info,keys_pressed,collision,state,pose):
         left_info_str = ''
         right_info_str = ''
-        str_len = 15
 
         # print(info.physics_info)
         if info != '':
@@ -332,12 +323,12 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
                 left_info_str += new_left_line
                 right_info_str += new_right_line 
             left_info_str += 'Pose\n'
-            right_info_str += '[%-.2f %-.2f]\n'%(pose[0],pose[1])
+            right_info_str += '[%-.0f %-.0f]\n'%(pose[0],pose[1])
 
             self.left_label.setText(left_info_str)
             self.right_label.setText(right_info_str)
 
-        key_str = 'Keys pressed | {}\n'.format(keys_pressed)
+        key_str = 'Keys pressed: {}\n'.format(keys_pressed)
         collision_str = f'Collision: [{collision[0]} {collision[1]}]'
 
         if state == True:
