@@ -227,6 +227,19 @@ class Game(QMainWindow,FilePaths):
             log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
         except:
             log('Could not convert mouse press into canvas coordinate...',color='y')
+    
+    def mouseMoveEvent(self,e):
+        try:
+            canvas_x = self.environment.geometry().x()+self.environment.main_frame.geometry().x()
+            canvas_y = self.environment.geometry().y()+self.environment.main_frame.geometry().y()
+
+            mouse_x = e.x() - canvas_x
+            mouse_y = e.y() - canvas_y
+
+            self.mouse_pos = np.array([[float(mouse_x)],[float(mouse_y)]])
+            log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
+        except:
+            log('Could not convert mouse press into canvas coordinate...',color='y')
 
     def mouseReleaseEvent(self,e):
         self.mouse_pos = np.zeros(2).reshape(2,1) - 1
