@@ -21,7 +21,7 @@ class Player(QWidget,Colors,FilePaths):
     force = np.array([ [0.] , [0.] ])
     velocity = 0.
     collision_str = np.zeros(2).reshape(2,1)
-    mouse_pos = np.zeros(2).reshape(2,1)
+    mouse_pos = np.zeros(2).reshape(2,1) - 1
 
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
@@ -75,14 +75,18 @@ class Player(QWidget,Colors,FilePaths):
         else:
             self.force = np.array([ [0.] , [0.] ])
 
-        # print(f'X: {mouse_pos[0]}    Y: {mouse_pos[1]} ')
-        self.mouse_pos = mouse_pos
-
-        player_vert = np.fliplr(transform('img',self.vertices.copy(),translate=height))
-        mouse_vert = transform('img',mouse_pos,translate=height)
-        # print(f'{player_vert}\n{mouse_vert}')
-        if polygon_is_collision(player_vert,mouse_vert).any():
-            log('Mouse click collided with player...')
+        if np.sum(mouse_pos) >= 0:
+            self.mouse_pos = mouse_pos
+            player_vert = transform('img',self.vertices.copy(),translate=height)
+            mouse_vert = transform('img',mouse_pos.copy(),translate=height)
+            if polygon_is_collision(player_vert,mouse_vert).any():
+                log('Mouse click collided with player...')
+                return
+            else:
+                self.pose = np.array([mouse_pos[0]-self.size[0]/2. , mouse_pos[1]-self.size[1]])
+                return
+        else:
+            self.mouse_pos = mouse_pos
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .3:
@@ -101,10 +105,8 @@ class Player(QWidget,Colors,FilePaths):
 
         self.physics.gravity()
         pose = self.pose.copy()
-        # self.collision_str = ''
         self.check_collison(pose,width,height,obstacles)
         
-
         self.physics.accelerate(self.force)
         pose = self.pose.copy()
         self.check_collison(pose,width,height,obstacles)
@@ -128,7 +130,7 @@ class Player(QWidget,Colors,FilePaths):
 
         collision = False
         obs_count = 0
-        vertices_transformed = transform('img',vertices,translate=height)
+        vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
             if polygon_is_collision(obstacle,vertices_transformed).any():
@@ -136,7 +138,7 @@ class Player(QWidget,Colors,FilePaths):
                 break
         # Only write that position change if it is collision free
         if not collision:
-            self.execute_move(pose,vertices)
+            self.execute_move(pose,vertices.copy())
         else:
             pose = self.pose.copy()
             self.collision_str[0] = 1
@@ -157,7 +159,7 @@ class Player(QWidget,Colors,FilePaths):
 
         collision = False
         obs_count = 0
-        vertices_transformed = transform('img',vertices,translate=height)
+        vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
@@ -165,7 +167,7 @@ class Player(QWidget,Colors,FilePaths):
                 break
         # Only write that position change if it is collision free
         if not collision:
-            self.execute_move(pose,vertices)
+            self.execute_move(pose,vertices.copy())
         else:
             pose[1] -= self.physics.velocity[1]
             self.collision_str[1] = 1

@@ -22,7 +22,7 @@ class Game(QMainWindow,FilePaths):
     fps_log = []
 
     key_pressed = []
-    mouse_pos = np.zeros(2).reshape(2,1)
+    mouse_pos = np.zeros(2).reshape(2,1) - 1
     tod = 'day'
     collision_str = None
     params = {}
@@ -118,7 +118,7 @@ class Game(QMainWindow,FilePaths):
     
     def update_player(self):
         obstacles = [self.environment.ground_poly.vertices.copy()]
-        self.player.update_position(self.key_pressed,self.mouse_pos,self.width,self.height,obstacles)
+        self.player.update_position(self.key_pressed,self.mouse_pos.copy(),self.width,self.height,obstacles)
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -229,7 +229,7 @@ class Game(QMainWindow,FilePaths):
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
     def mouseReleaseEvent(self,e):
-        self.mouse_pos = np.zeros(2).reshape(2,1)
+        self.mouse_pos = np.zeros(2).reshape(2,1) - 1
     
     # Qt method
     def keyPressEvent(self, event):

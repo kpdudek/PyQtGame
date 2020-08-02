@@ -426,7 +426,7 @@ class Environment(QWidget,Colors,FilePaths):
         else:
             trees = self.env_snapshot['trees']
         
-        # Generate sun
+        # Generate test points
         # painter.drawPoint(QPoint(500,300))
         # painter.drawPoint(QPoint(300,300))
         painter.end()
@@ -449,9 +449,11 @@ class Environment(QWidget,Colors,FilePaths):
             rec = QRect(float(self.player.pose[0]),float(self.player.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
             painter.drawRect(rec)
 
-            pen.setWidth(5)
-            painter.setPen(pen)
-            painter.drawPoint(QPoint(float(self.player.mouse_pos[0]),float(self.player.mouse_pos[1])))
+            if np.sum(self.player.mouse_pos) >= 0:
+                pen.setWidth(5)
+                pen.setColor(QtGui.QColor(self.warning_text))
+                painter.setPen(pen)
+                painter.drawPoint(QPoint(float(self.player.mouse_pos[0]),float(self.player.mouse_pos[1])))
         
         painter.end()
 
