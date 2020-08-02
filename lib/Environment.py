@@ -442,7 +442,7 @@ class Environment(QWidget,Colors,FilePaths):
         painter.drawPixmap(pose,self.player.player_pixmap)
 
         if self.player_debug:
-            rec = QRect(self.player.pose[0],self.player.pose[1],self.player.size[0],self.player.size[1])
+            rec = QRect(float(self.player.pose[0]),float(self.player.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
             painter.drawRect(rec)
         
         painter.end()
