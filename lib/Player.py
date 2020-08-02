@@ -22,6 +22,8 @@ class Player(QWidget,Colors,FilePaths):
     velocity = 0.
     collision_str = np.zeros(2).reshape(2,1)
     mouse_pos = np.zeros(2).reshape(2,1) - 1
+    collision_pt = np.zeros(2).reshape(2,1) - 1
+    calc_offsets = True
 
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
@@ -81,9 +83,18 @@ class Player(QWidget,Colors,FilePaths):
             mouse_vert = transform('img',mouse_pos.copy(),translate=height)
             if polygon_is_collision(player_vert,mouse_vert).any():
                 log('Mouse click collided with player...')
+                self.collision_pt = mouse_pos
                 return
             else:
-                self.pose = np.array([mouse_pos[0]-self.size[0]/2. , mouse_pos[1]-self.size[1]])
+                if np.sum(self.collision_pt) >= 0:
+                    if self.calc_offsets:
+                        self.x_offset = -1*(self.collision_pt[0] - self.pose[0])
+                        self.y_offset = -1*(self.collision_pt[1] - self.pose[1])
+                        self.calc_offsets = False
+
+                    self.pose = np.array([ mouse_pos[0]+self.x_offset , mouse_pos[1]+self.y_offset ])
+                else:
+                    self.pose = np.array([mouse_pos[0]-self.size[0]/2. , mouse_pos[1]-self.size[1]])
                 return
         else:
             self.mouse_pos = mouse_pos

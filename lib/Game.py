@@ -242,7 +242,12 @@ class Game(QMainWindow,FilePaths):
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
     def mouseReleaseEvent(self,e):
-        self.mouse_pos = np.zeros(2).reshape(2,1) - 1
+        try:
+            self.mouse_pos = np.zeros(2).reshape(2,1) - 1
+            self.player.collision_pt = np.zeros(2).reshape(2,1) - 1
+            self.player.calc_offsets = True
+        except:
+            log('Could not follow mouse release operations. Has the game started?')
     
     # Qt method
     def keyPressEvent(self, event):
