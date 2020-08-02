@@ -246,6 +246,7 @@ class Game(QMainWindow,FilePaths):
             self.mouse_pos = np.zeros(2).reshape(2,1) - 1
             self.player.collision_pt = np.zeros(2).reshape(2,1) - 1
             self.player.calc_offsets = True
+            self.mouse_prev = np.zeros(2).reshape(2,1) - 1
         except:
             log('Could not follow mouse release operations. Has the game started?')
     

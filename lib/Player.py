@@ -24,6 +24,7 @@ class Player(QWidget,Colors,FilePaths):
     mouse_pos = np.zeros(2).reshape(2,1) - 1
     collision_pt = np.zeros(2).reshape(2,1) - 1
     calc_offsets = True
+    mouse_prev = np.zeros(2).reshape(2,1) - 1
 
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
@@ -78,13 +79,12 @@ class Player(QWidget,Colors,FilePaths):
             self.force = np.array([ [0.] , [0.] ])
 
         if np.sum(mouse_pos) >= 0:
-            self.mouse_pos = mouse_pos
+            self.mouse_pos = mouse_pos # Always keep track of the mouse pose for drawing the red marker
             player_vert = transform('img',self.vertices.copy(),translate=height)
             mouse_vert = transform('img',mouse_pos.copy(),translate=height)
             if polygon_is_collision(player_vert,mouse_vert).any():
                 log('Mouse click collided with player...')
                 self.collision_pt = mouse_pos
-                return
             else:
                 if np.sum(self.collision_pt) >= 0:
                     if self.calc_offsets:
@@ -95,8 +95,15 @@ class Player(QWidget,Colors,FilePaths):
                     self.pose = np.array([ mouse_pos[0]+self.x_offset , mouse_pos[1]+self.y_offset ])
                 else:
                     self.pose = np.array([mouse_pos[0]-self.size[0]/2. , mouse_pos[1]-self.size[1]])
-                return
-        else:
+
+                if np.sum(self.mouse_prev) >= 0:
+                    vel_x = mouse_pos[0] - self.mouse_prev[0]
+                    vel_y = mouse_pos[1] - self.mouse_prev[1]
+                    self.physics.velocity = np.array([vel_x,vel_y])
+                    self.physics.send_info()
+            self.mouse_prev = mouse_pos
+            return
+        else: # Always keep track of the mouse pose for drawing the red marker
             self.mouse_pos = mouse_pos
 
         # Setting player velocity to zero within a threshold and updating geometry
