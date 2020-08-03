@@ -237,7 +237,7 @@ class Game(QMainWindow,FilePaths):
             mouse_y = e.y() - canvas_y
 
             self.mouse_pos = np.array([[float(mouse_x)],[float(mouse_y)]])
-            log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
+            # log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
         except:
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
@@ -247,6 +247,7 @@ class Game(QMainWindow,FilePaths):
             self.player.collision_pt = np.zeros(2).reshape(2,1) - 1
             self.player.calc_offsets = True
             self.mouse_prev = np.zeros(2).reshape(2,1) - 1
+            self.player.log_collis = True
         except:
             log('Could not follow mouse release operations. Has the game started?')
     
