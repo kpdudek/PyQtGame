@@ -97,8 +97,8 @@ class Player(QWidget,Colors,FilePaths):
                     self.pose = np.array([mouse_pos[0]-self.size[0]/2. , mouse_pos[1]-self.size[1]])
 
                 if np.sum(self.mouse_prev) >= 0:
-                    vel_x = mouse_pos[0] - self.mouse_prev[0]
-                    vel_y = mouse_pos[1] - self.mouse_prev[1]
+                    vel_x = (mouse_pos[0] - self.mouse_prev[0])
+                    vel_y = (mouse_pos[1] - self.mouse_prev[1])
                     self.physics.velocity = np.array([vel_x,vel_y])
                     self.physics.send_info()
             self.mouse_prev = mouse_pos
