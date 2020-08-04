@@ -13,6 +13,7 @@ from Environment import *
 from Player import *
 from WelcomeScreen import *
 from GameController import *
+from Inventory import *
 
 class Game(QMainWindow,FilePaths):
     fps = 45.0
@@ -62,6 +63,8 @@ class Game(QMainWindow,FilePaths):
         self.main_widget.load.connect(self.load_game)
         self.setCentralWidget(self.main_widget)
         self.game_main_window = True
+
+        self.inventory = Inventory(,self.screen_height,self.screen_width)
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -190,6 +193,9 @@ class Game(QMainWindow,FilePaths):
     def update_collision_str(self,string):
         self.collision_str = string
 
+    def display_inventory(self):
+        self.show_dock_widget(self.inventory)
+
     def show_dock_widget(self,dock_widget):
         self.dock = QDockWidget(self) 
         self.dock.setWidget(dock_widget) 
@@ -271,6 +277,8 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_S:
             # self.key_pressed.append('down')
             val = 'down'
+        elif event.key() == Qt.Key_E:
+            self.display_inventory()
         
         ### Game operation keys
         elif event.key() == Qt.Key_N:
