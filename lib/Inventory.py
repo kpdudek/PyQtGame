@@ -28,11 +28,14 @@ class Inventory(QWidget,Colors,FilePaths):
 
         width = 800
         height = 600
-        self.setGeometry(math.floor((screen_width-width)/2), math.floor((screen_height-height)/2), width, height) 
+        self.geom = QRect(math.floor((screen_width-width)/2), math.floor((screen_height-height)/2), width, height)
+        self.setGeometry(self.geom) 
+
+        self.grid_entries = [[0,0]]
 
         self.controls_label = QLabel('Inventory')
         self.controls_label.setStyleSheet(f"font:bold italic 24px")
         self.controls_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
-        self.layout.addWidget(self.controls_label,0,0)
+        self.layout.addWidget(self.controls_label,self.grid_entries[0][0],self.grid_entries[0][1])
 
         self.setLayout(self.layout)

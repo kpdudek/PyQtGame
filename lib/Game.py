@@ -28,6 +28,7 @@ class Game(QMainWindow,FilePaths):
     collision_str = None
     params = {}
 
+    inv_dock_hide = None
     new_env = False
     next_scene = False
     prev_scene = False
@@ -64,7 +65,7 @@ class Game(QMainWindow,FilePaths):
         self.setCentralWidget(self.main_widget)
         self.game_main_window = True
 
-        self.inventory = Inventory(,self.screen_height,self.screen_width)
+        self.inventory = Inventory(self.screen_width,self.screen_height)
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -194,7 +195,20 @@ class Game(QMainWindow,FilePaths):
         self.collision_str = string
 
     def display_inventory(self):
-        self.show_dock_widget(self.inventory)
+        if self.inv_dock_hide:
+            self.inv_dock.hide()
+            # self.inv_dock.deleteLater()
+            self.inv_dock.setGeometry(self.inventory.geom)
+            self.inv_dock_hide = False
+        else:
+            self.inv_dock = QDockWidget(self) 
+            self.inv_dock.setWidget(self.inventory) 
+            self.inv_dock.setGeometry(self.inventory.geom)
+            self.inv_dock.setAutoFillBackground(self.inventory.auto_fill_background)
+            self.inv_dock.show()
+            self.inv_dock_hide = True
+
+        # self.show_dock_widget(self.inventory)
 
     def show_dock_widget(self,dock_widget):
         self.dock = QDockWidget(self) 
@@ -321,6 +335,8 @@ class Game(QMainWindow,FilePaths):
             elif event.key() == Qt.Key_S:
                 # self.key_pressed.remove('down')
                 val = 'down'
+            elif event.key() == Qt.Key_E:
+                pass
             else:
                 log('Key release not recognized...')
 
