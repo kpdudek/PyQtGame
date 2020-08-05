@@ -13,8 +13,8 @@ from Physics import *
 from Geometry import *
 
 class Player(QWidget,Colors,FilePaths):
-    key_force = 3.
-    boost = 15.
+    key_force = 2.
+    boost = 25.
     max_vel = 8.
     mass = 12.
 

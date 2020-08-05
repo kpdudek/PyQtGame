@@ -88,6 +88,7 @@ class Environment(QWidget,Colors,FilePaths):
 
         log('Environment initialized...')
         log(f'Create count: {self.env_create_count} | env idx: {self.env_idx}')
+        log(f'Params: {self.params}')
 
     def load_game(self):
         with open(f'{self.user_path}saves/{self.save_file}') as fp:

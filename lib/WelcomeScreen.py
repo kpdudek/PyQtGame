@@ -144,7 +144,7 @@ class WelcomeScreen(QWidget,FilePaths):
             if self.env_type_selector.form_combo.currentText() == 'peak':
                 self.params.update({'rise_height':self.peak_height_selector.form_spin.value()})
 
-            self.params.update({'pixel_width':5})
+            self.params.update({'pixel_width':2})
             self.params.update({'player_debug':self.player_debug_check.isChecked()})
             self.env_params.emit(self.params)
 

@@ -297,6 +297,9 @@ class Polygon(object):
     def peak(self,top_left,bottom_right,rise):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
         bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
-        center_high = np.array([ (top_right[0]-top_left[0])/2. , top_left[1]-rise ])
-        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right,center_high),axis=1)
+        center_high_1 = np.array([ ((top_right[0]-top_left[0])/2.)+300. , top_left[1]-rise ])
+        center_high = np.array([ ((top_right[0]-top_left[0])/2.), top_left[1]-(rise/3.) ])
+        center_high_2 = np.array([ ((top_right[0]-top_left[0])/2.)-300. , top_left[1]-rise ])
+
+        self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right,center_high_1,center_high,center_high_2),axis=1)
 

@@ -14,7 +14,21 @@ from PyQt5 import uic
 from Utils import *
 from PaintUtils import *
 
+class Item(QLabel,Colors,FilePaths):
+    clicked_signal = pyqtSignal(object)
+
+    def __init__(self,item_type,icon,r,c):
+        super().__init__()
+        self.setText(f'{item_type},{r},{c}')
+        self.type = item_type
+        self.icon = icon
+        self.index = np.array([[r],[c]])
+
+    def mousePressEvent(self,e):
+        self.clicked_signal.emit(self.index)
+
 class Inventory(QWidget,Colors,FilePaths):
+    items = np.empty(24,dtype=object).reshape(4,6)
 
     def __init__(self,screen_width,screen_height):
         super().__init__()
@@ -24,18 +38,26 @@ class Inventory(QWidget,Colors,FilePaths):
         self.auto_fill_background = True
 
         self.layout = QGridLayout()
-        # self.layout.setAlignment(Qt.AlignCenter)
 
-        width = 800
-        height = 600
-        self.geom = QRect(math.floor((screen_width-width)/2), math.floor((screen_height-height)/2), width, height)
+        self.width = 800
+        self.height = 600
+        self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
 
-        self.grid_entries = [[0,0]]
-
-        self.controls_label = QLabel('Inventory')
-        self.controls_label.setStyleSheet(f"font:bold italic 24px")
-        self.controls_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
-        self.layout.addWidget(self.controls_label,self.grid_entries[0][0],self.grid_entries[0][1])
+        self.generate_layout()
 
         self.setLayout(self.layout)
+
+    def generate_layout(self):
+        r,c = self.items.shape
+        for i in range(0,r):
+            for j in range(0,c):
+                label = Item('t','png',i,j)
+                label.setStyleSheet(f"font:bold 14px; color: {self.divider_color}")
+                label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+                label.clicked_signal.connect(self.inv_click)
+                self.layout.addWidget(label,i,j)
+    def inv_click(self,index):
+        log(f'Inventory clicked: {index[0]},{index[1]}')
+    def assign_item(self,item):
+        self.items[0,0] = item
