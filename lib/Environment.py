@@ -423,6 +423,7 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.generate_env:
             trees = []
+            # base = QRect(200,200,12,24)
 
         else:
             trees = self.env_snapshot['trees']
@@ -430,6 +431,13 @@ class Environment(QWidget,Colors,FilePaths):
         # Generate test points
         # painter.drawPoint(QPoint(500,300))
         # painter.drawPoint(QPoint(300,300))
+        # base = QRect(200,200,12,24)
+
+        tree = QPixmap(f'{self.user_path}/graphics/tree.png')
+        tree = tree.scaled(200, 200, Qt.KeepAspectRatio)
+        pose = [20,300,600,1000,1300,1600]
+        for p in pose:
+            painter.drawPixmap(QPoint(p,600),tree)
         painter.end()
 
         if self.generate_env:
