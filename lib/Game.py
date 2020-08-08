@@ -25,6 +25,7 @@ class Game(QMainWindow,FilePaths):
     fps_log = []
 
     key_pressed = []
+    sprint = False
     mouse_pos = np.zeros(2).reshape(2,1) - 1
     tod = 'day'
     collision_str = None
@@ -122,9 +123,9 @@ class Game(QMainWindow,FilePaths):
     def update_player(self):
         obstacles = [self.environment.ground_poly.vertices.copy()]
 
-        self.player.update_position(self.key_pressed,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
+        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
 
-        self.dynamic_obstacles.update_position(self.width,self.height,copy.deepcopy(obstacles))
+        self.dynamic_obstacles.update_position(self.player,self.width,self.height,copy.deepcopy(obstacles))
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -285,6 +286,12 @@ class Game(QMainWindow,FilePaths):
             if event.key() == Qt.Key_Escape:
                 self.end_game()
             return
+
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ShiftModifier:
+            self.sprint = True
+        else:
+            self.sprint = False
         
         ### Move Keys
         val = ''
@@ -373,12 +380,18 @@ class Game(QMainWindow,FilePaths):
                     self.clear_key_count = 0
             
             ### Update player pose and redraw environment
+            tic = time.time()
             self.update_player()
+            toc = time.time()
+            print('Update call took: %.3f'%(toc-tic))
 
             ### recreate environment and repaint widget
+            tic = time.time()
             self.environment.redraw_scene()
             self.environment.repaint()
-
+            toc = time.time()
+            print('Drawing call took: %.3f'%(toc-tic))
+            
             # Update game loop tracking information
             self.loop_number += 1
             self.game_time += self.game_timer.interval() / 1000.0

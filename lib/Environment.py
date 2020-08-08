@@ -390,6 +390,9 @@ class Environment(QWidget,Colors,FilePaths):
             self.env_snapshot.update({'moon':moon})
 
     def draw_trees(self):
+        if self.env_type == 'peak':
+            return
+        
         painter = QtGui.QPainter(self.main_frame.pixmap())
 
         brown_pen = QtGui.QPen()

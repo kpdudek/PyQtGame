@@ -38,10 +38,10 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         bottom_right = np.array([[pose[0]+size[0]],[pose[1]+size[1]]],dtype=float)
         self.vertices.append(Polygon(top_left,bottom_right,poly_type='rect').vertices)
         
-        physics = Physics(12.,8.)
+        physics = Physics(10.,15.)
         self.physics.append(physics)
 
-    def update_position(self,width,height,obstacles):
+    def update_position(self,player,width,height,obstacles):
         for count,obstacle in enumerate(obstacles):
             obstacle = transform('img',obstacle,translate=height)
             obstacles[count] = obstacle
@@ -74,6 +74,9 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 break
+            if polygon_is_collision(vertices_transformed,obstacle).any():
+                collision = True
+                break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy(),idx)
@@ -100,6 +103,9 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         for obstacle in obstacles.copy():
             obs_count += 1
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
+                collision = True
+                break
+            if polygon_is_collision(vertices_transformed,obstacle).any() == True:
                 collision = True
                 break
         # Only write that position change if it is collision free

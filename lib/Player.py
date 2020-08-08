@@ -58,7 +58,7 @@ class Player(QWidget,Colors,FilePaths):
         bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
         self.vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
-    def update_position(self,key_press,mouse_pos,width,height,obstacles):
+    def update_position(self,key_press,sprint,mouse_pos,width,height,obstacles):
         if len(key_press) != 0:
             self.force = np.array([ [0.] , [0.] ])
 
@@ -69,6 +69,9 @@ class Player(QWidget,Colors,FilePaths):
                 elif key == 'left':
                     self.force[0] = -self.key_force
                     self.geom = 'player_left.svg'
+                
+                if sprint:
+                    self.force[0] = self.force[0] * 1.5
 
                 # print(self.collision_str)
                 if self.collision_str[1] == 1:
@@ -157,6 +160,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 break
+            # if polygon_is_collision(vertices_transformed,obstacle).any():
+            #     collision = True
+            #     break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())
@@ -186,6 +192,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
                 break
+            # if polygon_is_collision(vertices_transformed,obstacle).any() == True:
+            #     collision = True
+            #     break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())
