@@ -6,7 +6,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 import random, sys, os, math, time
 import numpy as np
- 
+import copy
+
 from Utils import *
 from PaintUtils import *
 from Environment import *
@@ -14,6 +15,7 @@ from Player import *
 from WelcomeScreen import *
 from GameController import *
 from Inventory import *
+from DynamicObstacles import *
 
 class Game(QMainWindow,FilePaths):
     fps = 45.0
@@ -53,7 +55,7 @@ class Game(QMainWindow,FilePaths):
         # setting title 
         self.setWindowTitle("Oregon Trail 2020")
 
-        welcome_width = 650
+        welcome_width = 800
         welcome_height = 600
         self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
 
@@ -67,6 +69,13 @@ class Game(QMainWindow,FilePaths):
 
         self.inventory = Inventory(self.screen_width,self.screen_height)
 
+        self.player = Player()
+        self.player.pause_signal.connect(self.pause_game)
+        self.player.collision_signal.connect(self.update_collision_str)
+        self.player.info_signal.connect(self.display_info)
+
+        self.dynamic_obstacles = DynamicObstacles()
+
         self.setFocusPolicy(Qt.StrongFocus)
 
         # Show main window
@@ -75,9 +84,6 @@ class Game(QMainWindow,FilePaths):
     def load_game(self,name):
         self.load = True
         self.save_file_name = name + '.json'
-        self.player = Player()
-        self.player.pause_signal.connect(self.pause_game)
-        self.player.collision_signal.connect(self.update_collision_str)
         log(f'Loading game called: {self.save_file_name}')
         self.display_environment()
 
@@ -89,12 +95,8 @@ class Game(QMainWindow,FilePaths):
 
         self.game_running = True
 
-        self.player.info_signal.connect(self.display_info)
-        
     def start_game(self,name):
         # Game Elements
-        self.player = Player()
-        self.player.pause_signal.connect(self.pause_game)
         self.save_file_name = name + '.json'
         self.load = False
         log(f'Creating game called: {self.save_file_name}')
@@ -108,9 +110,6 @@ class Game(QMainWindow,FilePaths):
 
         self.game_running = True
 
-        self.player.collision_signal.connect(self.update_collision_str)
-        self.player.info_signal.connect(self.display_info)
-
     def set_params(self,param_dict):
         self.params = param_dict
     
@@ -122,7 +121,10 @@ class Game(QMainWindow,FilePaths):
     
     def update_player(self):
         obstacles = [self.environment.ground_poly.vertices.copy()]
-        self.player.update_position(self.key_pressed,self.mouse_pos.copy(),self.width,self.height,obstacles)
+
+        self.player.update_position(self.key_pressed,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
+
+        self.dynamic_obstacles.update_position(self.width,self.height,copy.deepcopy(obstacles))
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -140,7 +142,7 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
-        self.environment = Environment(self.width,self.height,self.player,self.save_file_name,self.params,load = self.load)
+        self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)

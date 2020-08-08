@@ -23,7 +23,7 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
-    def __init__(self,width,height,player,save_file, params, load = True):
+    def __init__(self,width,height,player,dyn_obs,save_file, params, load = True):
         super().__init__()
         self.load = load
         self.params = params
@@ -34,6 +34,7 @@ class Environment(QWidget,Colors,FilePaths):
         # self.setFixedSize(width,height)
 
         self.player = player
+        self.dyn_obs = dyn_obs
         self.save_file = save_file
 
         if self.load:
@@ -404,15 +405,9 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.generate_env:
             trees = []
-            # base = QRect(200,200,12,24)
 
         else:
             trees = self.env_snapshot['trees']
-        
-        # Generate test points
-        # painter.drawPoint(QPoint(500,300))
-        # painter.drawPoint(QPoint(300,300))
-        # base = QRect(200,200,12,24)
 
         tree = QPixmap(f'{self.user_path}/graphics/tree.png')
         tree = tree.scaled(200, 200, Qt.KeepAspectRatio)
@@ -446,6 +441,28 @@ class Environment(QWidget,Colors,FilePaths):
                 painter.drawPoint(QPoint(float(self.player.mouse_pos[0]),float(self.player.mouse_pos[1])))
         
         painter.end()
+    
+    def draw_dynamic_obstacles(self):
+        painter = QtGui.QPainter(self.main_frame.pixmap())
+
+        pen = QtGui.QPen()
+        pen.setWidth(2)
+        pen.setColor(QtGui.QColor(self.divider_color))
+        painter.setPen(pen)
+        
+        for idx in range(0,len(self.dyn_obs.vertices)):
+            pixmap = self.dyn_obs.pixmaps[idx].copy()
+            pose = self.dyn_obs.poses[idx].copy()
+            size = self.dyn_obs.sizes[idx].copy()
+
+            pix_pose = QPoint(float(pose[0]),float(pose[1]))
+            painter.drawPixmap(pix_pose,pixmap)
+
+            if self.player_debug:
+                rec = QRect(float(pose[0]),float(pose[1]),float(size[0]),float(size[1]))
+                painter.drawRect(rec)
+        
+        painter.end()
 
     def redraw_scene(self):
         '''
@@ -456,6 +473,7 @@ class Environment(QWidget,Colors,FilePaths):
         self.draw_ground()
         self.draw_trees()
         self.draw_player()
+        self.draw_dynamic_obstacles()
 
     def new_environment(self):
         '''

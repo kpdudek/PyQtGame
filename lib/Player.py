@@ -43,7 +43,7 @@ class Player(QWidget,Colors,FilePaths):
         self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
-        self.physics = Physics(self.mass,self.max_vel)
+        self.physics = PlayerPhysics(self.mass,self.max_vel)
         self.physics.info_signal.connect(self.send_info)
     
     def send_info(self,info):

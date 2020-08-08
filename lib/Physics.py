@@ -21,7 +21,7 @@ class PhysicsInfo(object):
         self.physics_info['velocity'] = velocity
         self.physics_info['touching_ground'] = touching_ground
 
-class Physics(QWidget,FilePaths):
+class PlayerPhysics(QWidget,FilePaths):
     velocity = np.array([ [0.] , [0.] ])
     acceleration = np.array([ [0.] , [0.] ])
 
@@ -68,10 +68,41 @@ class Physics(QWidget,FilePaths):
         self.info.assign(self.force,self.drag,self.acceleration,self.velocity,self.touching_ground)
         self.info_signal.emit(self.info)
 
-    def is_collision(self):
-        pass
 
-    def rotate(self):
-        pass
+class Physics(QWidget,FilePaths):
+    velocity = np.array([ [0.] , [0.] ])
+    acceleration = np.array([ [0.] , [0.] ])
 
-    
+    c_d = 0.06
+    drag = 0.
+    time = 1.0
+    grav_accel = np.array([ [0.] , [13.] ])
+
+    touching_ground = False
+
+    def __init__(self,mass,max_vel):
+        super().__init__()
+        self.mass = mass
+        self.max_vel = max_vel
+
+    def accelerate(self,force):
+        self.force = force
+        self.compute_drag()
+
+        self.acceleration = self.force/self.mass
+        self.velocity += self.acceleration*self.time
+
+        for count,vel in enumerate(self.velocity):
+            if abs(vel) > self.max_vel:
+                self.velocity[count] = np.sign(vel) * self.max_vel
+
+    def gravity(self):
+        self.accelerate(self.grav_accel)
+
+    def compute_drag(self):
+        if abs(np.sum(self.force)) > 0.01:
+            self.drag = 0.
+            return
+        sign = -1 * np.sign(self.velocity[0])
+        self.drag = sign * self.c_d * abs(self.velocity[0])
+        self.velocity[0] += self.drag
