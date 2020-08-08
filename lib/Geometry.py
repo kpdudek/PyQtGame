@@ -3,13 +3,16 @@
 import os, sys, time
 import datetime as dt
 from threading import Thread
-from matplotlib import pyplot as plt
-from matplotlib import patches
 from math import sin,cos,atan2
 import math
 import numpy as np
 
 from Utils import *
+try:
+    from matplotlib import pyplot as plt
+    from matplotlib import patches
+except:
+    log('Matplot lib import skipped...')
 
 def edge_angle(ang_type,*argv):
     '''

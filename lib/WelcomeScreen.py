@@ -60,11 +60,19 @@ class WelcomeScreen(QWidget,FilePaths):
         self.check_box_grid.addStretch()
         self.layout.addLayout(self.check_box_grid)
 
+
+        self.btn_padding = QHBoxLayout()
+        self.btn_padding.addStretch()
+
         self.start_button = QPushButton('Create')
         self.start_button.setStyleSheet("font: 16px")
-        # self.start_button.setFixedSize(200,50)
+        self.start_button.setFixedSize(200,30)
+        # self.start_button.setFixedWidth(200)
         self.start_button.clicked.connect(self.start_game)
-        self.layout.addWidget(self.start_button)
+        self.btn_padding.addWidget(self.start_button)
+
+        self.btn_padding.addStretch()
+        self.layout.addLayout(self.btn_padding)
 
         ######################################################
         # Game loading
@@ -88,17 +96,23 @@ class WelcomeScreen(QWidget,FilePaths):
 
         self.layout.addLayout(self.game_load_layout)
 
+        self.load_btn_padding = QHBoxLayout()
+        self.load_btn_padding.addStretch()
+
         self.load_button = QPushButton('Load')
         self.load_button.setStyleSheet("font: 16px")
         self.load_button.clicked.connect(self.load_game)
-        # self.load_button.setFixedSize(200,50)
-        self.layout.addWidget(self.load_button)
+        self.load_button.setFixedSize(200,30)
+        self.load_btn_padding.addWidget(self.load_button)
 
         self.delete_button = QPushButton('Delete')
         self.delete_button.setStyleSheet("font: 16px")
         self.delete_button.clicked.connect(self.delete_game_save)
-        # self.delete_button.setFixedSize(200,50)
-        self.layout.addWidget(self.delete_button)
+        self.delete_button.setFixedSize(200,30)
+        self.load_btn_padding.addWidget(self.delete_button)
+
+        self.load_btn_padding.addStretch()
+        self.layout.addLayout(self.load_btn_padding)
 
     def display_env_options(self,text):
 

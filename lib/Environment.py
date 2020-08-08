@@ -178,7 +178,7 @@ class Environment(QWidget,Colors,FilePaths):
         if self.generate_env:
             clouds = []
 
-            self.num_clouds = 10
+            self.num_clouds = 15
     
             self.cloud_x_range = [20,self.width-20]
             self.cloud_y_range = [0,math.ceil(self.height/2.)]
@@ -193,44 +193,25 @@ class Environment(QWidget,Colors,FilePaths):
             
             if self.generate_env:
                 new_cloud = {}
-                sub_clouds = []
-                cloud_size = [10,20]
 
                 x = random.randint(self.cloud_x_range[0],self.cloud_x_range[1])
                 y = random.randint(self.cloud_y_range[0],self.cloud_y_range[1])
                 new_cloud.update({'origin':[x,y]})
 
-                num_sub_clouds = random.randint(5,15)
-                new_cloud.update({'num_sub_clouds':num_sub_clouds})
+                cloud_list = os.listdir(f'{self.user_path}/graphics/clouds/')
+                cloud_png = cloud_list[random.randint(0,len(cloud_list)-1)]
+                new_cloud.update({'cloud_png':cloud_png})
+
+                clouds.append(new_cloud)
 
             else:
                 x,y = self.env_snapshot['clouds'][cloud_idx]['origin']
-                num_sub_clouds = self.env_snapshot['clouds'][cloud_idx]['num_sub_clouds']
+                cloud_png = self.env_snapshot['clouds'][cloud_idx]['cloud_png']
 
-            for sub_cloud_idx in range(0,num_sub_clouds):
-                
-                if self.generate_env:
-                    sub_cloud = {}
 
-                    rad_x = random.randint(cloud_size[0],cloud_size[1])
-                    rad_y = random.randint(cloud_size[0],cloud_size[1])
-                    sub_cloud.update({'radii':[rad_x,rad_y]})
-
-                    offset = 20
-                    x_offset = random.randint(-offset,offset)
-                    y_offset = random.randint(-offset,offset)
-                    sub_cloud.update({'offsets':[x_offset,y_offset]})
-
-                    sub_clouds.append(sub_cloud)
-                else:
-                    rad_x,rad_y = self.env_snapshot['clouds'][cloud_idx]['sub_clouds'][sub_cloud_idx]['radii'] 
-                    x_offset,y_offset = self.env_snapshot['clouds'][cloud_idx]['sub_clouds'][sub_cloud_idx]['offsets']
-                
-                painter.drawEllipse(QPoint(x+x_offset,y+y_offset),rad_x,rad_y)
-            
-            if self.generate_env:      
-                new_cloud.update({'sub_clouds':sub_clouds})
-                clouds.append(new_cloud)
+            cloud = QPixmap(f'{self.user_path}/graphics/clouds/{cloud_png}')
+            cloud = cloud.scaled(550, 100, Qt.KeepAspectRatio)
+            painter.drawPixmap(QPoint(x,y),cloud)
 
         if self.generate_env:
             self.env_snapshot.update({'clouds':clouds})

@@ -28,7 +28,7 @@ class Divider(QWidget,Colors,FilePaths):
 
         # Divider
         self.divider = QLabel(f'{text}:')
-        self.divider.setStyleSheet(f"font:bold italic 24px; color: {self.background_color}; background-color: {self.divider_color}")
+        self.divider.setStyleSheet(f"font:bold italic 24px; color: {self.title_white}; background-color: {self.title_blue}")
         self.layout.addWidget(self.divider)
 
         if bottom_spacer:

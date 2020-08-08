@@ -25,6 +25,8 @@ class ElementColors():
     ###################################################
     # Welcome Screen Colors
     ###################################################
+    title_blue = '#000080'
+    title_white = '#FFFFFF'
     divider_color = '#ff9955'
     background_color = '#353535'
     warning_text = '#FB0101'

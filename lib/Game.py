@@ -53,8 +53,8 @@ class Game(QMainWindow,FilePaths):
         # setting title 
         self.setWindowTitle("Oregon Trail 2020")
 
-        welcome_width = 1200
-        welcome_height = 800
+        welcome_width = 650
+        welcome_height = 600
         self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
 
         # Set main widget as main windows central widget
@@ -236,6 +236,8 @@ class Game(QMainWindow,FilePaths):
     
     # Qt method
     def mousePressEvent(self,e):
+        if self.game_main_window:
+            return
         try:
             canvas_x = self.environment.geometry().x()+self.environment.main_frame.geometry().x()
             canvas_y = self.environment.geometry().y()+self.environment.main_frame.geometry().y()
@@ -249,6 +251,8 @@ class Game(QMainWindow,FilePaths):
             log('Could not convert mouse press into canvas coordinate...',color='y')
     
     def mouseMoveEvent(self,e):
+        if self.game_main_window:
+            return
         try:
             canvas_x = self.environment.geometry().x()+self.environment.main_frame.geometry().x()
             canvas_y = self.environment.geometry().y()+self.environment.main_frame.geometry().y()
@@ -262,6 +266,8 @@ class Game(QMainWindow,FilePaths):
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
     def mouseReleaseEvent(self,e):
+        if self.game_main_window:
+            return
         try:
             self.mouse_pos = np.zeros(2).reshape(2,1) - 1
             self.player.collision_pt = np.zeros(2).reshape(2,1) - 1
@@ -269,7 +275,7 @@ class Game(QMainWindow,FilePaths):
             self.mouse_prev = np.zeros(2).reshape(2,1) - 1
             self.player.log_collis = True
         except:
-            log('Could not follow mouse release operations. Has the game started?')
+            log('Could not complete mouse release operations...')
     
     # Qt method
     def keyPressEvent(self, event):
@@ -337,8 +343,6 @@ class Game(QMainWindow,FilePaths):
                 val = 'down'
             elif event.key() == Qt.Key_E:
                 pass
-            else:
-                log('Key release not recognized...')
 
             while val in self.key_pressed:
                 self.key_pressed.remove(val)
