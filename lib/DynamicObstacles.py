@@ -24,6 +24,24 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.sizes = []
 
         self.ball()
+        self.ball2()
+
+
+    def ball2(self):
+        pixmap = QPixmap(f'{self.user_path}graphics/ball.png')
+        self.pixmaps.append(pixmap)
+
+        size = [pixmap.size().width(),pixmap.size().height()]
+        pose = np.array([ [1000.] , [200.] ])
+        self.poses.append(pose)
+        self.sizes.append(size)
+
+        top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
+        bottom_right = np.array([[pose[0]+size[0]],[pose[1]+size[1]]],dtype=float)
+        self.vertices.append(Polygon(top_left,bottom_right,poly_type='rect').vertices)
+        
+        physics = Physics(10.,15.)
+        self.physics.append(physics)        
 
     def ball(self):
         pixmap = QPixmap(f'{self.user_path}graphics/ball.png')

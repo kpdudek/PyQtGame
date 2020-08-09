@@ -161,9 +161,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 break
-            # if polygon_is_collision(vertices_transformed,obstacle).any():
-            #     collision = True
-            #     break
+            if polygon_is_collision(vertices_transformed,obstacle).any():
+                collision = True
+                break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())
@@ -193,9 +193,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
                 break
-            # if polygon_is_collision(vertices_transformed,obstacle).any() == True:
-            #     collision = True
-            #     break
+            if polygon_is_collision(vertices_transformed,obstacle).any() == True:
+                collision = True
+                break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())

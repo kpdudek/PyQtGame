@@ -359,6 +359,8 @@ class Game(QMainWindow,FilePaths):
             log('Key release event failed...',color='y')
         
     def game_loop(self):
+        curr_time = time.time()
+
         if self.game_running:
             if self.new_env:
                 self.environment.new_environment()
@@ -383,24 +385,23 @@ class Game(QMainWindow,FilePaths):
             tic = time.time()
             self.update_dynamics()
             toc = time.time()
-            print('Update call took: %.3f'%(toc-tic))
+            # print('Update call took: %.3f'%(toc-tic))
 
             ### recreate environment and repaint widget
             tic = time.time()
             self.environment.redraw_scene()
             self.environment.repaint()
             toc = time.time()
-            print('Drawing call took: %.3f'%(toc-tic))
+            # print('Drawing call took: %.3f'%(toc-tic))
             
             # Update game loop tracking information
             self.loop_number += 1
             self.game_time += self.game_timer.interval() / 1000.0
             self.environment.game_time = self.game_time
 
-        curr_time = time.time()
-        self.fps_time = 1./((curr_time - self.fps_time))
-        self.fps_log.append(self.fps_time)
-        if len(self.fps_log) == 300:
+        # self.fps_time = 1./((curr_time - self.fps_time))
+        self.fps_log.append(1./((curr_time - self.fps_time)))
+        if len(self.fps_log) == 100:
             average_fps = np.mean(self.fps_log)
             log(f'Average fps: {average_fps}')
             self.fps_log = []
