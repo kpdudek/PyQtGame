@@ -289,8 +289,19 @@ class Polygon(object):
         elif poly_type == 'peak':
             assert(len(argv)==3)
             self.peak(argv[0],argv[1],argv[2])
-        else:
-            log('Polygon type not recognized!',color='r')
+        # else:
+        #     log('Polygon type not recognized!',color='r')
+
+    def unit_circle(self,num,rad):
+        self.vertices = np.zeros(num*2).reshape(2,num)
+        theta = 0.
+        d_theta = (2*np.pi)/float(num)
+        for idx in range(0,num):
+            x = rad*np.cos(theta)
+            y = rad*np.sin(theta)
+            self.vertices[0,idx] = x
+            self.vertices[1,idx] = y
+            theta += d_theta
 
     def rectangle(self,top_left,bottom_right):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
