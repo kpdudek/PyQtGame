@@ -120,7 +120,7 @@ class Game(QMainWindow,FilePaths):
         except:
             pass # No physics display exists
     
-    def update_player(self):
+    def update_dynamics(self):
         obstacles = [self.environment.ground_poly.vertices.copy()]
 
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
@@ -381,7 +381,7 @@ class Game(QMainWindow,FilePaths):
             
             ### Update player pose and redraw environment
             tic = time.time()
-            self.update_player()
+            self.update_dynamics()
             toc = time.time()
             print('Update call took: %.3f'%(toc-tic))
 

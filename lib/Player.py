@@ -14,6 +14,7 @@ from Geometry import *
 
 class Player(QWidget,Colors,FilePaths):
     key_force = 2.
+    sprint_multiplier = 2.5
     boost = 25.
     max_vel = 8.
     mass = 12.
@@ -71,7 +72,7 @@ class Player(QWidget,Colors,FilePaths):
                     self.geom = 'player_left.svg'
                 
                 if sprint:
-                    self.force[0] = self.force[0] * 1.5
+                    self.force[0] = self.force[0] * self.sprint_multiplier
 
                 # print(self.collision_str)
                 if self.collision_str[1] == 1:
