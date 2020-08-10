@@ -4,6 +4,7 @@ import os, sys, time
 import datetime as dt
 from threading import Thread
 from math import sin,cos,atan2
+from concurrent.futures import ThreadPoolExecutor
 import math
 import numpy as np
 
@@ -188,9 +189,8 @@ def polygon_is_collision(vertices,points):
     polygon, 'outside' or non-collision is inside the polygon. Output is
     a [1 X N] boolean array where true means the point is colliding. 
     '''
-    results = np.ones(len(points[0,:]),dtype=bool)#flagPoints=true(1,size(points,2))
-    # print(results)
-    for iVertices in range(0,len(vertices[0,:])): #=1:size(vertices,2)
+    results = np.ones(len(points[0,:]),dtype=bool)
+    for iVertices in range(0,len(vertices[0,:])): 
         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
         results = np.logical_and(results, np.logical_not(flagPointVertex))
     return results
@@ -205,11 +205,57 @@ def multithreaded_polygon_is_collision(vertices,points):
     polygon, 'outside' or non-collision is inside the polygon. Output is
     a [1 X N] boolean array where true means the point is colliding. 
     '''
-    results = np.ones(len(points[0,:]),dtype=bool)#flagPoints=true(1,size(points,2))
-    # print(results)
-    for iVertices in range(0,len(vertices[0,:])): #=1:size(vertices,2)
-        flagPointVertex = polygon_is_visible(vertices,iVertices,points)
-        results = np.logical_and(results, np.logical_not(flagPointVertex))
+    results = np.ones(len(points[0,:]),dtype=bool)
+
+    # for iVertices in range(0,len(vertices[0,:])):
+    #     flagPointVertex = polygon_is_visible(vertices,iVertices,points)
+    #     results = np.logical_and(results, np.logical_not(flagPointVertex))
+
+    num_threads = 4
+    executor = ThreadPoolExecutor(num_threads)
+    threads = []
+
+    num_vert = len(vertices[0,:])
+    delta_vert = math.floor(float(num_vert)/float(num_threads))
+    
+    # idx_start = 0
+    # idx_end = delta_vert
+    # for idx in range(0,num_threads):
+    #     if idx == num_threads-1:
+    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:],points=points)
+    #         threads.append(thread)
+    #     else:
+    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:idx_end],points=points)
+    #         threads.append(thread)
+    #         idx_start = idx_end
+    #         idx_end += delta_vert
+    for idx in range(0,num_threads):
+        thread = executor.submit(polygon_is_collision,vertices=vertices,points=points[:,idx].reshape(2,1))
+        threads.append(thread)
+
+    terminate = False
+    all_done = np.zeros(num_threads)
+    while not terminate:
+        for count,thread in enumerate(threads):
+            if thread.done():
+                if not (all_done[count] == 1):
+                    all_done[count] = 1
+        
+        if np.sum(all_done) == num_threads:
+            terminate = True
+    
+    idx_start = 0
+    idx_end = 0
+    for thread in threads:
+        result = thread.result()
+        print(result)
+        # print(result)
+        # idx_end += (len(result)-1)
+        # results[idx_start:idx_end] = result
+        # idx_start = idx_end
+        results = np.logical_and(results, result)
+
+    # np.concatenate(results)
     return results
 
 def polygon_is_filled(vertices):
