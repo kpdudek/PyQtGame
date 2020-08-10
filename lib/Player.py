@@ -158,10 +158,10 @@ class Player(QWidget,Colors,FilePaths):
         vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
-            if multithreaded_polygon_is_collision(obstacle,vertices_transformed).any():
+            if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 break
-            if multithreaded_polygon_is_collision(vertices_transformed,obstacle).any():
+            if polygon_is_collision(vertices_transformed,obstacle).any():
                 collision = True
                 break
         # Only write that position change if it is collision free
@@ -190,10 +190,10 @@ class Player(QWidget,Colors,FilePaths):
         vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
-            if multithreaded_polygon_is_collision(obstacle,vertices_transformed).any() == True:
+            if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
                 break
-            if multithreaded_polygon_is_collision(vertices_transformed,obstacle).any() == True:
+            if polygon_is_collision(vertices_transformed,obstacle).any() == True:
                 collision = True
                 break
         # Only write that position change if it is collision free

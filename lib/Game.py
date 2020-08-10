@@ -401,7 +401,7 @@ class Game(QMainWindow,FilePaths):
 
         # self.fps_time = 1./((curr_time - self.fps_time))
         self.fps_log.append(1./((curr_time - self.fps_time)))
-        if len(self.fps_log) == 100:
+        if len(self.fps_log) == 50:
             average_fps = np.mean(self.fps_log)
             log(f'Average fps: {average_fps}')
             self.fps_log = []

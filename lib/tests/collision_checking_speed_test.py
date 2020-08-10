@@ -85,15 +85,16 @@ class CollisionThreadTest(QMainWindow):
         log(f'FPS simulated for {num_players} Players and {num_obstacles} Obstacles')
 
 
-        print('\n\n')
+        print('\n')
         log('Without Multithreading...')
         '''
-        Three sided polygon collision check
+        n sided polygon collision check
         '''
-        poly_type = 'Triangle'
+        n = 4
+        poly_type = f'{n} sided'
 
         poly = Polygon()
-        poly.unit_circle(4,50)
+        poly.unit_circle(n,50)
 
         obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
         tic = time.time()
@@ -105,56 +106,16 @@ class CollisionThreadTest(QMainWindow):
         log(f'FPS: {(1./(toc-tic))*fps_multiplier}')
         self.plot_canvas.plot(obstacle,vertices_transformed)
 
-        # '''
-        # Four sided polygon collision check
-        # '''
-        # poly_type = 'Square'
-
-        # poly = Polygon()
-        # poly.unit_circle(4,50)
-        
-        # obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
-        # tic = time.time()
-        # res_1 = polygon_is_collision(obstacle,vertices_transformed)
-        # res_2 = polygon_is_collision(vertices_transformed,obstacle)
-        # toc = time.time()
-        # print('\n')
-        # log(f'{poly_type} collision checking took (s): {toc-tic}')
-        # log(f'{poly_type} results: {res_1.any()} {res_2.any()}')
-        # log(f'FPS: {(1./(toc-tic))*fps_multiplier}')
-        # self.plot_canvas.plot(obstacle,vertices_transformed)
-
-        # '''
-        # Six sided polygon collision check
-        # '''
-        # poly_type = 'Pentagon'
-
-        # poly = Polygon()
-        # poly.unit_circle(6,50)
-        
-        # obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
-        # tic = time.time()
-        # res_1 = polygon_is_collision(obstacle,vertices_transformed)
-        # res_2 = polygon_is_collision(vertices_transformed,obstacle)
-        # toc = time.time()
-        # print('\n')
-        # log(f'{poly_type} collision checking took (s): {toc-tic}')
-        # log(f'{poly_type} results: {res_1.any()} {res_2.any()}')
-        # log(f'FPS: {(1./(toc-tic))*fps_multiplier}')
-        # self.plot_canvas.plot(obstacle,vertices_transformed)
-
-
-
-
-        print('\n\n')
+        print('\n')
         log('With Multithreading...')
         '''
-        Three sided polygon collision check
+        n sided polygon collision check
         '''
-        poly_type = 'Triangle'
+        n = 4
+        poly_type = f'{n} sided'
 
         poly = Polygon()
-        poly.unit_circle(4,50)
+        poly.unit_circle(n,50)
 
         obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
         tic = time.time()

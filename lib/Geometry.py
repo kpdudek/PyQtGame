@@ -205,7 +205,7 @@ def multithreaded_polygon_is_collision(vertices,points):
     polygon, 'outside' or non-collision is inside the polygon. Output is
     a [1 X N] boolean array where true means the point is colliding. 
     '''
-    results = np.ones(len(points[0,:]),dtype=bool)
+    # results = np.ones(len(points[0,:]),dtype=bool)
 
     # for iVertices in range(0,len(vertices[0,:])):
     #     flagPointVertex = polygon_is_visible(vertices,iVertices,points)
@@ -246,14 +246,15 @@ def multithreaded_polygon_is_collision(vertices,points):
     
     idx_start = 0
     idx_end = 0
+    results = np.zeros(num_threads,dtype=bool)
     for thread in threads:
         result = thread.result()
-        print(result)
+        # print(result)
         # print(result)
         # idx_end += (len(result)-1)
         # results[idx_start:idx_end] = result
         # idx_start = idx_end
-        results = np.logical_and(results, result)
+        results = np.logical_or(results, result)
 
     # np.concatenate(results)
     return results
