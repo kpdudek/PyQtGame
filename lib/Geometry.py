@@ -4,6 +4,7 @@ import os, sys, time
 import datetime as dt
 from threading import Thread
 from math import sin,cos,atan2
+from concurrent.futures import ThreadPoolExecutor
 import math
 import numpy as np
 
@@ -188,11 +189,74 @@ def polygon_is_collision(vertices,points):
     polygon, 'outside' or non-collision is inside the polygon. Output is
     a [1 X N] boolean array where true means the point is colliding. 
     '''
-    results = np.ones(len(points[0,:]),dtype=bool)#flagPoints=true(1,size(points,2))
-    # print(results)
-    for iVertices in range(0,len(vertices[0,:])): #=1:size(vertices,2)
+    results = np.ones(len(points[0,:]),dtype=bool)
+    for iVertices in range(0,len(vertices[0,:])): 
         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
         results = np.logical_and(results, np.logical_not(flagPointVertex))
+    return results
+
+def multithreaded_polygon_is_collision(vertices,points):
+    '''
+    Determines if a set of points lies inside or outside of a given polygon
+    Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
+    a [2 x N] set of test points of the same form. Uses lower level
+    function polygon_isVisible to determine if test point is visible to any
+    vertex of the polygon, and thus inside or outside. Note: for a hollow
+    polygon, 'outside' or non-collision is inside the polygon. Output is
+    a [1 X N] boolean array where true means the point is colliding. 
+    '''
+    # results = np.ones(len(points[0,:]),dtype=bool)
+
+    # for iVertices in range(0,len(vertices[0,:])):
+    #     flagPointVertex = polygon_is_visible(vertices,iVertices,points)
+    #     results = np.logical_and(results, np.logical_not(flagPointVertex))
+
+    num_threads = 4
+    executor = ThreadPoolExecutor(num_threads)
+    threads = []
+
+    num_vert = len(vertices[0,:])
+    delta_vert = math.floor(float(num_vert)/float(num_threads))
+    
+    # idx_start = 0
+    # idx_end = delta_vert
+    # for idx in range(0,num_threads):
+    #     if idx == num_threads-1:
+    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:],points=points)
+    #         threads.append(thread)
+    #     else:
+    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:idx_end],points=points)
+    #         threads.append(thread)
+    #         idx_start = idx_end
+    #         idx_end += delta_vert
+    for idx in range(0,num_threads):
+        thread = executor.submit(polygon_is_collision,vertices=vertices,points=points[:,idx].reshape(2,1))
+        threads.append(thread)
+
+    terminate = False
+    all_done = np.zeros(num_threads)
+    while not terminate:
+        for count,thread in enumerate(threads):
+            if thread.done():
+                if not (all_done[count] == 1):
+                    all_done[count] = 1
+        
+        if np.sum(all_done) == num_threads:
+            terminate = True
+    
+    idx_start = 0
+    idx_end = 0
+    results = np.zeros(num_threads,dtype=bool)
+    for thread in threads:
+        result = thread.result()
+        # print(result)
+        # print(result)
+        # idx_end += (len(result)-1)
+        # results[idx_start:idx_end] = result
+        # idx_start = idx_end
+        results = np.logical_or(results, result)
+
+    # np.concatenate(results)
     return results
 
 def polygon_is_filled(vertices):
@@ -289,8 +353,19 @@ class Polygon(object):
         elif poly_type == 'peak':
             assert(len(argv)==3)
             self.peak(argv[0],argv[1],argv[2])
-        else:
-            log('Polygon type not recognized!',color='r')
+        # else:
+        #     log('Polygon type not recognized!',color='r')
+
+    def unit_circle(self,num,rad):
+        self.vertices = np.zeros(num*2).reshape(2,num)
+        theta = 0.
+        d_theta = (2*np.pi)/float(num)
+        for idx in range(0,num):
+            x = rad*np.cos(theta)
+            y = rad*np.sin(theta)
+            self.vertices[0,idx] = x
+            self.vertices[1,idx] = y
+            theta += d_theta
 
     def rectangle(self,top_left,bottom_right):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)

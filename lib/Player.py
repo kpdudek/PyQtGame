@@ -53,10 +53,10 @@ class Player(QWidget,Colors,FilePaths):
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
-        log('Player graphic: {}, size: {}'.format(img,self.size))
+        # log('Player graphic: {}, size: {}'.format(img,self.size))
 
-        top_left = np.array([[self.pose[0]],[self.pose[1]]],dtype=float)
-        bottom_right = np.array([[self.pose[0]+self.size[0]],[self.pose[1]+self.size[1]]],dtype=float)
+        top_left = np.array([self.pose[0],self.pose[1]],dtype=float)
+        bottom_right = np.array([self.pose[0]+self.size[0],self.pose[1]+self.size[1]],dtype=float)
         self.vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
 
     def update_position(self,key_press,sprint,mouse_pos,width,height,obstacles):
@@ -161,9 +161,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any():
                 collision = True
                 break
-            # if polygon_is_collision(vertices_transformed,obstacle).any():
-            #     collision = True
-            #     break
+            if polygon_is_collision(vertices_transformed,obstacle).any():
+                collision = True
+                break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())
@@ -193,9 +193,9 @@ class Player(QWidget,Colors,FilePaths):
             if polygon_is_collision(obstacle,vertices_transformed).any() == True:
                 collision = True
                 break
-            # if polygon_is_collision(vertices_transformed,obstacle).any() == True:
-            #     collision = True
-            #     break
+            if polygon_is_collision(vertices_transformed,obstacle).any() == True:
+                collision = True
+                break
         # Only write that position change if it is collision free
         if not collision:
             self.execute_move(pose,vertices.copy())

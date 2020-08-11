@@ -5,8 +5,9 @@ import time, random
 import numpy as np
 
 def task(min_sleep,max_sleep):
-    time.sleep(random.randint(min_sleep,max_sleep)+random.random())
-    return None
+    t = random.randint(min_sleep,max_sleep)+random.random()
+    time.sleep(t)
+    return t
 
 def main():
     num_threads = 4
@@ -25,7 +26,7 @@ def main():
                 if not (all_done[count] == 1):
                     toc = time.time()
                     all_done[count] = 1
-                    print(f'Thread {count} finished in {toc-tic} seconds!')
+                    print(f'Thread {count} finished in {toc-tic} seconds with result {thread.result()}!')
         
         if np.sum(all_done) == num_threads:
             terminate = True
