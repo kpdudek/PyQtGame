@@ -29,9 +29,6 @@ def main():
         
         if np.sum(all_done) == num_threads:
             terminate = True
-    # for thread in threads:
-    #     thread.join()
-    #     thread.is_alive()
 
 if __name__ == '__main__':
     try:

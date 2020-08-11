@@ -4,7 +4,9 @@ import os, sys, time
 import datetime as dt
 from threading import Thread
 from math import sin,cos,atan2
-from concurrent.futures import ThreadPoolExecutor
+# from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Process
+from multiprocessing import Pool
 import math
 import numpy as np
 
@@ -205,18 +207,12 @@ def multithreaded_polygon_is_collision(vertices,points):
     polygon, 'outside' or non-collision is inside the polygon. Output is
     a [1 X N] boolean array where true means the point is colliding. 
     '''
-    # results = np.ones(len(points[0,:]),dtype=bool)
-
-    # for iVertices in range(0,len(vertices[0,:])):
-    #     flagPointVertex = polygon_is_visible(vertices,iVertices,points)
-    #     results = np.logical_and(results, np.logical_not(flagPointVertex))
-
     num_threads = 4
-    executor = ThreadPoolExecutor(num_threads)
+    # executor = ThreadPoolExecutor(num_threads)
     threads = []
 
-    num_vert = len(vertices[0,:])
-    delta_vert = math.floor(float(num_vert)/float(num_threads))
+    # num_vert = len(vertices[0,:])
+    # delta_vert = math.floor(float(num_vert)/float(num_threads))
     
     # idx_start = 0
     # idx_end = delta_vert
@@ -229,26 +225,27 @@ def multithreaded_polygon_is_collision(vertices,points):
     #         threads.append(thread)
     #         idx_start = idx_end
     #         idx_end += delta_vert
+    
     for idx in range(0,num_threads):
-        thread = executor.submit(polygon_is_collision,vertices=vertices,points=points[:,idx].reshape(2,1))
+        thread = Process(target=polygon_is_collision,args=(vertices,points[:,idx].reshape(2,1),))
         threads.append(thread)
 
     terminate = False
     all_done = np.zeros(num_threads)
     while not terminate:
         for count,thread in enumerate(threads):
-            if thread.done():
+            if not thread.is_alive():
                 if not (all_done[count] == 1):
                     all_done[count] = 1
         
         if np.sum(all_done) == num_threads:
             terminate = True
     
-    idx_start = 0
-    idx_end = 0
+    # idx_start = 0
+    # idx_end = 0
     results = np.zeros(num_threads,dtype=bool)
     for thread in threads:
-        result = thread.result()
+        result = thread
         # print(result)
         # print(result)
         # idx_end += (len(result)-1)
