@@ -90,7 +90,7 @@ class CollisionThreadTest(QMainWindow):
         '''
         n sided polygon collision check
         '''
-        n = 4
+        n = 6
         poly_type = f'{n} sided'
 
         poly = Polygon()
@@ -111,7 +111,7 @@ class CollisionThreadTest(QMainWindow):
         '''
         n sided polygon collision check
         '''
-        n = 4
+        n = 6
         poly_type = f'{n} sided'
 
         poly = Polygon()

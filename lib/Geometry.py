@@ -226,32 +226,35 @@ def multithreaded_polygon_is_collision(vertices,points):
     #         idx_start = idx_end
     #         idx_end += delta_vert
     
-    for idx in range(0,num_threads):
-        thread = Process(target=polygon_is_collision,args=(vertices,points[:,idx].reshape(2,1),))
-        threads.append(thread)
+    # for idx in range(0,num_threads):
+    #     thread = Process(target=polygon_is_collision,args=(vertices,points[:,idx].reshape(2,1),))
+    #     threads.append(thread)
 
-    terminate = False
-    all_done = np.zeros(num_threads)
-    while not terminate:
-        for count,thread in enumerate(threads):
-            if not thread.is_alive():
-                if not (all_done[count] == 1):
-                    all_done[count] = 1
+    # terminate = False
+    # all_done = np.zeros(num_threads)
+    # while not terminate:
+    #     for count,thread in enumerate(threads):
+    #         if not thread.is_alive():
+    #             if not (all_done[count] == 1):
+    #                 all_done[count] = 1
         
-        if np.sum(all_done) == num_threads:
-            terminate = True
+    #     if np.sum(all_done) == num_threads:
+    #         terminate = True
+
+    pool = Pool(num_threads)
+    # vertices,points[:,idx].reshape(2,1)
+    reslts = pool.starmap(polygon_is_collision,[(vertices,points[:,0].reshape(2,1)),(vertices,points[:,1].reshape(2,1)),(vertices,points[:,2].reshape(2,1)),(vertices,points[:,3].reshape(2,1))])
     
     # idx_start = 0
     # idx_end = 0
-    results = np.zeros(num_threads,dtype=bool)
-    for thread in threads:
-        result = thread
+    results = np.zeros(1,dtype=bool)
+    for res in reslts:
         # print(result)
         # print(result)
         # idx_end += (len(result)-1)
         # results[idx_start:idx_end] = result
         # idx_start = idx_end
-        results = np.logical_or(results, result)
+        results = np.logical_or(results, res)
 
     # np.concatenate(results)
     return results
