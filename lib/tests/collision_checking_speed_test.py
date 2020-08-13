@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib import patches
+from multiprocessing import Pool
 
 path = os.getcwd()
 sys.path.insert(1,os.path.dirname(path))
@@ -118,10 +119,13 @@ class CollisionThreadTest(QMainWindow):
         poly.unit_circle(n,50)
 
         obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
+        pool = Pool(5)
+
         tic = time.time()
-        res_1 = multithreaded_polygon_is_collision(obstacle,vertices_transformed)
-        res_2 = multithreaded_polygon_is_collision(vertices_transformed,obstacle)
+        res_1 = multithreaded_polygon_is_collision(pool,obstacle,vertices_transformed)
+        res_2 = multithreaded_polygon_is_collision(pool,vertices_transformed,obstacle)
         toc = time.time()
+
         log(f'{poly_type} collision checking took (s): {toc-tic}')
         log(f'{poly_type} results: {res_1.any()} {res_2.any()}')
         log(f'FPS: {(1./(toc-tic))*fps_multiplier}')
