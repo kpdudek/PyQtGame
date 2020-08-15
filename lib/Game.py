@@ -121,7 +121,7 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_dynamics(self):
-        obstacles = [self.environment.ground_poly.vertices.copy(),self.dynamic_obstacles.vertices[0].copy()]
+        obstacles = [self.environment.ground_poly.vertices.copy()]#,self.dynamic_obstacles.vertices[0].copy()]
 
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
 
@@ -409,4 +409,6 @@ class Game(QMainWindow,FilePaths):
         # Set time information for next loop
         self.fps_time = curr_time
 
+        toc = time.time()
+        print(f"Game Loop: {toc-curr_time}")
         # self.prompt_manager.check_prompts()
