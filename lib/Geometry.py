@@ -197,7 +197,7 @@ def polygon_is_collision(vertices,points):
         results = np.logical_and(results, np.logical_not(flagPointVertex))
     return results
 
-def multithreaded_polygon_is_collision(vertices,points):
+def multithreaded_polygon_is_collision(pool,vertices,points):
     '''
     Determines if a set of points lies inside or outside of a given polygon
     Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
@@ -208,55 +208,17 @@ def multithreaded_polygon_is_collision(vertices,points):
     a [1 X N] boolean array where true means the point is colliding. 
     '''
     num_threads = 4
-    # executor = ThreadPoolExecutor(num_threads)
-    threads = []
-
-    # num_vert = len(vertices[0,:])
-    # delta_vert = math.floor(float(num_vert)/float(num_threads))
-    
-    # idx_start = 0
-    # idx_end = delta_vert
-    # for idx in range(0,num_threads):
-    #     if idx == num_threads-1:
-    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:],points=points)
-    #         threads.append(thread)
-    #     else:
-    #         thread = executor.submit(polygon_is_collision,vertices=vertices[:,idx_start:idx_end],points=points)
-    #         threads.append(thread)
-    #         idx_start = idx_end
-    #         idx_end += delta_vert
-    
-    # for idx in range(0,num_threads):
-    #     thread = Process(target=polygon_is_collision,args=(vertices,points[:,idx].reshape(2,1),))
-    #     threads.append(thread)
-
-    # terminate = False
-    # all_done = np.zeros(num_threads)
-    # while not terminate:
-    #     for count,thread in enumerate(threads):
-    #         if not thread.is_alive():
-    #             if not (all_done[count] == 1):
-    #                 all_done[count] = 1
-        
-    #     if np.sum(all_done) == num_threads:
-    #         terminate = True
 
     pool = Pool(num_threads)
-    # vertices,points[:,idx].reshape(2,1)
-    reslts = pool.starmap(polygon_is_collision,[(vertices,points[:,0].reshape(2,1)),(vertices,points[:,1].reshape(2,1)),(vertices,points[:,2].reshape(2,1)),(vertices,points[:,3].reshape(2,1))])
+    point_args = []
+    for idx in range(0,len(points[0,:])):
+        point_args.append((vertices,points[:,idx].reshape(2,1)))
+    reslts = pool.starmap(polygon_is_collision,point_args)
     
-    # idx_start = 0
-    # idx_end = 0
     results = np.zeros(1,dtype=bool)
     for res in reslts:
-        # print(result)
-        # print(result)
-        # idx_end += (len(result)-1)
-        # results[idx_start:idx_end] = result
-        # idx_start = idx_end
         results = np.logical_or(results, res)
 
-    # np.concatenate(results)
     return results
 
 def polygon_is_filled(vertices):

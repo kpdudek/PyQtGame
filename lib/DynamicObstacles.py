@@ -23,8 +23,8 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.poses = []
         self.sizes = []
 
-        self.ball()
-        self.ball2()
+        # self.ball()
+        # self.ball2()
 
 
     def ball2(self):

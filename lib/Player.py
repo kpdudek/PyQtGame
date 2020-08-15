@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 import random, sys, os, math
 import numpy as np
+from multiprocessing import Pool
 
 from Utils import *
 from PaintUtils import *
@@ -53,7 +54,6 @@ class Player(QWidget,Colors,FilePaths):
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
-        # log('Player graphic: {}, size: {}'.format(img,self.size))
 
         top_left = np.array([self.pose[0],self.pose[1]],dtype=float)
         bottom_right = np.array([self.pose[0]+self.size[0],self.pose[1]+self.size[1]],dtype=float)
@@ -74,7 +74,6 @@ class Player(QWidget,Colors,FilePaths):
                 if sprint:
                     self.force[0] = self.force[0] * self.sprint_multiplier
 
-                # print(self.collision_str)
                 if self.collision_str[1] == 1:
                     if key == 'up':
                         self.force[1] = -self.boost*self.key_force

@@ -23,6 +23,8 @@ class Environment(QWidget,Colors,FilePaths):
     env_idx = 0
     env_create_count = 0
 
+    ground_chunk = None
+
     def __init__(self,width,height,player,dyn_obs,save_file, params, load = True):
         super().__init__()
         self.load = load
@@ -315,15 +317,23 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.env_type == 'rect':
             self.ground_poly = Polygon(top_left,bottom_right,poly_type=self.env_type)
+
+            if not self.ground_chunk:
+                self.ground_chunk = QPixmap(f'{self.user_path}/graphics/ground.png')
+                self.ground_chunk = self.ground_chunk.scaled(50, 50, Qt.KeepAspectRatio)
+        
+            pose = np.arange(0,self.width,self.ground_chunk.size().width())
+            for p in pose:
+                painter.drawPixmap(QPoint(p,self.height-self.ground_chunk.size().height()),self.ground_chunk)
+
         elif self.env_type == 'peak':
             self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=self.env_type)
         
-        # Generate ground
-        p = QPolygonF()
-        for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
-            p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
-
-        painter.drawPolygon(p)
+            p = QPolygonF()
+            for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
+                p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
+            painter.drawPolygon(p)
+        
         painter.end()
 
         if self.generate_env:
