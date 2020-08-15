@@ -9,7 +9,7 @@ from multiprocessing import Process
 from multiprocessing import Pool
 import math
 import numpy as np
-from numba import jit
+# from numba import jit
 
 from Utils import *
 try:
