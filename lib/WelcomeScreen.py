@@ -30,6 +30,7 @@ class WelcomeScreen(QWidget,FilePaths):
 
         self.main_title = QtSvg.QSvgWidget(f'{self.user_path}graphics/title_banner.svg')
         self.main_title.setMinimumHeight(250)
+        self.main_title.setMaximumHeight(500)
         self.layout.addWidget(self.main_title,2)
 
         ######################################################

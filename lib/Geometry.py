@@ -9,6 +9,7 @@ from multiprocessing import Process
 from multiprocessing import Pool
 import math
 import numpy as np
+from numba import jit
 
 from Utils import *
 try:
@@ -51,26 +52,39 @@ def edge_angle(ang_type,*argv):
     edge_angle = atan2(sin_theta,cosine_theta)
     return edge_angle
 
-# calculates the cross product of vector p1 and p2
-# if p1 is clockwise from p2 wrt origin then it returns +ve value
-# if p2 is anti-clockwise from p2 wrt origin then it returns -ve value
-# if p1 p2 and origin are collinear then it returs 0
 def cross_product(p1, p2):
-	return p1[0] * p2[1] - p2[0] * p1[1]
+    '''
+    calculates the cross product of vector p1 and p2
+    if p1 is clockwise from p2 wrt origin then it returns +ve value
+    if p2 is anti-clockwise from p2 wrt origin then it returns -ve value
+    if p1 p2 and origin are collinear then it returs 0
+    source: https://algorithmtutor.com/Computational-Geometry/Determining-if-two-consecutive-segments-turn-left-or-right/
+    '''
+    return p1[0] * p2[1] - p2[0] * p1[1]
 
-# returns the cross product of vector p1p3 and p1p2
-# if p1p3 is clockwise from p1p2 it returns +ve value
-# if p1p3 is anti-clockwise from p1p2 it returns -ve value
-# if p1 p2 and p3 are collinear it returns 0
+
 def direction(p1, p2, p3):
+    '''
+    returns the cross product of vector p1p3 and p1p2
+    if p1p3 is clockwise from p1p2 it returns +ve value
+    if p1p3 is anti-clockwise from p1p2 it returns -ve value
+    if p1 p2 and p3 are collinear it returns 0
+    source: https://algorithmtutor.com/Computational-Geometry/Determining-if-two-consecutive-segments-turn-left-or-right/
+    '''
     return  cross_product(p3-p1, p2-p1)
 
-# checks if p lies on the segment p1p2
 def on_segment(p1, p2, p):
+    '''
+    checks if p lies on the segment p1p2
+    source: https://algorithmtutor.com/Computational-Geometry/Determining-if-two-consecutive-segments-turn-left-or-right/
+    '''
     return min(p1[0], p2[0]) <= p[0] <= max(p1[0], p2[0]) and min(p1[1], p2[1]) <= p[1] <= max(p1[1], p2[1])
 
-# checks if line segment p1p2 and p3p4 intersect
 def edge_is_collision(edge1,edge2,endpoint_collision=False):
+    '''
+    checks if line segment p1p2 and p3p4 intersect
+    source: https://algorithmtutor.com/Computational-Geometry/Check-if-two-line-segment-intersect/
+    '''
     p1 = edge1[:,0]
     p2 = edge1[:,1]
     p3 = edge2[:,0]
@@ -98,6 +112,7 @@ def edge_is_collision(edge1,edge2,endpoint_collision=False):
     else:
         return False
 
+
 def polygon_is_self_occluded(vertex,vertexPrev,vertexNext,point):
     '''
     Determines if a set of test points are Self Occluded, or non-intersecting but within a polygon 
@@ -115,10 +130,10 @@ def polygon_is_self_occluded(vertex,vertexPrev,vertexNext,point):
         anglePrev = atan2(vertexPrev[1]-vertex[1],vertexPrev[0]-vertex[0])
         anglePoint = atan2(point[1,iPoints]-vertex[1],point[0,iPoints]-vertex[0])
         
-        #maintaining the vertices gives a consistent relationship of what
-        #angles constitue self-occlusion for both counterclockwise and
-        #clockwise objects, but is dependent on whether the previous angle
-        #was greater or less than the next angle.
+        # maintaining the vertices gives a consistent relationship of what
+        # angles constitue self-occlusion for both counterclockwise and
+        # clockwise objects, but is dependent on whether the previous angle
+        # was greater or less than the next angle.
         if anglePrev > angleNext:
             if anglePoint < anglePrev and anglePoint > angleNext:
                 results[iPoints]=True
@@ -131,23 +146,25 @@ def polygon_is_self_occluded(vertex,vertexPrev,vertexNext,point):
                 results[iPoints]=False
     return results
 
+
 def polygon_is_visible(vertices,indexVertex,points):
-    # Determines if a set of test points are visible by a paticular vertex of a polygon
-    # Inputs are a [2 x N] set of vertices that define a polygon of the form
-    # [x1..xn; y1..yn], an integer index to indicate which vertex to test,
-    # and a [2 x N] set of coordinates that are test points of the form [x; y].
-    # The function combines the output of two helper functions, to determine 
-    # if the test point is invisible to the vertex by either self-occlusion
-    # or collision with an edge of the polygon. Output is a [1 x N] boolean 
-    # array where true means the test point is visible.
-    
+    '''
+    Determines if a set of test points are visible by a paticular vertex of a polygon
+    Inputs are a [2 x N] set of vertices that define a polygon of the form
+    [x1..xn; y1..yn], an integer index to indicate which vertex to test,
+    and a [2 x N] set of coordinates that are test points of the form [x; y].
+    The function combines the output of two helper functions, to determine 
+    if the test point is invisible to the vertex by either self-occlusion
+    or collision with an edge of the polygon. Output is a [1 x N] boolean 
+    array where true means the test point is visible.
+    '''
     # Error handling for indexVertex
     if indexVertex > len(vertices[0,:])-1 or indexVertex < 0:
         log('IndexVertex must be a valid column index of "vertices" between 1 and size(vertices,2)')
         return
     
-    #Converting inputs to inputs for polygon_isSelfOccluded() and handling
-    #the roll-over cases for the indexVertex input
+    # Converting inputs to inputs for polygon_isSelfOccluded() and handling
+    # the roll-over cases for the indexVertex input
     vertex = vertices[:,indexVertex].reshape((2,1))
     if indexVertex == 0:
         vertexPrev = vertices[:,-1]
@@ -181,6 +198,7 @@ def polygon_is_visible(vertices,indexVertex,points):
     # helper functions return 'is invisible'; invert results for 'visible'
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
+
 def polygon_is_collision(vertices,points):
     '''
     Determines if a set of points lies inside or outside of a given polygon
@@ -192,10 +210,12 @@ def polygon_is_collision(vertices,points):
     a [1 X N] boolean array where true means the point is colliding. 
     '''
     results = np.ones(len(points[0,:]),dtype=bool)
+
     for iVertices in range(0,len(vertices[0,:])): 
         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
         results = np.logical_and(results, np.logical_not(flagPointVertex))
     return results
+
 
 def multithreaded_polygon_is_collision(pool,vertices,points):
     '''
@@ -209,7 +229,6 @@ def multithreaded_polygon_is_collision(pool,vertices,points):
     '''
     num_threads = 4
 
-    pool = Pool(num_threads)
     point_args = []
     for idx in range(0,len(points[0,:])):
         point_args.append((vertices,points[:,idx].reshape(2,1)))
@@ -220,6 +239,7 @@ def multithreaded_polygon_is_collision(pool,vertices,points):
         results = np.logical_or(results, res)
 
     return results
+
 
 def polygon_is_filled(vertices):
     '''
@@ -259,6 +279,7 @@ def polygon_is_filled(vertices):
     else:
         return None
 
+
 def reshape_for_patch(vertices):
     '''
     This shape takes vertices of a polygon with shape [2,N]
@@ -272,8 +293,13 @@ def reshape_for_patch(vertices):
             out[i,j] = vertices[j,i]
     return out
 
+# 
 def transform(frame,*argv,translate=None):
-    
+    '''
+    Convert from image frame with origin in top left with positive y down, to
+    conventional cartesian with origin in bottom left and positive y up.
+    Both frames have positive x right.
+    '''
     if frame == 'img':
         assert(translate!=None)
         transform_entities = []
@@ -284,7 +310,6 @@ def transform(frame,*argv,translate=None):
 
         if len(transform_entities) == 1:
             transform_entities = transform_entities[0]
-        # print(f'Transformed Vertices:\n{transform_entities}')
         return transform_entities
     else:
         return argv
@@ -315,8 +340,6 @@ class Polygon(object):
         elif poly_type == 'peak':
             assert(len(argv)==3)
             self.peak(argv[0],argv[1],argv[2])
-        # else:
-        #     log('Polygon type not recognized!',color='r')
 
     def unit_circle(self,num,rad):
         self.vertices = np.zeros(num*2).reshape(2,num)

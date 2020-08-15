@@ -69,6 +69,11 @@ class CollisionThreadTest(QMainWindow):
 
         self.show()
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close_window()
+        return
+
     def close_window(self):
         self.close()
 
@@ -86,8 +91,8 @@ class CollisionThreadTest(QMainWindow):
         log(f'FPS simulated for {num_players} Players and {num_obstacles} Obstacles')
 
 
-        print('\n')
-        log('Without Multithreading...')
+        print()
+        log('Without MultiProcessing...')
         '''
         n sided polygon collision check
         '''
@@ -98,17 +103,19 @@ class CollisionThreadTest(QMainWindow):
         poly.unit_circle(n,50)
 
         obstacle = np.fliplr(transform('img',poly.vertices.copy(),translate=0.))
+
         tic = time.time()
         res_1 = polygon_is_collision(obstacle,vertices_transformed)
         res_2 = polygon_is_collision(vertices_transformed,obstacle)
         toc = time.time()
+
         log(f'{poly_type} collision checking took (s): {toc-tic}')
         log(f'{poly_type} results: {res_1.any()} {res_2.any()}')
         log(f'FPS: {(1./(toc-tic))*fps_multiplier}')
         self.plot_canvas.plot(obstacle,vertices_transformed)
 
-        print('\n')
-        log('With Multithreading...')
+        print()
+        log('With MultiProcessing...')
         '''
         n sided polygon collision check
         '''
