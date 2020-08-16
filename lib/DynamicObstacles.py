@@ -89,9 +89,9 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
-            if polygon_is_collision(obstacle,vertices_transformed).any():
-                collision = True
-                break
+            # if polygon_is_collision(obstacle,vertices_transformed).any():
+            #     collision = True
+            #     break
             if polygon_is_collision(vertices_transformed,obstacle).any():
                 collision = True
                 break
@@ -120,11 +120,13 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         vertices_transformed = transform('img',vertices.copy(),translate=height)
         for obstacle in obstacles.copy():
             obs_count += 1
-            if polygon_is_collision(obstacle,vertices_transformed).any() == True:
-                collision = True
-                break
+            # if polygon_is_collision(obstacle,vertices_transformed).any() == True:
+            #     collision = True
+            #     break
+            # print(f"Vertices:\n{vertices_transformed}\nObstacle{obs_count}:\n{obstacle}")
             if polygon_is_collision(vertices_transformed,obstacle).any() == True:
                 collision = True
+                # print('Collision!')
                 break
         # Only write that position change if it is collision free
         if not collision:

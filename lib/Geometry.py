@@ -9,6 +9,7 @@ from multiprocessing import Process
 from multiprocessing import Pool
 import math
 import numpy as np
+import copy
 # from numba import jit
 
 from Utils import *
@@ -199,21 +200,70 @@ def polygon_is_visible(vertices,indexVertex,points):
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
 
-def polygon_is_collision(vertices,points):
-    '''
-    Determines if a set of points lies inside or outside of a given polygon
-    Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
-    a [2 x N] set of test points of the same form. Uses lower level
-    function polygon_isVisible to determine if test point is visible to any
-    vertex of the polygon, and thus inside or outside. Note: for a hollow
-    polygon, 'outside' or non-collision is inside the polygon. Output is
-    a [1 X N] boolean array where true means the point is colliding. 
-    '''
-    results = np.ones(len(points[0,:]),dtype=bool)
+# def polygon_is_collision(vertices,points):
+#     '''
+#     Determines if a set of points lies inside or outside of a given polygon
+#     Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
+#     a [2 x N] set of test points of the same form. Uses lower level
+#     function polygon_isVisible to determine if test point is visible to any
+#     vertex of the polygon, and thus inside or outside. Note: for a hollow
+#     polygon, 'outside' or non-collision is inside the polygon. Output is
+#     a [1 X N] boolean array where true means the point is colliding. 
+#     '''
+#     results = np.ones(len(points[0,:]),dtype=bool)
 
-    for iVertices in range(0,len(vertices[0,:])): 
-        flagPointVertex = polygon_is_visible(vertices,iVertices,points)
-        results = np.logical_and(results, np.logical_not(flagPointVertex))
+#     for iVertices in range(0,len(vertices[0,:])): 
+#         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
+#         results = np.logical_and(results, np.logical_not(flagPointVertex))
+#     return results
+
+def polygon_is_collision(poly1,poly2,*argv):
+    '''
+Assume two sets of vertices are passed representing two polygons
+    # Two instances of the Polygon class are passed to it 
+    '''
+    results = np.zeros(1,dtype=bool)
+
+    if type(poly1) == Polygon:
+        vertices1 = copy.deepcopy(poly1.vertices)
+    else:
+        vertices1 = copy.deepcopy(poly1)
+        # print('Not polygon')
+    
+    if type(poly2) == Polygon:
+        vertices2 = copy.deepcopy(poly2.vertices)
+    else:
+        vertices2 = copy.deepcopy(poly2)
+        # print('Not polygon')
+
+    collision = False
+    for idx1 in range(0,len(vertices1[0,:])):
+        for idx2 in range(0,len(vertices2[0,:])):
+            r,c = vertices1.shape[0:2]
+            if idx1 == c-1:
+                edge1 = np.concatenate((vertices1[:,idx1].reshape(2,1),vertices1[:,0].reshape(2,1)),axis=1)
+                # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,0].reshape(2,1)])
+            else:
+                edge1 = np.concatenate((vertices1[:,idx1].reshape(2,1),vertices1[:,idx1+1].reshape(2,1)),axis=1)
+                # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,idx1+1].reshape(2,1)])
+            
+            r,c = vertices2.shape[0:2]
+            if idx2 == c-1:
+                edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,0].reshape(2,1)),axis=1)
+                # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,0].reshape(2,1)])
+            else:
+                edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,idx2+1].reshape(2,1)),axis=1)
+                # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,idx2+1].reshape(2,1)])
+               
+            # print(f"edge1:\n{edge1}\nedge2\n{edge2}")
+            if edge_is_collision(edge1,edge2,endpoint_collision=True):
+                collision = True
+                results[0] = True
+                break
+        
+        if collision:
+            break
+    
     return results
 
 
@@ -322,10 +372,14 @@ def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A P
     vertices = reshape_for_patch(vertices)
     patch = patches.Polygon(vertices, facecolor=color, fill=poly_fill)
     ax.add_patch(patch)
-    try: 
-        ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
-    except:
-        pass # No point array passed
+    # try: 
+    #     ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
+    # except:
+    #     pass # No point array passed
+    vertices2 = reshape_for_patch(points)
+    patch2 = patches.Polygon(vertices2, facecolor=point_color, fill=poly_fill)
+    ax.add_patch(patch2)
+
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
@@ -341,7 +395,7 @@ class Polygon(object):
             assert(len(argv)==3)
             self.peak(argv[0],argv[1],argv[2])
 
-    def unit_circle(self,num,rad):
+    def unit_circle(self,num,rad,translate=None):
         self.vertices = np.zeros(num*2).reshape(2,num)
         theta = 0.
         d_theta = (2*np.pi)/float(num)
@@ -351,6 +405,12 @@ class Polygon(object):
             self.vertices[0,idx] = x
             self.vertices[1,idx] = y
             theta += d_theta
+        
+        if translate:
+            assert(len(translate)==2)
+            for idx in range(0,num):
+                self.vertices[0,idx] += translate[0]
+                self.vertices[1,idx] += translate[1]
 
     def rectangle(self,top_left,bottom_right):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
