@@ -38,6 +38,11 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
         self.show_physics_button = ControlButton('Physics',fn=self.show_physics)
         self.button_grid.addWidget(self.show_physics_button,0,4)
 
+        self.fps_label = QLabel('...')
+        self.fps_label.setFixedSize(100,20)
+        self.fps_label.setStyleSheet(f"font:bold 14px")
+        self.button_grid.addWidget(self.fps_label,0,5)
+
     def save_scene(self):
         self.save_scene_signal.emit()
     

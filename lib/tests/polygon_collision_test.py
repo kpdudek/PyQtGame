@@ -38,7 +38,7 @@ def polygon_is_collision_speed_test():
     except:
         print("Couldn't compute FPS...")
 
-    geom.polygon_plot(poly1.vertices,points=poly2.vertices,title=f'Collision Result: {collis_res}')
+    geom.polygon_plot(poly1.vertices.copy(),points=poly2.vertices.copy(),title=f'Collision Result: {collis_res}')
 
 def polygon_is_collision_vertices_test():
     '''
@@ -47,14 +47,21 @@ def polygon_is_collision_vertices_test():
     '''
     print('---------- Polygon Collision checking speed test ----------')
     
-    poly1 = np.array([[0.,0.,1800.,1800.],[50.,0.,0.,50.]])
-    poly2 = np.array([[650.5,650.5,675.5,675.5],[369.,60.,60.,369.]])
+    poly1 = np.array([[200.,200.,225.,225.],[77.33333333,27.33333333,27.33333333,77.33333333]])
+    poly2 = np.array([[0.,0.,1800.,1800.],[50.,0.,0.,50.]])
 
-    collis_res = geom.polygon_is_collision(poly1,poly2)
+    # Vertices:
+    # [[ 200.          200.          225.          225.        ]
+    # [  77.33333333   27.33333333   27.33333333   77.33333333]]
+    # Obstacle1:
+    # [[    0.     0.  1800.  1800.]
+    # [   50.     0.     0.    50.]]
+
+    collis_res = geom.polygon_is_collision(poly2,poly1)
 
     print(f'Results: {collis_res.any()}')
 
-    geom.polygon_plot(poly1,points=poly2,lim=2000,title=f'Collision Result: {collis_res}')
+    geom.polygon_plot(poly2,points=poly1,lim=2000,title=f'Collision Result: {collis_res}')
 
 def proximity_check_test():
     print('---------- Proximity Checking Test ----------')

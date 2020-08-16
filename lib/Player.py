@@ -193,6 +193,8 @@ class Player(QWidget,Colors,FilePaths):
             # if polygon_is_collision(obstacle,vertices_transformed).any() == True:
             #     collision = True
             #     break
+            # print(f"Vertices:\n{vertices_transformed}\nObstacle{obs_count}:\n{obstacle}")
+            # print(f"Collision: {polygon_is_collision(vertices_transformed,obstacle).any()}")
             if polygon_is_collision(vertices_transformed,obstacle).any():
                 collision = True
                 break

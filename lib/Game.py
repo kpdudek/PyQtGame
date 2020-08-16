@@ -19,6 +19,7 @@ from DynamicObstacles import *
 
 class Game(QMainWindow,FilePaths):
     fps = 45.0
+    fps_calc = []
     game_time = 0.0
     loop_number = 0
     fps_time = time.time()
@@ -121,9 +122,10 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_dynamics(self):
-        obstacles = [self.environment.ground_poly.vertices.copy()]#,self.dynamic_obstacles.vertices[0].copy()]
+        player_obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.dynamic_obstacles.vertices[0])]#,self.dynamic_obstacles.vertices[0].copy()]
+        obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.player.vertices)]
 
-        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(obstacles))
+        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(player_obstacles))
 
         self.dynamic_obstacles.update_position(self.player,self.width,self.height,copy.deepcopy(obstacles))
 
@@ -410,5 +412,10 @@ class Game(QMainWindow,FilePaths):
         self.fps_time = curr_time
 
         toc = time.time()
-        print(f"Game Loop: {toc-curr_time}")
+        # print(f"Max FPS: {1./(toc-curr_time)}")
+        self.fps_calc.append((1./(toc-curr_time))) 
+        if len(self.fps_calc) == 10:
+            self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
+            self.fps_calc = []
+        
         # self.prompt_manager.check_prompts()

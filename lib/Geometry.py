@@ -228,17 +228,19 @@ Assume two sets of vertices are passed representing two polygons
         vertices1 = copy.deepcopy(poly1.vertices)
     else:
         vertices1 = copy.deepcopy(poly1)
+        # print('Not polygon')
     
     if type(poly2) == Polygon:
         vertices2 = copy.deepcopy(poly2.vertices)
     else:
         vertices2 = copy.deepcopy(poly2)
+        # print('Not polygon')
 
     collision = False
-    for idx1 in range(0,len(vertices1[0,:])-1):
-        for idx2 in range(0,len(vertices2[0,:])-1):
+    for idx1 in range(0,len(vertices1[0,:])):
+        for idx2 in range(0,len(vertices2[0,:])):
             r,c = vertices1.shape[0:2]
-            if idx1 == c:
+            if idx1 == c-1:
                 edge1 = np.concatenate((vertices1[:,idx1].reshape(2,1),vertices1[:,0].reshape(2,1)),axis=1)
                 # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,0].reshape(2,1)])
             else:
@@ -246,13 +248,14 @@ Assume two sets of vertices are passed representing two polygons
                 # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,idx1+1].reshape(2,1)])
             
             r,c = vertices2.shape[0:2]
-            if idx2 == c:
+            if idx2 == c-1:
                 edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,0].reshape(2,1)),axis=1)
                 # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,0].reshape(2,1)])
             else:
                 edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,idx2+1].reshape(2,1)),axis=1)
                 # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,idx2+1].reshape(2,1)])
                
+            # print(f"edge1:\n{edge1}\nedge2\n{edge2}")
             if edge_is_collision(edge1,edge2,endpoint_collision=True):
                 collision = True
                 results[0] = True
@@ -369,10 +372,14 @@ def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A P
     vertices = reshape_for_patch(vertices)
     patch = patches.Polygon(vertices, facecolor=color, fill=poly_fill)
     ax.add_patch(patch)
-    try: 
-        ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
-    except:
-        pass # No point array passed
+    # try: 
+    #     ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
+    # except:
+    #     pass # No point array passed
+    vertices2 = reshape_for_patch(points)
+    patch2 = patches.Polygon(vertices2, facecolor=point_color, fill=poly_fill)
+    ax.add_patch(patch2)
+
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
