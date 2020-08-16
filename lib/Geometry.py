@@ -214,6 +214,27 @@ def point_is_collision(poly1,point):
     
     return result
 
+def sphere_is_collision(poly1,poly2):
+    '''
+    This function determines if two spheres are in collision
+    positive r --> solid sphere
+    negative r --> hollow sphere
+    '''
+    dist = np.sqrt(np.power(poly1.sphere.pose[0]-poly2.sphere.pose[0],2)+np.power(poly1.sphere.pose[1]-poly2.sphere.pose[1],2))
+    if (poly1.sphere.radius < 0) and (poly2.sphere.radius < 0):
+        return True
+    elif (poly1.sphere.radius < 0) or (poly2.sphere.radius < 0):
+        if dist > -1*(poly1.sphere.radius+poly2.sphere.radius):
+            return True
+        else:
+            return False
+    else:
+        if dist < (poly1.sphere.radius+poly2.sphere.radius):
+            return True
+        else:
+            return False
+
+
 def polygon_is_collision(poly1,poly2,*argv):
     '''
     Assume two sets of vertices are passed representing two polygons

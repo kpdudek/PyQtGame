@@ -40,11 +40,12 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.poses.append(pose)
         self.sizes.append(size)
 
-        top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
-        bottom_right = np.array([[pose[0]+size[0]],[pose[1]+size[1]]],dtype=float)
-        # self.vertices.append(Polygon(top_left,bottom_right,poly_type='rect').vertices)
+        x_c = pose[0] + (size[0]/2.)
+        y_c = pose[1] + (size[1]/2.)
+
         poly = Polygon()
-        poly.rectangle(top_left,bottom_right)
+        poly.unit_circle(6,math.ceil(size[0]/2.))
+        poly.teleport(x_c,y_c)
         self.polys.append(poly)
 
         centroid_offset = pose - poly.sphere.pose
@@ -53,30 +54,9 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         physics = Physics(10.,15.)
         self.physics.append(physics)        
 
-    # def ball(self):
-    #     pixmap = QPixmap(f'{self.user_path}graphics/ball.png')
-    #     self.pixmaps.append(pixmap)
-
-    #     size = [pixmap.size().width(),pixmap.size().height()]
-    #     pose = np.array([ [800.] , [200.] ])
-    #     self.poses.append(pose)
-    #     self.sizes.append(size)
-
-    #     top_left = np.array([[pose[0]],[pose[1]]],dtype=float)
-    #     bottom_right = np.array([[pose[0]+size[0]],[pose[1]+size[1]]],dtype=float)
-    #     # self.vertices.append(Polygon(top_left,bottom_right,poly_type='rect').vertices)
-        
-    #     physics = Physics(10.,15.)
-    #     self.physics.append(physics)
-
     def update_position(self,force,obstacles):
-        # for count,obstacle in enumerate(obstacles):
-        #     obstacle = transform('img',obstacle,translate=height)
-        #     obstacles[count] = obstacle
-
         for idx in range(0,len(self.polys)):
             self.physics[idx].gravity()
-            # pose = self.poses[idx].copy()
             self.collision_check(obstacles,idx)
 
     def collision_check(self,obstacles,idx):
