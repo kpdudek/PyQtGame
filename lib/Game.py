@@ -122,7 +122,7 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_dynamics(self):
-        player_obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.dynamic_obstacles.vertices[0])]#,self.dynamic_obstacles.vertices[0].copy()]
+        player_obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.dynamic_obstacles.vertices[0]),copy.deepcopy(self.dynamic_obstacles.vertices[1])]#,self.dynamic_obstacles.vertices[0].copy()]
         obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.player.vertices)]
 
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(player_obstacles))
