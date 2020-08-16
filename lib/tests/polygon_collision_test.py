@@ -50,13 +50,6 @@ def polygon_is_collision_vertices_test():
     poly1 = np.array([[200.,200.,225.,225.],[77.33333333,27.33333333,27.33333333,77.33333333]])
     poly2 = np.array([[0.,0.,1800.,1800.],[50.,0.,0.,50.]])
 
-    # Vertices:
-    # [[ 200.          200.          225.          225.        ]
-    # [  77.33333333   27.33333333   27.33333333   77.33333333]]
-    # Obstacle1:
-    # [[    0.     0.  1800.  1800.]
-    # [   50.     0.     0.    50.]]
-
     collis_res = geom.polygon_is_collision(poly2,poly1)
 
     print(f'Results: {collis_res.any()}')
@@ -65,13 +58,33 @@ def polygon_is_collision_vertices_test():
 
 def proximity_check_test():
     print('---------- Proximity Checking Test ----------')
+    
+    poly1 = geom.Polygon()
+    poly1.unit_circle(5,3)
+    
+    poly2 = geom.Polygon()
+    top_left = np.array([[0.],[3.]])
+    bottom_right = np.array([[5.],[0.]])
+    poly2.rectangle(top_left,bottom_right)
+
+    poly1.translate(5,5)
+    poly2.translate(7,7)
+
+    collis_res = geom.polygon_is_collision(poly1,poly2)
+
+    geom.polygon_plot(poly1,poly2,lim=[0,15,0,15],title=f'Prominity Test\nCollision Result: {collis_res}')
 
 def main():
-    # Run test cases
+    '''
+    Run test cases
+    '''
+    
+    # polygon_is_collision_speed_test()
+    
+    # polygon_is_collision_vertices_test()
 
-    polygon_is_collision_speed_test()
-    polygon_is_collision_vertices_test()
-    # proximity_check_test()
+    proximity_check_test()
+
 
     # Show plots
     plt.show()

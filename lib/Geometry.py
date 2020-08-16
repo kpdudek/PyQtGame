@@ -10,6 +10,7 @@ from multiprocessing import Pool
 import math
 import numpy as np
 import copy
+import random
 # from numba import jit
 
 from Utils import *
@@ -200,32 +201,24 @@ def polygon_is_visible(vertices,indexVertex,points):
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
 
-# def polygon_is_collision(vertices,points):
-#     '''
-#     Determines if a set of points lies inside or outside of a given polygon
-#     Inputs are a [2 X N] set of vertices of the form [x1..xn; y1...yn] and
-#     a [2 x N] set of test points of the same form. Uses lower level
-#     function polygon_isVisible to determine if test point is visible to any
-#     vertex of the polygon, and thus inside or outside. Note: for a hollow
-#     polygon, 'outside' or non-collision is inside the polygon. Output is
-#     a [1 X N] boolean array where true means the point is colliding. 
-#     '''
-#     results = np.ones(len(points[0,:]),dtype=bool)
-
-#     for iVertices in range(0,len(vertices[0,:])): 
-#         flagPointVertex = polygon_is_visible(vertices,iVertices,points)
-#         results = np.logical_and(results, np.logical_not(flagPointVertex))
-#     return results
+def polygon_is_collision(poly1,poly2):
+    '''
+    For a given pair of polygon objects, check if the bounding spheres
+    are in collision
+    '''
+    pass
+    #return results
 
 def polygon_is_collision(poly1,poly2,*argv):
     '''
-Assume two sets of vertices are passed representing two polygons
+    Assume two sets of vertices are passed representing two polygons
     # Two instances of the Polygon class are passed to it 
     '''
     results = np.zeros(1,dtype=bool)
 
     if type(poly1) == Polygon:
         vertices1 = copy.deepcopy(poly1.vertices)
+
     else:
         vertices1 = copy.deepcopy(poly1)
         # print('Not polygon')
@@ -313,18 +306,13 @@ def polygon_is_filled(vertices):
 
     # compute the sum of angle that line segments rotate.
     for index in range(0,c_num):#1:c_num:
-        # compute the rotation angle between two consecutive vectors, and
-        # perform angle summation.
         angleSum += edge_angle('vertices',np.array([[0],[0]]),VecSet[:,index],SubVec[:,index])
 
-    #judge the sign of the angle summation.
+    # positive --> counter-clockwise
+    # negative --> clockwise
     if angleSum > 0:
-        #positive angle summation indicates that the vertices are placed in
-        #counterclockwise order.
         return True
     elif angleSum < 0:
-        # negative angle summation indicates that the vertices are placed in
-        # clockwise order.
         return False
     else:
         return None
@@ -332,8 +320,9 @@ def polygon_is_filled(vertices):
 
 def reshape_for_patch(vertices):
     '''
-    This shape takes vertices of a polygon with shape [2,N]
-    and returns the same vertices with shape [N,2]
+    Matplotlib patch() method takes vertives in [n,2] shape
+    Polygon class stores vertices as [2,n]
+    This function takes [2,n] format and returns [n,2]
     '''
     r,c = vertices.shape
     out = np.zeros(vertices.size)
@@ -343,12 +332,12 @@ def reshape_for_patch(vertices):
             out[i,j] = vertices[j,i]
     return out
 
-# 
+
 def transform(frame,*argv,translate=None):
     '''
     Convert from image frame with origin in top left with positive y down, to
     conventional cartesian with origin in bottom left and positive y up.
-    Both frames have positive x right.
+    Both frames have positive x right when using the img transform.
     '''
     if frame == 'img':
         assert(translate!=None)
@@ -364,29 +353,52 @@ def transform(frame,*argv,translate=None):
     else:
         return argv
 
-def polygon_plot(vertices,color='b',points=None,point_color='g',lim=5,title='A Plot',poly_fill=True):
+def polygon_plot(*argv,color=None,point_color=None,lim=[-5,5,-5,5],title='A Plot',poly_fill=True):
     _,ax = plt.subplots(1)
     if lim != None:
-        ax.set_ylim(-lim, lim)
-        ax.set_xlim(-lim, lim)
-    vertices = reshape_for_patch(vertices)
-    patch = patches.Polygon(vertices, facecolor=color, fill=poly_fill)
-    ax.add_patch(patch)
-    # try: 
-    #     ax.plot(points[0,:],points[1,:],f'{point_color}o', markersize=3)
+        assert(len(lim)==4)
+        ax.set_ylim(lim[0], lim[1])
+        ax.set_xlim(lim[2], lim[3])
+    
+    if color == None:
+        color = ['r','g','b']
+    else:
+        color = list(color)
+
+    for arg in argv:
+        c_idx = random.randint(0,len(color)-1)
+        vertices = reshape_for_patch(arg.vertices)
+        patch = patches.Polygon(vertices, alpha=0.6,facecolor=color[c_idx],fill=True)
+        ax.add_patch(patch)
+
+        circle_patch = patches.Circle((arg.sphere.pose[0],arg.sphere.pose[1]),radius=arg.sphere.radius,fill=False)
+        ax.add_patch(circle_patch)
+
+    # try:
+    #     vertices2 = reshape_for_patch(points)
+    #     patch2 = patches.Polygon(vertices2,edgecolor=point_color,facecolor=point_color, fill=False)
+    #     ax.add_patch(patch2)
     # except:
-    #     pass # No point array passed
-    vertices2 = reshape_for_patch(points)
-    patch2 = patches.Polygon(vertices2, facecolor=point_color, fill=poly_fill)
-    ax.add_patch(patch2)
+    #     pass
+
+    # try:
+    #     
+    # except:
+    #     pass
 
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
 
+class Sphere(object):
+    def __init__(self,x,y,r):
+        self.pose = [x,y]
+        self.radius = r
+
 class Polygon(object):
     def __init__(self,*argv,poly_type=None):
         self.vertices = None
+        self.sphere = None
 
         if poly_type == 'rect':
             assert(len(argv)==2)
@@ -395,7 +407,7 @@ class Polygon(object):
             assert(len(argv)==3)
             self.peak(argv[0],argv[1],argv[2])
 
-    def unit_circle(self,num,rad,translate=None):
+    def unit_circle(self,num,rad):
         self.vertices = np.zeros(num*2).reshape(2,num)
         theta = 0.
         d_theta = (2*np.pi)/float(num)
@@ -406,16 +418,14 @@ class Polygon(object):
             self.vertices[1,idx] = y
             theta += d_theta
         
-        if translate:
-            assert(len(translate)==2)
-            for idx in range(0,num):
-                self.vertices[0,idx] += translate[0]
-                self.vertices[1,idx] += translate[1]
+        self.set_bounding_sphere()
 
     def rectangle(self,top_left,bottom_right):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
         bottom_left = np.array([ top_left[0],bottom_right[1] ],dtype=float)
         self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right),axis=1)
+
+        self.set_bounding_sphere()
     
     def peak(self,top_left,bottom_right,rise):
         top_right = np.array([ bottom_right[0] , top_left[1] ],dtype=float)
@@ -425,4 +435,31 @@ class Polygon(object):
         center_high_2 = np.array([ ((top_right[0]-top_left[0])/2.)-300. , top_left[1]-rise ])
 
         self.vertices = np.concatenate((top_left,bottom_left,bottom_right,top_right,center_high_1,center_high,center_high_2),axis=1)
+
+        self.set_bounding_sphere()
+
+    def set_bounding_sphere(self):
+        # Compute centroid    
+        r,c = self.vertices.shape
+        x_c = np.sum(self.vertices[0,:]) / float(c)
+        y_c = np.sum(self.vertices[1,:]) / float(c)
+
+        # Compute radius
+        r = 0.
+        centroid = np.array([[x_c],[y_c]])
+        for idx in range(0,len(self.vertices[0,:])):
+            vert = self.vertices[:,idx]
+            rad = np.sqrt(np.power(vert[0]-centroid[0],2)+np.power(vert[1]-centroid[1],2))
+            if rad > r:
+                r = rad 
+        
+        self.sphere = Sphere(x_c,y_c,r)
+
+    def translate(self,x,y):
+        for idx in range(0,len(self.vertices[0,:])):
+            self.vertices[0,idx] += x
+            self.vertices[1,idx] += y
+
+        self.sphere.pose[0] += x
+        self.sphere.pose[1] += y
 
