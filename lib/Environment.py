@@ -473,7 +473,7 @@ class Environment(QWidget,Colors,FilePaths):
         pen.setColor(QtGui.QColor(self.divider_color))
         painter.setPen(pen)
         
-        for idx in range(0,len(self.dyn_obs.vertices)):
+        for idx in range(0,len(self.dyn_obs.polys)):
             pixmap = self.dyn_obs.pixmaps[idx].copy()
             pose = self.dyn_obs.poses[idx].copy()
             size = self.dyn_obs.sizes[idx].copy()
