@@ -201,13 +201,18 @@ def polygon_is_visible(vertices,indexVertex,points):
     return np.logical_not(np.logical_or(selfOccludedPoints,edgeCollisionPoints))
 
 
-def polygon_is_collision(poly1,poly2):
+def point_is_collision(poly1,point):
     '''
     For a given pair of polygon objects, check if the bounding spheres
     are in collision
     '''
-    pass
-    #return results
+    result = True
+    for idx in range(0,len(poly1[0,:])):
+        if polygon_is_visible(poly1,idx,point):
+         result = False
+         return result
+    
+    return result
 
 def polygon_is_collision(poly1,poly2,*argv):
     '''
@@ -221,13 +226,11 @@ def polygon_is_collision(poly1,poly2,*argv):
 
     else:
         vertices1 = copy.deepcopy(poly1)
-        # print('Not polygon')
     
     if type(poly2) == Polygon:
         vertices2 = copy.deepcopy(poly2.vertices)
     else:
         vertices2 = copy.deepcopy(poly2)
-        # print('Not polygon')
 
     collision = False
     for idx1 in range(0,len(vertices1[0,:])):
@@ -235,21 +238,16 @@ def polygon_is_collision(poly1,poly2,*argv):
             r,c = vertices1.shape[0:2]
             if idx1 == c-1:
                 edge1 = np.concatenate((vertices1[:,idx1].reshape(2,1),vertices1[:,0].reshape(2,1)),axis=1)
-                # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,0].reshape(2,1)])
             else:
                 edge1 = np.concatenate((vertices1[:,idx1].reshape(2,1),vertices1[:,idx1+1].reshape(2,1)),axis=1)
-                # edge1 = np.array([vertices1[:,idx1].reshape(2,1) , vertices1[:,idx1+1].reshape(2,1)])
             
             r,c = vertices2.shape[0:2]
             if idx2 == c-1:
                 edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,0].reshape(2,1)),axis=1)
-                # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,0].reshape(2,1)])
             else:
                 edge2 = np.concatenate((vertices2[:,idx2].reshape(2,1),vertices2[:,idx2+1].reshape(2,1)),axis=1)
-                # edge2 = np.array([vertices2[:,idx2].reshape(2,1) , vertices2[:,idx2+1].reshape(2,1)])
                
-            # print(f"edge1:\n{edge1}\nedge2\n{edge2}")
-            if edge_is_collision(edge1,edge2,endpoint_collision=True):
+            if edge_is_collision(edge1,edge2,endpoint_collision=False):
                 collision = True
                 results[0] = True
                 break
@@ -374,25 +372,13 @@ def polygon_plot(*argv,color=None,point_color=None,lim=[-5,5,-5,5],title='A Plot
         circle_patch = patches.Circle((arg.sphere.pose[0],arg.sphere.pose[1]),radius=arg.sphere.radius,fill=False)
         ax.add_patch(circle_patch)
 
-    # try:
-    #     vertices2 = reshape_for_patch(points)
-    #     patch2 = patches.Polygon(vertices2,edgecolor=point_color,facecolor=point_color, fill=False)
-    #     ax.add_patch(patch2)
-    # except:
-    #     pass
-
-    # try:
-    #     
-    # except:
-    #     pass
-
     plt.gca().set_aspect('equal', adjustable='box')
     plt.grid(color='k', linestyle='-', linewidth=.5)
     plt.title(f'{title}')
 
 class Sphere(object):
     def __init__(self,x,y,r):
-        self.pose = [x,y]
+        self.pose = np.array([[x],[y]])
         self.radius = r
 
 class Polygon(object):
@@ -440,7 +426,7 @@ class Polygon(object):
 
     def set_bounding_sphere(self):
         # Compute centroid    
-        r,c = self.vertices.shape
+        r,c = self.vertices.shape[0:2]
         x_c = np.sum(self.vertices[0,:]) / float(c)
         y_c = np.sum(self.vertices[1,:]) / float(c)
 
@@ -463,3 +449,8 @@ class Polygon(object):
         self.sphere.pose[0] += x
         self.sphere.pose[1] += y
 
+    def teleport(self,x,y):
+        coord = np.array([x,y])
+        diff = coord - self.sphere.pose
+
+        self.translate(diff[0],diff[1])

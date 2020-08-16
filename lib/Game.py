@@ -71,12 +71,12 @@ class Game(QMainWindow,FilePaths):
 
         self.inventory = Inventory(self.screen_width,self.screen_height)
 
-        self.player = Player()
+        self.player = Player(self.width,self.height)
         self.player.pause_signal.connect(self.pause_game)
         self.player.collision_signal.connect(self.update_collision_str)
         self.player.info_signal.connect(self.display_info)
 
-        self.dynamic_obstacles = DynamicObstacles()
+        self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -122,12 +122,17 @@ class Game(QMainWindow,FilePaths):
             pass # No physics display exists
     
     def update_dynamics(self):
-        player_obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.dynamic_obstacles.vertices[0]),copy.deepcopy(self.dynamic_obstacles.vertices[1])]#,self.dynamic_obstacles.vertices[0].copy()]
-        obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.player.vertices)]
+        # player_obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.dynamic_obstacles.vertices[0]),copy.deepcopy(self.dynamic_obstacles.vertices[1])]#,self.dynamic_obstacles.vertices[0].copy()]
+        # obstacles = [copy.deepcopy(self.environment.ground_poly.vertices),copy.deepcopy(self.player.vertices)]
+        
+        player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
+        for poly in self.dynamic_obstacles.polys:
+            player_obstacles.append(poly)
+        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
-        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),self.width,self.height,copy.deepcopy(player_obstacles))
-
-        self.dynamic_obstacles.update_position(self.player,self.width,self.height,copy.deepcopy(obstacles))
+        force = 0.
+        obstacles = [self.environment.ground_poly,self.environment.frame_poly]
+        self.dynamic_obstacles.update_position(force,copy.deepcopy(obstacles))
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -414,7 +419,7 @@ class Game(QMainWindow,FilePaths):
         toc = time.time()
         # print(f"Max FPS: {1./(toc-curr_time)}")
         self.fps_calc.append((1./(toc-curr_time))) 
-        if len(self.fps_calc) == 10:
+        if len(self.fps_calc) == 30:
             self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
             self.fps_calc = []
         
