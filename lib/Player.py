@@ -126,10 +126,11 @@ class Player(QWidget,Colors,FilePaths):
         self.poly.translate(self.physics.velocity[0],0.)
         collision = False
         for obstacle in obstacles:
-            if polygon_is_collision(self.poly,obstacle):
-                collision = True
-                break
-        
+            if sphere_is_collision(self.poly,obstacle):
+                if polygon_is_collision(self.poly,obstacle):
+                    collision = True
+                    break
+    
         if collision:
             self.poly.translate(-1*self.physics.velocity[0],0.)
             self.collision_str[0] = 1
@@ -142,9 +143,10 @@ class Player(QWidget,Colors,FilePaths):
         self.poly.translate(0.,self.physics.velocity[1])
         collision = False
         for obstacle in obstacles:
-            if polygon_is_collision(self.poly,obstacle):
-                collision = True
-                break
+            if sphere_is_collision(self.poly,obstacle):
+                if polygon_is_collision(self.poly,obstacle):
+                    collision = True
+                    break
 
         if collision:
             self.poly.translate(0.,-1*self.physics.velocity[1])

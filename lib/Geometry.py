@@ -376,8 +376,8 @@ def polygon_plot(*argv,color=None,point_color=None,lim=[-5,5,-5,5],title='A Plot
     _,ax = plt.subplots(1)
     if lim != None:
         assert(len(lim)==4)
-        ax.set_ylim(lim[0], lim[1])
-        ax.set_xlim(lim[2], lim[3])
+        ax.set_xlim(lim[0], lim[1])
+        ax.set_ylim(lim[2], lim[3])
     
     if color == None:
         color = ['r','g','b']

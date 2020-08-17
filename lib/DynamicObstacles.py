@@ -44,7 +44,7 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         y_c = pose[1] + (size[1]/2.)
 
         poly = Polygon()
-        poly.unit_circle(6,math.ceil(size[0]/2.))
+        poly.unit_circle(8,math.ceil(size[0]/2.))
         poly.teleport(x_c,y_c)
         self.polys.append(poly)
 
@@ -63,9 +63,10 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.polys[idx].translate(self.physics[idx].velocity[0],0.)
         collision = False
         for obstacle in obstacles:
-            if polygon_is_collision(self.polys[idx],obstacle):
-                collision = True
-                break
+            if sphere_is_collision(self.polys[idx],obstacle):
+                if polygon_is_collision(self.polys[idx],obstacle):
+                    collision = True
+                    break
         
         if collision:
             self.polys[idx].translate(-1*self.physics[idx].velocity[0],0.)
@@ -78,9 +79,10 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.polys[idx].translate(0.,self.physics[idx].velocity[1])
         collision = False
         for obstacle in obstacles:
-            if polygon_is_collision(self.polys[idx],obstacle):
-                collision = True
-                break
+            if sphere_is_collision(self.polys[idx],obstacle):
+                if polygon_is_collision(self.polys[idx],obstacle):
+                    collision = True
+                    break
 
         if collision:
             self.polys[idx].translate(0.,-1*self.physics[idx].velocity[1])
@@ -88,74 +90,4 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         else:
             t = np.array([[0.],self.physics[idx].velocity[1]])
             self.poses[idx] += t
-
-    # def check_collison(self,pose,width,height,obstacles,idx):
-    #     ########### Check X Axis Collision ###########
-    #     pose[0] += self.physics[idx].velocity[0] 
-
-    #     ### Checking bounds of environment
-    #     if pose[0]+self.sizes[idx][0] > width:
-    #         pose[0] = width-self.sizes[idx][0]
-    #     elif pose[0] < 0:
-    #         pose[0] = 0
-
-    #     # Check if that pose would be in collision
-    #     top_left = np.array([pose[0],pose[1]],dtype=float)
-    #     bottom_right = np.array([pose[0]+self.sizes[idx][0],pose[1]+self.sizes[idx][1]],dtype=float)
-    #     vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
-
-    #     collision = False
-    #     obs_count = 0
-    #     vertices_transformed = transform('img',vertices.copy(),translate=height)
-    #     for obstacle in obstacles.copy():
-    #         obs_count += 1
-    #         # if polygon_is_collision(obstacle,vertices_transformed).any():
-    #         #     collision = True
-    #         #     break
-    #         if polygon_is_collision(vertices_transformed,obstacle).any():
-    #             collision = True
-    #             break
-    #     # Only write that position change if it is collision free
-    #     if not collision:
-    #         self.execute_move(pose,vertices.copy(),idx)
-    #     else:
-    #         pose = self.poses[idx].copy()
-    #         self.physics[idx].velocity[0] = 0.
-
-    #     ########### Check Y Axis Collision ###########
-    #     pose[1] += self.physics[idx].velocity[1] 
-    
-    #     if pose[1] < 0:
-    #         pose[1] = 0
-    #     elif pose[1]+self.sizes[idx][1] > height:
-    #         pose[1] = height-self.sizes[idx][1]
-
-    #     # Check if that pose would be in collision
-    #     top_left = np.array([pose[0],pose[1]],dtype=float)
-    #     bottom_right = np.array([pose[0]+self.sizes[idx][0],pose[1]+self.sizes[idx][1]],dtype=float)
-    #     vertices = Polygon(top_left,bottom_right,poly_type='rect').vertices
-
-    #     collision = False
-    #     obs_count = 0
-    #     vertices_transformed = transform('img',vertices.copy(),translate=height)
-    #     for obstacle in obstacles.copy():
-    #         obs_count += 1
-    #         # if polygon_is_collision(obstacle,vertices_transformed).any() == True:
-    #         #     collision = True
-    #         #     break
-    #         # print(f"Vertices:\n{vertices_transformed}\nObstacle{obs_count}:\n{obstacle}")
-    #         if polygon_is_collision(vertices_transformed,obstacle).any() == True:
-    #             collision = True
-    #             # print('Collision!')
-    #             break
-    #     # Only write that position change if it is collision free
-    #     if not collision:
-    #         self.execute_move(pose,vertices.copy(),idx)
-    #     else:
-    #         pose[1] -= self.physics[idx].velocity[1]
-    #         self.physics[idx].velocity[1] = 0.
-
-    # def execute_move(self,pose,vertices,idx):
-    #     self.poses[idx] = pose
-    #     self.vertices[idx] = vertices
 

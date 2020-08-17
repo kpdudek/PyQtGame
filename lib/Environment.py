@@ -482,9 +482,11 @@ class Environment(QWidget,Colors,FilePaths):
             painter.drawPixmap(pix_pose,pixmap)
 
             if self.player_debug:
-                rec = QRect(float(pose[0]),float(pose[1]),float(size[0]),float(size[1]))
-                painter.drawRect(rec)
-        
+                p = QPolygonF()
+                for poly_idx in range(0,len(self.dyn_obs.polys[idx].vertices[0,:])):
+                    p.append(QPointF(self.dyn_obs.polys[idx].vertices[0,poly_idx],self.dyn_obs.polys[idx].vertices[1,poly_idx]))
+                painter.drawPolygon(p)
+
         painter.end()
 
     def redraw_scene(self):

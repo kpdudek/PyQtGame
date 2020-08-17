@@ -19,9 +19,12 @@ def polygon_is_collision_speed_test():
     '''
     print('---------- Polygon Collision checking speed test ----------')
     poly1 = geom.Polygon()
-    poly1.unit_circle(5,2,translate=[2,0])
+    poly1.unit_circle(5,2)
+    poly1.translate(8.,8.)
+
     poly2 = geom.Polygon()
     poly2.unit_circle(8,2)
+    poly2.translate(3.,3.)
 
     num_players = 1.
     num_obstacles = 2.
@@ -38,7 +41,7 @@ def polygon_is_collision_speed_test():
     except:
         print("Couldn't compute FPS...")
 
-    geom.polygon_plot(poly1.vertices.copy(),points=poly2.vertices.copy(),title=f'Collision Result: {collis_res}')
+    geom.polygon_plot(poly1,poly2,lim=[0,15,0,15],title=f'Collision Result: {collis_res}')
 
 def polygon_is_collision_vertices_test():
     '''
@@ -47,14 +50,21 @@ def polygon_is_collision_vertices_test():
     '''
     print('---------- Polygon Collision checking speed test ----------')
     
-    poly1 = np.array([[200.,200.,225.,225.],[77.33333333,27.33333333,27.33333333,77.33333333]])
-    poly2 = np.array([[0.,0.,1800.,1800.],[50.,0.,0.,50.]])
+    poly1 = geom.Polygon()
+    top_left = np.array([[200.],[77.3]])
+    bot_right = np.array([[225.],[27.3]])
+    poly1.rectangle(top_left,bot_right)
+
+    poly2 = geom.Polygon()
+    top_left = np.array([[0.],[50.]])
+    bot_right = np.array([[1800.],[0.]])
+    poly2.rectangle(top_left,bot_right)
 
     collis_res = geom.polygon_is_collision(poly2,poly1)
 
     print(f'Results: {collis_res.any()}')
 
-    geom.polygon_plot(poly2,points=poly1,lim=2000,title=f'Collision Result: {collis_res}')
+    geom.polygon_plot(poly1,poly2,lim=[0,2000,0,200],title=f'Collision Result: {collis_res}')
 
 def proximity_check_test():
     print('---------- Proximity Checking Test ----------')
@@ -70,18 +80,26 @@ def proximity_check_test():
     poly1.translate(5,5)
     poly2.translate(7,7)
 
-    collis_res = geom.polygon_is_collision(poly1,poly2)
+    tic = time.time()
+    sphere_res = geom.sphere_is_collision(poly1,poly2)
+    toc = time.time()
+    print(f'Sphere time: {toc-tic}')
 
-    geom.polygon_plot(poly1,poly2,lim=[0,15,0,15],title=f'Prominity Test\nCollision Result: {collis_res}')
+    tic = time.time()
+    collis_res = geom.polygon_is_collision(poly1,poly2)
+    toc = time.time()
+    print(f'Poly time: {toc-tic}')
+
+    geom.polygon_plot(poly1,poly2,lim=[0,15,0,15],title=f'Prominity Test\nCollision Result: {collis_res}\nSphere Collision: {sphere_res}')
 
 def main():
     '''
     Run test cases
     '''
     
-    # polygon_is_collision_speed_test()
+    polygon_is_collision_speed_test()
     
-    # polygon_is_collision_vertices_test()
+    polygon_is_collision_vertices_test()
 
     proximity_check_test()
 
