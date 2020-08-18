@@ -452,10 +452,11 @@ class Environment(QWidget,Colors,FilePaths):
             rec = QRect(float(self.player.pose[0]),float(self.player.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
             painter.drawRect(rec)
 
-            # p = QPolygonF()
-            # for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
-            #     p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
-            # painter.drawPolygon(p)
+            pen.setWidth(1)
+            pen.setColor(QtGui.QColor(self.warning_text))
+            painter.setPen(pen)
+
+            painter.drawEllipse(QPoint(float(self.player.poly.sphere.pose[0]),float(self.player.poly.sphere.pose[1])),self.player.poly.sphere.radius,self.player.poly.sphere.radius)
 
             if np.sum(self.player.mouse_pos) >= 0:
                 pen.setWidth(5)
@@ -480,6 +481,11 @@ class Environment(QWidget,Colors,FilePaths):
 
             pix_pose = QPoint(float(pose[0]),float(pose[1]))
             painter.drawPixmap(pix_pose,pixmap)
+
+            pen.setWidth(1)
+            pen.setColor(QtGui.QColor(self.warning_text))
+            painter.setPen(pen)
+            painter.drawEllipse(QPoint(float(self.dyn_obs.polys[idx].sphere.pose[0]),float(self.dyn_obs.polys[idx].sphere.pose[1])),self.dyn_obs.polys[idx].sphere.radius,self.dyn_obs.polys[idx].sphere.radius)
 
             if self.player_debug:
                 p = QPolygonF()
