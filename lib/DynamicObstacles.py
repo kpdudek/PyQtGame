@@ -28,8 +28,8 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.sizes = []
 
         self.ball(1000.,200.)
-        self.ball(800.,200.)
-        self.ball(1200.,200.)
+        # self.ball(800.,200.)
+        # self.ball(1200.,200.)
         # self.ball(1300.,200.)
         # self.ball(1400.,200.)
         # self.ball(1500.,200.)

@@ -482,12 +482,15 @@ class Environment(QWidget,Colors,FilePaths):
             pix_pose = QPoint(float(pose[0]),float(pose[1]))
             painter.drawPixmap(pix_pose,pixmap)
 
-            pen.setWidth(1)
-            pen.setColor(QtGui.QColor(self.warning_text))
-            painter.setPen(pen)
-            painter.drawEllipse(QPoint(float(self.dyn_obs.polys[idx].sphere.pose[0]),float(self.dyn_obs.polys[idx].sphere.pose[1])),self.dyn_obs.polys[idx].sphere.radius,self.dyn_obs.polys[idx].sphere.radius)
-
             if self.player_debug:
+                pen.setWidth(2)
+                pen.setColor(QtGui.QColor(self.warning_text))
+                painter.setPen(pen)
+                painter.drawEllipse(QPoint(float(self.dyn_obs.polys[idx].sphere.pose[0]),float(self.dyn_obs.polys[idx].sphere.pose[1])),self.dyn_obs.polys[idx].sphere.radius,self.dyn_obs.polys[idx].sphere.radius)
+                
+                pen.setWidth(2)
+                pen.setColor(QtGui.QColor(self.divider_color))
+                painter.setPen(pen)
                 p = QPolygonF()
                 for poly_idx in range(0,len(self.dyn_obs.polys[idx].vertices[0,:])):
                     p.append(QPointF(self.dyn_obs.polys[idx].vertices[0,poly_idx],self.dyn_obs.polys[idx].vertices[1,poly_idx]))
