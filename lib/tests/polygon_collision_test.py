@@ -19,12 +19,12 @@ def polygon_is_collision_speed_test():
     '''
     print('---------- Polygon Collision checking speed test ----------')
     poly1 = geom.Polygon()
-    poly1.unit_circle(5,2)
-    poly1.translate(8.,8.)
+    poly1.unit_circle(40,1.)
+    poly1.translate(3.,3.)
 
     poly2 = geom.Polygon()
-    poly2.unit_circle(8,2)
-    poly2.translate(3.,3.)
+    poly2.unit_circle(40,1.)
+    poly2.translate(3.2,3.2)
 
     num_players = 1.
     num_obstacles = 2.
@@ -99,9 +99,9 @@ def main():
     
     polygon_is_collision_speed_test()
     
-    polygon_is_collision_vertices_test()
+    # polygon_is_collision_vertices_test()
 
-    proximity_check_test()
+    # proximity_check_test()
 
 
     # Show plots
