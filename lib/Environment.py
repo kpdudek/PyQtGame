@@ -338,6 +338,18 @@ class Environment(QWidget,Colors,FilePaths):
             for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
                 p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
             painter.drawPolygon(p)
+
+        if self.player_debug:
+            pen.setWidth(2)
+            pen.setColor(QtGui.QColor(self.warning_text))
+            painter.setPen(pen)
+
+            brush = QtGui.QBrush()
+            brush.setStyle(Qt.NoBrush)
+            painter.setBrush(brush)
+
+            circle_point = QPoint(float(self.ground_poly.sphere.pose[0]),float(self.ground_poly.sphere.pose[1]))
+            painter.drawEllipse(circle_point,self.ground_poly.sphere.radius,self.ground_poly.sphere.radius)
         
         painter.end()
 

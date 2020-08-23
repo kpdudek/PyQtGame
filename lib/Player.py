@@ -25,9 +25,6 @@ class Player(QWidget,Colors,FilePaths):
     velocity = 0.
     collision_str = np.zeros(2).reshape(2,1)
     mouse_pos = np.zeros(2).reshape(2,1) - 1
-    collision_pt = np.zeros(2).reshape(2,1) - 1
-    calc_offsets = True
-    log_collis = True
     mouse_prev = np.zeros(2).reshape(2,1) - 1
 
     info_signal = pyqtSignal(object)
@@ -61,9 +58,7 @@ class Player(QWidget,Colors,FilePaths):
 
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
-
-        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so') # Or full path to file   
-                    
+        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so') # Or full path to file           
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
     
@@ -102,11 +97,14 @@ class Player(QWidget,Colors,FilePaths):
             player_vert = transform('img',copy.deepcopy(self.poly.vertices),translate=self.height)
             mouse_vert = transform('img',mouse_pos.copy(),translate=self.height)
 
-            if point_is_collision(player_vert,mouse_vert):
-                return
-            else:
-                self.poly.teleport(mouse_pos[0],mouse_pos[1])
-                self.pose = mouse_pos + self.centroid_offset
+            self.poly.teleport(mouse_pos[0],mouse_pos[1])
+            self.pose = mouse_pos + self.centroid_offset
+
+            if np.sum(self.mouse_prev) >= 0:
+                mouse_vel = mouse_pos - self.mouse_prev
+                self.physics.velocity = mouse_vel
+            self.mouse_prev = mouse_pos
+            self.physics.send_info()
             return
         else: # Always keep track of the mouse pose for drawing the red marker
             self.mouse_pos = mouse_pos
@@ -130,30 +128,26 @@ class Player(QWidget,Colors,FilePaths):
 
         self.collision_signal.emit(self.collision_str)
 
+        self.physics.send_info()
+
     def collision_check(self,obstacles):
         # X Collision Check
         self.poly.translate(self.physics.velocity[0],0.)
         collision = False
 
-        # data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
-        # data = data.astype(np.double)
-        # data_p = data.ctypes.data_as(self.c_float_p)
-
         for obstacle in obstacles:
             if sphere_is_collision(self.poly,obstacle):
-                data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = copy.deepcopy(self.poly.vertices)
                 data = data.astype(np.double)
                 data_p = data.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = copy.deepcopy(obstacle.vertices)
                 data2 = data2.astype(np.double)
                 data_p2 = data2.ctypes.data_as(self.c_float_p)
 
                 # C Function call in python
                 res = self.fun.polygon_is_collision(data_p,2,len(self.poly.vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
-
-                if res: #polygon_is_collision(self.poly,obstacle):
-                # if polygon_is_collision(self.poly,obstacle):
+                if res:
                     collision = True
                     break
     
@@ -170,19 +164,17 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
         for obstacle in obstacles:
             if sphere_is_collision(self.poly,obstacle):
-                data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = copy.deepcopy(self.poly.vertices)
                 data = data.astype(np.double)
                 data_p = data.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = copy.deepcopy(obstacle.vertices)
                 data2 = data2.astype(np.double)
                 data_p2 = data2.ctypes.data_as(self.c_float_p)
 
                 # # C Function call in python
                 res = self.fun.polygon_is_collision(data_p,2,len(self.poly.vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
-
-                if res: #polygon_is_collision(self.poly,obstacle):
-                # if polygon_is_collision(self.poly,obstacle):
+                if res:
                     collision = True
                     break
 

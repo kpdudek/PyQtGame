@@ -300,16 +300,12 @@ class Game(QMainWindow,FilePaths):
         ### Move Keys
         val = ''
         if event.key() == Qt.Key_D:
-            # self.key_pressed.append('right')
             val = 'right'
         elif event.key() == Qt.Key_A:
-            # self.key_pressed.append('left')
             val = 'left'
         elif event.key() == Qt.Key_W:
-            # self.key_pressed.append('up')
             val = 'up'
         elif event.key() == Qt.Key_S:
-            # self.key_pressed.append('down')
             val = 'down'
         elif event.key() == Qt.Key_E:
             self.display_inventory()
@@ -346,13 +342,10 @@ class Game(QMainWindow,FilePaths):
             if event.key() == Qt.Key_D:
                 val = 'right'
             elif event.key() == Qt.Key_A:
-                # self.key_pressed.remove('left')
                 val = 'left'
             elif event.key() == Qt.Key_W:
-                # self.key_pressed.remove('up')
                 val = 'up'
             elif event.key() == Qt.Key_S:
-                # self.key_pressed.remove('down')
                 val = 'down'
             elif event.key() == Qt.Key_E:
                 pass
@@ -386,17 +379,17 @@ class Game(QMainWindow,FilePaths):
                     self.clear_key_count = 0
             
             ### Update player pose and redraw environment
-            tic = time.time()
+            # tic = time.time()
             self.update_dynamics()
-            toc = time.time()
-            # print('Update call took: %.3f'%(toc-tic))
+            # toc = time.time()
+            # print('Update call took: %e'%(toc-tic))
 
             ### recreate environment and repaint widget
-            tic = time.time()
+            # tic = time.time()
             self.environment.redraw_scene()
             self.environment.repaint()
-            toc = time.time()
-            # print('Drawing call took: %.3f'%(toc-tic))
+            # toc = time.time()
+            # print('Drawing call took: %e'%(toc-tic))
             
             # Update game loop tracking information
             self.loop_number += 1
@@ -420,4 +413,4 @@ class Game(QMainWindow,FilePaths):
             self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
             self.fps_calc = []
         
-        # self.prompt_manager.check_prompts()
+        self.prompt_manager.check_prompts()
