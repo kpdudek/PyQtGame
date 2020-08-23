@@ -42,7 +42,7 @@ class Player(QWidget,Colors,FilePaths):
         self.pose = np.array([ [200.] , [200.] ]) # pose for pixmap
         self.player_pixmap = None
 
-        self.geom = 'player.svg'
+        self.geom = 'Player.png'
         self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
@@ -67,6 +67,11 @@ class Player(QWidget,Colors,FilePaths):
 
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
+        # tree = QPixmap(f'{self.user_path}/graphics/tree.png')
+        # tree = tree.scaled(200, 200, Qt.KeepAspectRatio)
+        # pose = [20,300,600,1000,1300,1600]
+        # for p in pose:
+        #     painter.drawPixmap(QPoint(p,600),tree)
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
 
     def update_position(self,key_press,sprint,mouse_pos,obstacles):
@@ -76,10 +81,10 @@ class Player(QWidget,Colors,FilePaths):
             for key in key_press:
                 if key == 'right':
                     self.force[0] = self.key_force
-                    self.geom = 'player_right.svg'            
+                    self.geom = 'Player.png'          
                 elif key == 'left':
                     self.force[0] = -self.key_force
-                    self.geom = 'player_left.svg'
+                    self.geom = 'Player.png'
                 
                 if sprint:
                     self.force[0] = self.force[0] * self.sprint_multiplier
@@ -111,7 +116,7 @@ class Player(QWidget,Colors,FilePaths):
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .3:
-            self.geom = 'player.svg'
+            self.geom = 'Player.png'
         
         ### Updating player image
         if self.geom != self.prev_geom:
