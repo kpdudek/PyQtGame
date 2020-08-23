@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 import random, sys, os, math
 import numpy as np
+import ctypes
 
 from Utils import *
 from PaintUtils import *
@@ -36,6 +37,12 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         # self.ball(1600.,200.)
         # self.ball(1700.,200.)
 
+        # C library for collision checking
+        self.c_float_p = ctypes.POINTER(ctypes.c_double)
+
+        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so') # Or full path to file   
+                    
+        self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
     def ball(self,x,y):
         pixmap = QPixmap(f'{self.user_path}graphics/ball.png')
@@ -68,9 +75,23 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
     def collision_check(self,obstacles,idx):
         self.polys[idx].translate(self.physics[idx].velocity[0],0.)
         collision = False
+
         for obstacle in obstacles:
             if sphere_is_collision(self.polys[idx],obstacle):
-                if polygon_is_collision(self.polys[idx],obstacle):
+
+                data = copy.deepcopy(self.polys[idx].vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = data.astype(np.double)
+                data_p = data.ctypes.data_as(self.c_float_p)
+
+                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = data2.astype(np.double)
+                data_p2 = data2.ctypes.data_as(self.c_float_p)
+
+                # C Function call in python
+                res = self.fun.polygon_is_collision(data_p,2,len(self.polys[idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+
+                if res: #polygon_is_collision(self.poly,obstacle):
+                # if polygon_is_collision(self.polys[idx],obstacle):
                     collision = True
                     break
         
@@ -86,7 +107,19 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         collision = False
         for obstacle in obstacles:
             if sphere_is_collision(self.polys[idx],obstacle):
-                if polygon_is_collision(self.polys[idx],obstacle):
+                data = copy.deepcopy(self.polys[idx].vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = data.astype(np.double)
+                data_p = data.ctypes.data_as(self.c_float_p)
+
+                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = data2.astype(np.double)
+                data_p2 = data2.ctypes.data_as(self.c_float_p)
+
+                # C Function call in python
+                res = self.fun.polygon_is_collision(data_p,2,len(self.polys[idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+
+                if res: #polygon_is_collision(self.poly,obstacle):
+                # if polygon_is_collision(self.polys[idx],obstacle):
                     collision = True
                     break
 

@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 import random, sys, os, math
 import numpy as np
 from multiprocessing import Pool
+import ctypes
 
 from Utils import *
 from PaintUtils import *
@@ -57,6 +58,14 @@ class Player(QWidget,Colors,FilePaths):
         self.centroid_offset = self.pose - self.poly.sphere.pose 
 
         self.physics.info_signal.connect(self.send_info)
+
+        # C library for collision checking
+        self.c_float_p = ctypes.POINTER(ctypes.c_double)
+
+        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so') # Or full path to file   
+                    
+        self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
+
     
     def send_info(self,info):
         self.info_signal.emit(info)
@@ -125,9 +134,26 @@ class Player(QWidget,Colors,FilePaths):
         # X Collision Check
         self.poly.translate(self.physics.velocity[0],0.)
         collision = False
+
+        # data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+        # data = data.astype(np.double)
+        # data_p = data.ctypes.data_as(self.c_float_p)
+
         for obstacle in obstacles:
             if sphere_is_collision(self.poly,obstacle):
-                if polygon_is_collision(self.poly,obstacle):
+                data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = data.astype(np.double)
+                data_p = data.ctypes.data_as(self.c_float_p)
+
+                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = data2.astype(np.double)
+                data_p2 = data2.ctypes.data_as(self.c_float_p)
+
+                # C Function call in python
+                res = self.fun.polygon_is_collision(data_p,2,len(self.poly.vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+
+                if res: #polygon_is_collision(self.poly,obstacle):
+                # if polygon_is_collision(self.poly,obstacle):
                     collision = True
                     break
     
@@ -144,7 +170,19 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
         for obstacle in obstacles:
             if sphere_is_collision(self.poly,obstacle):
-                if polygon_is_collision(self.poly,obstacle):
+                data = copy.deepcopy(self.poly.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data = data.astype(np.double)
+                data_p = data.ctypes.data_as(self.c_float_p)
+
+                data2 = copy.deepcopy(obstacle.vertices)#.copy() #numpy.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
+                data2 = data2.astype(np.double)
+                data_p2 = data2.ctypes.data_as(self.c_float_p)
+
+                # # C Function call in python
+                res = self.fun.polygon_is_collision(data_p,2,len(self.poly.vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+
+                if res: #polygon_is_collision(self.poly,obstacle):
+                # if polygon_is_collision(self.poly,obstacle):
                     collision = True
                     break
 
