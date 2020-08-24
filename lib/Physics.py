@@ -25,7 +25,7 @@ class PlayerPhysics(QWidget,FilePaths):
     velocity = np.array([ [0.] , [0.] ])
     acceleration = np.array([ [0.] , [0.] ])
 
-    c_d = 0.06
+    c_d = 0.1
     drag = 0.
     time = 1.0
     grav_accel = np.array([ [0.] , [13.] ])

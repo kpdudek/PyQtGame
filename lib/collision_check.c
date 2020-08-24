@@ -84,11 +84,3 @@ int polygon_is_collision(double poly1 [], int poly1_row, int poly1_col, double p
 
     return collision;
 }
-// int polygon_is_collision(double poly1 [] ){
-//     int res = 1;
-//     printf("Made it to c!\n");
-//     for(int i = 0; i < 8; i++){
-//         printf(" %f\n",poly1[i]);
-//     }
-//     return res;
-// }

@@ -320,7 +320,6 @@ class Game(QMainWindow,FilePaths):
             self.prev_scene_event()
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
-            # self.exit_game = True
             self.end_game()
 
         elif event.key() == Qt.Key_P:
@@ -396,18 +395,16 @@ class Game(QMainWindow,FilePaths):
             self.game_time += self.game_timer.interval() / 1000.0
             self.environment.game_time = self.game_time
 
-        # self.fps_time = 1./((curr_time - self.fps_time))
-        self.fps_log.append(1./((curr_time - self.fps_time)))
-        if len(self.fps_log) == 50:
-            average_fps = np.mean(self.fps_log)
-            log(f'Average fps: {average_fps}')
-            self.fps_log = []
+        # self.fps_log.append(1./((curr_time - self.fps_time)))
+        # if len(self.fps_log) == 50:
+        #     average_fps = np.mean(self.fps_log)
+        #     log(f'Average fps: {average_fps}')
+        #     self.fps_log = []
         
         # Set time information for next loop
         self.fps_time = curr_time
 
         toc = time.time()
-        # print(f"Max FPS: {1./(toc-curr_time)}")
         self.fps_calc.append((1./(toc-curr_time))) 
         if len(self.fps_calc) == 30:
             self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))

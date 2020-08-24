@@ -24,6 +24,10 @@ class Environment(QWidget,Colors,FilePaths):
     env_create_count = 0
 
     ground_chunk = None
+    ground_poly = None
+    tree = None
+    gen_cloud_pixmaps = None
+    cloud_pixmaps = []
 
     def __init__(self,width,height,player,dyn_obs,save_file, params, load = True):
         super().__init__()
@@ -198,31 +202,39 @@ class Environment(QWidget,Colors,FilePaths):
         
         ### Draw clouds using number of clouds, and range to generate random pose if generating new environment
         for cloud_idx in range(0,self.num_clouds):
-            
-            if self.generate_env:
-                new_cloud = {}
+            if not self.gen_cloud_pixmaps:
+                if self.generate_env:
+                    new_cloud = {}
 
-                x = random.randint(self.cloud_x_range[0],self.cloud_x_range[1])
-                y = random.randint(self.cloud_y_range[0],self.cloud_y_range[1])
-                new_cloud.update({'origin':[x,y]})
+                    x = random.randint(self.cloud_x_range[0],self.cloud_x_range[1])
+                    y = random.randint(self.cloud_y_range[0],self.cloud_y_range[1])
+                    new_cloud.update({'origin':[x,y]})
 
-                cloud_list = os.listdir(f'{self.user_path}/graphics/clouds/')
-                cloud_png = cloud_list[random.randint(0,len(cloud_list)-1)]
-                new_cloud.update({'cloud_png':cloud_png})
+                    cloud_list = os.listdir(f'{self.user_path}/graphics/clouds/')
+                    cloud_png = cloud_list[random.randint(0,len(cloud_list)-1)]
+                    new_cloud.update({'cloud_png':cloud_png})
 
-                clouds.append(new_cloud)
+                    clouds.append(new_cloud)
 
+                else:
+                    x,y = self.env_snapshot['clouds'][cloud_idx]['origin']
+                    cloud_png = self.env_snapshot['clouds'][cloud_idx]['cloud_png']
+
+
+                cloud = QPixmap(f'{self.user_path}/graphics/clouds/{cloud_png}')
+                cloud = cloud.scaled(550, 100, Qt.KeepAspectRatio)
+                self.cloud_pixmaps.append(cloud)
+
+                painter.drawPixmap(QPoint(x,y),cloud)
             else:
+                cloud = self.cloud_pixmaps[cloud_idx]
                 x,y = self.env_snapshot['clouds'][cloud_idx]['origin']
-                cloud_png = self.env_snapshot['clouds'][cloud_idx]['cloud_png']
-
-
-            cloud = QPixmap(f'{self.user_path}/graphics/clouds/{cloud_png}')
-            cloud = cloud.scaled(550, 100, Qt.KeepAspectRatio)
-            painter.drawPixmap(QPoint(x,y),cloud)
+                painter.drawPixmap(QPoint(x,y),cloud)
+        self.gen_cloud_pixmaps = True
 
         if self.generate_env:
             self.env_snapshot.update({'clouds':clouds})
+        
         painter.end()
     
     def draw_stars(self):
@@ -321,7 +333,8 @@ class Environment(QWidget,Colors,FilePaths):
         bottom_right = np.array([[origin[0]+size[0]],[origin[1]+size[1]]],dtype=float)
 
         if self.env_type == 'rect':
-            self.ground_poly = Polygon(top_left,bottom_right,poly_type=self.env_type)
+            if not self.ground_poly:
+                self.ground_poly = Polygon(top_left,bottom_right,poly_type=self.env_type)
 
             if not self.ground_chunk:
                 self.ground_chunk = QPixmap(f'{self.user_path}/graphics/ground.png')
@@ -332,12 +345,13 @@ class Environment(QWidget,Colors,FilePaths):
                 painter.drawPixmap(QPoint(p,self.height-self.ground_chunk.size().height()),self.ground_chunk)
 
         elif self.env_type == 'peak':
-            self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=self.env_type)
+            if not self.ground_poly:
+                self.ground_poly = Polygon(top_left,bottom_right,float(rise_height),poly_type=self.env_type)
         
-            p = QPolygonF()
-            for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
-                p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
-            painter.drawPolygon(p)
+                self.p = QPolygonF()
+                for poly_idx in range(0,len(self.ground_poly.vertices[0,:])):
+                    self.p.append(QPointF(self.ground_poly.vertices[0,poly_idx],self.ground_poly.vertices[1,poly_idx]))
+            painter.drawPolygon(self.p)
 
         if self.player_debug:
             pen.setWidth(2)
@@ -439,11 +453,13 @@ class Environment(QWidget,Colors,FilePaths):
         else:
             trees = self.env_snapshot['trees']
 
-        tree = QPixmap(f'{self.user_path}/graphics/tree.png')
-        tree = tree.scaled(200, 200, Qt.KeepAspectRatio)
-        pose = [20,300,600,1000,1300,1600]
-        for p in pose:
-            painter.drawPixmap(QPoint(p,600),tree)
+        if not self.tree:
+            self.tree = QPixmap(f'{self.user_path}/graphics/tree.png')
+            self.tree = self.tree.scaled(200, 200, Qt.KeepAspectRatio)
+
+        poses = [20,300,600,1000,1300,1600]
+        for p in poses:
+            painter.drawPixmap(QPoint(p,600),self.tree)
         painter.end()
 
         if self.generate_env:
@@ -487,12 +503,12 @@ class Environment(QWidget,Colors,FilePaths):
         painter.setPen(pen)
         
         for idx in range(0,len(self.dyn_obs.polys)):
-            pixmap = self.dyn_obs.pixmaps[idx].copy()
-            pose = self.dyn_obs.poses[idx].copy()
-            size = self.dyn_obs.sizes[idx].copy()
+            # pixmap = self.dyn_obs.pixmaps[idx].copy()
+            # pose = self.dyn_obs.poses[idx].copy()
+            # size = self.dyn_obs.sizes[idx].copy()
 
-            pix_pose = QPoint(float(pose[0]),float(pose[1]))
-            painter.drawPixmap(pix_pose,pixmap)
+            pix_pose = QPoint(float(self.dyn_obs.poses[idx][0]),float(self.dyn_obs.poses[idx][1]))
+            painter.drawPixmap(pix_pose,self.dyn_obs.pixmaps[idx])
 
             if self.player_debug:
                 pen.setWidth(2)

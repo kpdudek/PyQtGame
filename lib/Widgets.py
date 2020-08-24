@@ -201,13 +201,13 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.controls_list_layout = QHBoxLayout()
 
         self.controls_list = QListWidget()
-        control_list = ['Up','Down','Left','Right','Save and exit','End turn','Previous scene','Advance scene','Pause']
+        control_list = ['Up','Down','Left','Right','Save and exit','End turn','Previous scene','Advance scene','Pause','Sprint']
         self.controls_list.addItems(control_list)
         self.controls_list_layout.addWidget(self.controls_list)
         self.controls_list.itemClicked.connect(self.link_lists)
 
         self.button_list = QListWidget()
-        control_buttons = ['W','S','A','D','ESC','N','B','M','P']
+        control_buttons = ['W','S','A','D','ESC','N','B','M','P','Shift']
         self.button_list.addItems(control_buttons)
         self.controls_list_layout.addWidget(self.button_list)
         self.button_list.itemClicked.connect(self.link_button_list)

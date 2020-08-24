@@ -17,8 +17,8 @@ from Geometry import *
 class Player(QWidget,Colors,FilePaths):
     key_force = 2.
     sprint_multiplier = 2.5
-    boost = 25.
-    max_vel = 8.
+    boost = 28.
+    max_vel = 11.
     mass = 12.
 
     force = np.array([ [0.] , [0.] ])
@@ -67,11 +67,6 @@ class Player(QWidget,Colors,FilePaths):
 
     def set_geometry(self,img):
         self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
-        # tree = QPixmap(f'{self.user_path}/graphics/tree.png')
-        # tree = tree.scaled(200, 200, Qt.KeepAspectRatio)
-        # pose = [20,300,600,1000,1300,1600]
-        # for p in pose:
-        #     painter.drawPixmap(QPoint(p,600),tree)
         self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
 
     def update_position(self,key_press,sprint,mouse_pos,obstacles):
