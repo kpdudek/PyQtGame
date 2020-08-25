@@ -30,6 +30,8 @@ class Player(QWidget,Colors,FilePaths):
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
     collision_signal = pyqtSignal(object)
+
+    player_pixmap = None
     
     def __init__(self,width,height):
         super().__init__()
@@ -66,8 +68,9 @@ class Player(QWidget,Colors,FilePaths):
         self.info_signal.emit(info)
 
     def set_geometry(self,img):
-        self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
-        self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
+        if not self.player_pixmap:
+            self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
+            self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
 
     def update_position(self,key_press,sprint,mouse_pos,obstacles):
         if len(key_press) != 0:

@@ -410,4 +410,4 @@ class Game(QMainWindow,FilePaths):
             self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
             self.fps_calc = []
         
-        self.prompt_manager.check_prompts()
+        # self.prompt_manager.check_prompts()
