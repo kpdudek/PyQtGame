@@ -415,9 +415,12 @@ class Game(QMainWindow,FilePaths):
 
         toc = time.time()
         # print(f"Max FPS: {1./(toc-curr_time)}")
-        self.fps_calc.append((1./(toc-curr_time))) 
-        if len(self.fps_calc) == 30:
-            self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
-            self.fps_calc = []
+        try:
+            self.fps_calc.append((1./(toc-curr_time))) 
+            if len(self.fps_calc) == 30:
+                self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
+                self.fps_calc = []
+        except:
+            log('Computed fps is invalid...',color='r')
         
         # self.prompt_manager.check_prompts()
