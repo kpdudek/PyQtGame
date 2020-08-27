@@ -128,7 +128,7 @@ class Game(QMainWindow,FilePaths):
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
-        obstacles = [self.environment.ground_poly,self.environment.frame_poly]
+        obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.poly]
         self.dynamic_obstacles.update_position(force,obstacles)
 
     def display_environment(self):
@@ -139,12 +139,12 @@ class Game(QMainWindow,FilePaths):
 
         self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
 
-        self.game_menu_options = GameMenuOptions()
+        self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
         self.game_layout.addWidget(self.game_menu_options)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
+        # self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
         self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)

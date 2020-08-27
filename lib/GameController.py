@@ -17,8 +17,10 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     clear_keys_signal = pyqtSignal()
     dock_widget_signal = pyqtSignal(object)
 
-    def __init__(self):
+    def __init__(self,dynamic_obstacles):
         super().__init__()
+
+        self.dynamic_obstacles = dynamic_obstacles
 
         self.button_grid = QGridLayout()
         self.setLayout(self.button_grid)
@@ -38,10 +40,13 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
         self.show_physics_button = ControlButton('Physics',fn=self.show_physics)
         self.button_grid.addWidget(self.show_physics_button,0,4)
 
+        self.obstacle_manager_button = ControlButton('Obstacles',fn=self.show_obstacles)
+        self.button_grid.addWidget(self.obstacle_manager_button,0,5)
+
         self.fps_label = QLabel('...')
         self.fps_label.setFixedSize(100,20)
         self.fps_label.setStyleSheet(f"font:bold 14px")
-        self.button_grid.addWidget(self.fps_label,0,5)
+        self.button_grid.addWidget(self.fps_label,0,6)
 
     def save_scene(self):
         self.save_scene_signal.emit()
@@ -54,13 +59,18 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
-        self.clear_keys_signal.emit()
+        # self.clear_keys_signal.emit()
         self.dock_widget_signal.emit(self.controls_window)
 
     def show_physics(self):
         self.physics_window = PhysicsDisplay()
-        self.clear_keys_signal.emit()
+        # self.clear_keys_signal.emit()
         self.dock_widget_signal.emit(self.physics_window)
+
+    def show_obstacles(self):
+        self.obstacles_window = ObstaclesDisplay(self.dynamic_obstacles)
+        # self.clear_keys_signal.emit()
+        self.dock_widget_signal.emit(self.obstacles_window)
 
 class GameController(QWidget,FilePaths,Colors):
     new_scene_signal = pyqtSignal()

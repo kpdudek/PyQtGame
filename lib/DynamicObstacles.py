@@ -21,6 +21,8 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.width = width
         self.height = height
 
+        # obstacles = {}
+
         self.polys = []
         self.centroid_offsets = []
         self.physics = []
