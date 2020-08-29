@@ -503,10 +503,6 @@ class Environment(QWidget,Colors,FilePaths):
         painter.setPen(pen)
         
         for idx in range(0,len(self.dyn_obs.polys)):
-            # pixmap = self.dyn_obs.pixmaps[idx].copy()
-            # pose = self.dyn_obs.poses[idx].copy()
-            # size = self.dyn_obs.sizes[idx].copy()
-
             pix_pose = QPoint(float(self.dyn_obs.poses[idx][0]),float(self.dyn_obs.poses[idx][1]))
             painter.drawPixmap(pix_pose,self.dyn_obs.pixmaps[idx])
 

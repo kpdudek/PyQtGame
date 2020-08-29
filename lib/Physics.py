@@ -68,7 +68,6 @@ class PlayerPhysics(QWidget,FilePaths):
         self.info.assign(self.force,self.drag,self.acceleration,self.velocity,self.touching_ground)
         self.info_signal.emit(self.info)
 
-
 class Physics(QWidget,FilePaths):
     velocity = np.array([ [0.] , [0.] ])
     acceleration = np.array([ [0.] , [0.] ])

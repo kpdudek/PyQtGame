@@ -352,27 +352,16 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
 
         self.auto_fill_background = True
 
-        self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignCenter)
+        uic.loadUi(f'{self.user_path}ui/obstacle_manager.ui', self)
 
-        self.obstacle_count = QLabel(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
-        self.obstacle_count.setStyleSheet(f"font:bold italic 24px")
-        self.obstacle_count.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
-        self.layout.addWidget(self.obstacle_count)
-
-        self.add_button = QPushButton('Add')
         self.add_button.clicked.connect(self.add_obstacle)
-        self.layout.addWidget(self.add_button)
-
-        self.ok_button = QPushButton('Close')
-        self.ok_button.clicked.connect(self.close_window)
-        # self.ok_button.setDefault(True)
-        self.layout.addWidget(self.ok_button)
-
-        self.setLayout(self.layout)
+        self.close_button.clicked.connect(self.close_window)
 
     def add_obstacle(self):
-        self.dynamic_obstacles.ball(1000.,200.)
+        x = float(self.x_pose.value())
+        y = float(self.y_pose.value())
+
+        self.dynamic_obstacles.ball(x,y)
         self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
 
     def close_window(self):

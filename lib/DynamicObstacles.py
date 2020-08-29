@@ -30,15 +30,6 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.poses = []
         self.sizes = []
 
-        self.ball(500.,200.)
-        # self.ball(800.,200.)
-        # self.ball(1200.,200.)
-        # self.ball(1300.,200.)
-        # self.ball(1400.,200.)
-        # self.ball(1500.,200.)
-        # self.ball(1600.,200.)
-        # self.ball(1700.,200.)
-
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
         self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so')
