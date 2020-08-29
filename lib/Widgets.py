@@ -191,7 +191,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         if rect:
             self.setGeometry(rect)
         else:
-            self.setGeometry(0,0,600,600)
+            self.setGeometry(0,0,400,400)
 
         self.controls_label = QLabel('Controls:')
         self.controls_label.setStyleSheet(f"font:bold italic 24px")
@@ -216,7 +216,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
 
         self.ok_button = QPushButton('Close')
         self.ok_button.clicked.connect(self.close_window)
-        self.ok_button.setDefault(True)
+        # self.ok_button.setDefault(True)
         self.layout.addWidget(self.ok_button)
 
         self.setLayout(self.layout)
@@ -353,8 +353,9 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         self.auto_fill_background = True
 
         uic.loadUi(f'{self.user_path}ui/obstacle_manager.ui', self)
-
+        
         self.add_button.clicked.connect(self.add_obstacle)
+        self.remove_button.clicked.connect(self.remove_obstacle)
         self.close_button.clicked.connect(self.close_window)
 
     def add_obstacle(self):
@@ -362,6 +363,10 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         y = float(self.y_pose.value())
 
         self.dynamic_obstacles.ball(x,y)
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
+
+    def remove_obstacle(self):
+        self.dynamic_obstacles.remove_ball()
         self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
 
     def close_window(self):

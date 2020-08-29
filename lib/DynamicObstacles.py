@@ -21,8 +21,6 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.width = width
         self.height = height
 
-        # obstacles = {}
-
         self.polys = []
         self.centroid_offsets = []
         self.physics = []
@@ -56,7 +54,24 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.centroid_offsets.append(centroid_offset)
 
         physics = Physics(10.,15.)
-        self.physics.append(physics)        
+        # print(physics.id())
+        self.physics.append(physics)
+
+    def remove_ball(self,idx=None):
+        if idx:
+            self.polys.pop(idx)
+            self.centroid_offsets.pop(idx)
+            self.physics.pop(idx)
+            self.pixmaps.pop(idx)
+            self.poses.pop(idx)
+            self.sizes.pop(idx)
+        else:
+            self.polys.pop()
+            self.centroid_offsets.pop()
+            self.physics.pop()
+            self.pixmaps.pop()
+            self.poses.pop()
+            self.sizes.pop()      
 
     def update_position(self,force,obstacles):
         for idx in range(0,len(self.polys)):

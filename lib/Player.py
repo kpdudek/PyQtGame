@@ -44,7 +44,7 @@ class Player(QWidget,Colors,FilePaths):
         self.pose = np.array([ [200.] , [200.] ]) # pose for pixmap
         self.player_pixmap = None
 
-        self.geom = 'Player.png'
+        self.geom = 'left_1.png'
         self.set_geometry(self.geom)
         self.prev_geom = self.geom
 
@@ -69,7 +69,7 @@ class Player(QWidget,Colors,FilePaths):
 
     def set_geometry(self,img):
         if not self.player_pixmap:
-            self.player_pixmap = QPixmap(f'{self.user_path}graphics/{img}')
+            self.player_pixmap = QPixmap(f'{self.user_path}graphics/cat/left/{img}')
             self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
 
     def update_position(self,key_press,sprint,mouse_pos,obstacles):
@@ -114,7 +114,7 @@ class Player(QWidget,Colors,FilePaths):
 
         # Setting player velocity to zero within a threshold and updating geometry
         if abs(self.physics.velocity[0]) < .3:
-            self.geom = 'Player.png'
+            self.geom = 'left_1.png'
         
         ### Updating player image
         if self.geom != self.prev_geom:
