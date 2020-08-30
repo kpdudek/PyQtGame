@@ -117,7 +117,7 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.pose)
+            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose)
         except:
             pass # No physics display exists
     
@@ -128,7 +128,7 @@ class Game(QMainWindow,FilePaths):
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
-        obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.poly]
+        obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
         self.dynamic_obstacles.update_position(force,obstacles)
 
     def display_environment(self):

@@ -455,11 +455,11 @@ class Environment(QWidget,Colors,FilePaths):
 
         if not self.tree:
             self.tree = QPixmap(f'{self.user_path}/graphics/tree.png')
-            self.tree = self.tree.scaled(200, 200, Qt.KeepAspectRatio)
+            self.tree = self.tree.scaled(250, 250, Qt.KeepAspectRatio)
 
         poses = [20,300,600,1000,1300,1600]
         for p in poses:
-            painter.drawPixmap(QPoint(p,600),self.tree)
+            painter.drawPixmap(QPoint(p,550),self.tree)
         painter.end()
 
         if self.generate_env:
@@ -473,18 +473,18 @@ class Environment(QWidget,Colors,FilePaths):
         pen.setColor(QtGui.QColor(self.divider_color))
         painter.setPen(pen)
         
-        pose = QPoint(float(self.player.pose[0]),float(self.player.pose[1]))
-        painter.drawPixmap(pose,self.player.player_pixmap)
+        pose = QPoint(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]))
+        painter.drawPixmap(pose,self.player.sprite.pixmaps[self.player.sprite.idx])
 
         if self.player_debug:
-            rec = QRect(float(self.player.pose[0]),float(self.player.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
+            rec = QRect(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
             painter.drawRect(rec)
 
             pen.setWidth(1)
             pen.setColor(QtGui.QColor(self.warning_text))
             painter.setPen(pen)
 
-            painter.drawEllipse(QPoint(float(self.player.poly.sphere.pose[0]),float(self.player.poly.sphere.pose[1])),self.player.poly.sphere.radius,self.player.poly.sphere.radius)
+            painter.drawEllipse(QPoint(float(self.player.polys[self.player.sprite.idx].sphere.pose[0]),float(self.player.polys[self.sprite.idx].sphere.pose[1])),self.player.polys[self.sprite.idx].sphere.radius,self.player.polys[self.sprite.idx].sphere.radius)
 
             if np.sum(self.player.mouse_pos) >= 0:
                 pen.setWidth(5)

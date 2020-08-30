@@ -38,10 +38,7 @@ int polygon_is_collision(double poly1 [], int poly1_row, int poly1_col, double p
     double e1 [2][2] = {};
     double e2 [2][2] = {};
 
-    // for(int i = 0; i < (poly1_col * poly1_row); i++){printf("%f ",poly1[i]);}
-    // printf("\n");
     int count = 0;
-    // printf("%d %d\n",poly1_col,poly2_col);
     for(int i = 0; i < poly1_col; i++){
         for(int j = 0; j < poly2_col; j++){
             if(i == poly1_col-1){
@@ -71,7 +68,6 @@ int polygon_is_collision(double poly1 [], int poly1_row, int poly1_col, double p
             }
 
             if(edge_is_collision(e1,e2)==1){
-                // printf("Edge in collision on loop: %d!\n",count);
                 collision = 1;
                 break;
             }
@@ -81,6 +77,5 @@ int polygon_is_collision(double poly1 [], int poly1_row, int poly1_col, double p
             break;
         }
     }
-
     return collision;
 }
