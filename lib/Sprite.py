@@ -32,6 +32,9 @@ class Sprite(QWidget,Colors,FilePaths):
         for png in sorted(os.listdir(f'{self.user_path}graphics/{folder}')):
             print(png)
             pix = QPixmap(f'{self.user_path}graphics/{folder}/{png}')
+
+            pix = pix.transformed(QTransform().scale(-1, 1))
+            
             if scale:
                 pix = pix.scaled(scale, scale, Qt.KeepAspectRatio)
             self.pixmaps.append(pix)
@@ -60,11 +63,12 @@ class Sprite(QWidget,Colors,FilePaths):
         split_t = time.time()
 
         if split_t-self.time > self.freq:
-            self.set_pixmap()
+            
             self.idx += 1
             if self.idx > len(self.pixmaps)-1:
                 self.idx = 0
             self.time = split_t
-
+        
+        self.set_pixmap()
 
             
