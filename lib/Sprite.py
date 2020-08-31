@@ -24,12 +24,12 @@ class Sprite(QWidget,Colors,FilePaths):
 
     pose = np.array([ [200.] , [200.] ])
 
-    freq = 1./10.0 #Hz
+    freq = 1./8.0 #Hz
 
     def __init__(self,folder,scale=None):
         super().__init__()
 
-        for png in os.listdir(f'{self.user_path}graphics/{folder}'):
+        for png in sorted(os.listdir(f'{self.user_path}graphics/{folder}')):
             print(png)
             pix = QPixmap(f'{self.user_path}graphics/{folder}/{png}')
             if scale:
