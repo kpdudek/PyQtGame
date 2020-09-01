@@ -31,36 +31,16 @@ class Player(QWidget,Colors,FilePaths):
     info_signal = pyqtSignal(object)
     pause_signal = pyqtSignal()
     collision_signal = pyqtSignal(object)
-
-    player_pixmap = None
     
     def __init__(self,width,height):
         super().__init__()
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
 
         self.width = width
         self.height = height
 
-        # self.pose = np.array([ [200.] , [200.] ]) # pose for pixmap
-        self.player_pixmap = None
-
         self.sprite = Sprite('cat/left/',scale=60)
-        # Sprites
-        # self.left_1_pixmap = QPixmap(f'{self.user_path}graphics/cat/left/left_1.png').scaled(60, 60, Qt.KeepAspectRatio)
-
-        # self.geom = 'left_1.png'
-        # self.set_geometry(self.geom)
-        # self.prev_geom = self.geom
 
         self.physics = PlayerPhysics(self.mass,self.max_vel)
-        
-        # self.poly = Polygon()
-        # bot_right = np.array([self.pose[0]+self.size[0],self.pose[1]+self.size[1]])
-        # self.poly.rectangle(self.pose,bot_right)
-
-        # self.centroid_offset = self.pose - self.poly.sphere.pose 
-
         self.physics.info_signal.connect(self.send_info)
 
         # C library for collision checking
@@ -71,12 +51,6 @@ class Player(QWidget,Colors,FilePaths):
     def send_info(self,info):
         self.info_signal.emit(info)
 
-    # def set_geometry(self,img):
-    #     # if not self.player_pixmap:
-    #     self.player_pixmap = self.left_1_pixmap
-    #     # self.player_pixmap = self.player_pixmap.scaled(60, 60, Qt.KeepAspectRatio)
-    #     self.size = [self.player_pixmap.size().width(),self.player_pixmap.size().height()]
-
     def update_position(self,key_press,sprint,mouse_pos,obstacles):
         if len(key_press) != 0:
             self.force = np.array([ [0.] , [0.] ])
@@ -84,10 +58,12 @@ class Player(QWidget,Colors,FilePaths):
             for key in key_press:
                 if key == 'right':
                     self.force[0] = self.key_force
-                    self.geom = 'left_1.png'          
+                    # self.geom = 'left_1.png'
+                    self.sprite.direction(0.)       
                 elif key == 'left':
                     self.force[0] = -self.key_force
-                    self.geom = 'left_1.png'
+                    # self.geom = 'left_1.png'
+                    self.sprite.direction(180.)
                 
                 if sprint:
                     self.force[0] = self.force[0] * self.sprint_multiplier
@@ -117,15 +93,6 @@ class Player(QWidget,Colors,FilePaths):
         else: # Always keep track of the mouse pose for drawing the red marker
             self.mouse_pos = mouse_pos
 
-        # Setting player velocity to zero within a threshold and updating geometry
-        # if abs(self.physics.velocity[0]) < .3:
-        #     self.geom = 'left_1.png'
-        
-        ### Updating player image
-        # if self.geom != self.prev_geom:
-        #     self.set_geometry(self.geom)
-        # self.prev_geom = self.geom
-
         self.collision_str = np.zeros(2).reshape(2,1)
 
         self.physics.gravity()
@@ -138,7 +105,7 @@ class Player(QWidget,Colors,FilePaths):
 
         self.physics.send_info()
 
-        self.sprite.animate()
+        self.sprite.animate(self.physics.velocity[0])
 
     def collision_check(self,obstacles):
         # X Collision Check

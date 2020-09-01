@@ -59,7 +59,7 @@
            <item>
             <widget class="QLabel" name="obstacle_count">
              <property name="text">
-              <string>Num Obstacles: </string>
+              <string>Num Obstacles: 0</string>
              </property>
             </widget>
            </item>

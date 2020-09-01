@@ -58,6 +58,8 @@ class DynamicObstacles(QWidget,Colors,FilePaths):
         self.physics.append(physics)
 
     def remove_ball(self,idx=None):
+        if len(self.polys)==0:
+            return
         if idx:
             self.polys.pop(idx)
             self.centroid_offsets.pop(idx)

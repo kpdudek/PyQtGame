@@ -26,14 +26,13 @@ class Sprite(QWidget,Colors,FilePaths):
 
     freq = 1./8.0 #Hz
 
+    ang = 180. # Degrees from 0 at horizontal right
+
     def __init__(self,folder,scale=None):
         super().__init__()
 
         for png in sorted(os.listdir(f'{self.user_path}graphics/{folder}')):
-            print(png)
             pix = QPixmap(f'{self.user_path}graphics/{folder}/{png}')
-
-            pix = pix.transformed(QTransform().scale(-1, 1))
             
             if scale:
                 pix = pix.scaled(scale, scale, Qt.KeepAspectRatio)
@@ -53,15 +52,39 @@ class Sprite(QWidget,Colors,FilePaths):
 
         self.time = time.time()
 
-    def direction(self,dir):
-        pass
+    def direction(self,ang):
+        if ang == self.ang:
+            return
+        
+        elif (ang < 90.) or (ang > 270.): # Right half
+            if not (self.ang < 90.) or (self.ang > 270.):
+                for idx,pix in enumerate(self.pixmaps):
+                    self.pixmaps[idx] = pix.transformed(QTransform().scale(-1, 1))
+
+        elif (ang > 90.) and (ang < 270.): # Left half
+            if not (self.ang > 90.) and (self.ang < 270.):
+                for idx,pix in enumerate(self.pixmaps):
+                    self.pixmaps[idx] = pix.transformed(QTransform().scale(-1, 1))
+
+        elif (ang == 90.): # Facing up
+            pass
+
+        elif (ang == 270.): # Facing forwards
+            pass
+
+        self.ang = ang
 
     def set_pixmap(self):
         self.pixmap = self.pixmaps[self.idx]
     
-    def animate(self):
+    def animate(self,vel):
         split_t = time.time()
 
+        if not vel == 0.:
+            self.freq = 1./(30*abs(vel))
+        else:
+            return
+        
         if split_t-self.time > self.freq:
             
             self.idx += 1

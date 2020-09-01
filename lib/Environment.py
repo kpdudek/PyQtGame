@@ -26,6 +26,7 @@ class Environment(QWidget,Colors,FilePaths):
     ground_chunk = None
     ground_poly = None
     tree = None
+    sun = None
     gen_cloud_pixmaps = None
     cloud_pixmaps = []
 
@@ -385,7 +386,7 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.generate_env:
             sun = {}
-            origin = [35,35]
+            origin = [-10,-10]
             radii = [50,50]
 
             sun.update({'origin':origin,'radii':radii})
@@ -393,8 +394,15 @@ class Environment(QWidget,Colors,FilePaths):
             origin = self.env_snapshot['sun']['origin']
             radii = self.env_snapshot['sun']['radii']
         
-        # Generate sun
-        painter.drawEllipse(QPoint(origin[0],origin[1]),radii[0],radii[1])
+        # Only create pixmap once
+        if not self.sun:
+            self.sun = QPixmap(f'{self.user_path}/graphics/sun.png')
+            diam = radii[0] + radii[1]
+            self.sun = self.sun.scaled(diam, diam, Qt.KeepAspectRatio)
+
+        # Draw sun pixmap
+        painter.drawPixmap(QPoint(origin[0],origin[1]),self.sun)
+        
         painter.end()
 
         if self.generate_env:
