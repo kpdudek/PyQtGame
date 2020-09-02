@@ -125,6 +125,10 @@ class Game(QMainWindow,FilePaths):
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
         for poly in self.dynamic_obstacles.polys:
             player_obstacles.append(poly)
+
+        while None in player_obstacles:
+            player_obstacles.remove(None)
+        
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
@@ -361,6 +365,7 @@ class Game(QMainWindow,FilePaths):
             if self.new_env:
                 self.environment.new_environment()
                 self.new_env = False
+                # return
 
             elif self.prev_scene:
                 self.environment.previous_scene()
