@@ -22,21 +22,22 @@ class PhysicsInfo(object):
         self.physics_info['touching_ground'] = touching_ground
 
 class PlayerPhysics(QWidget,FilePaths):
-    velocity = np.array([ [0.] , [0.] ])
-    acceleration = np.array([ [0.] , [0.] ])
-
-    c_d = 0.1
-    drag = 0.
-    time = 1.0
-    grav_accel = np.array([ [0.] , [13.] ])
-
-    touching_ground = False
     info_signal = pyqtSignal(object)
 
     def __init__(self,mass,max_vel):
         super().__init__()
         self.mass = mass
         self.max_vel = max_vel
+
+        self.velocity = np.array([ [0.] , [0.] ])
+        self.acceleration = np.array([ [0.] , [0.] ])
+
+        self.touching_ground = False
+
+        self.c_d = 0.06
+        self.drag = 0.
+        self.time = 1.0
+        self.grav_accel = np.array([ [0.] , [13.] ])
 
         self.info = PhysicsInfo(self.mass,self.grav_accel,self.max_vel)
 
@@ -69,20 +70,21 @@ class PlayerPhysics(QWidget,FilePaths):
         self.info_signal.emit(self.info)
 
 class Physics(QWidget,FilePaths):
-    velocity = np.array([ [0.] , [0.] ])
-    acceleration = np.array([ [0.] , [0.] ])
-
-    c_d = 0.06
-    drag = 0.
-    time = 1.0
-    grav_accel = np.array([ [0.] , [13.] ])
-
-    touching_ground = False
 
     def __init__(self,mass,max_vel):
         super().__init__()
         self.mass = mass
         self.max_vel = max_vel
+
+        self.velocity = np.array([ [0.] , [0.] ])
+        self.acceleration = np.array([ [0.] , [0.] ])
+
+        self.touching_ground = False
+
+        self.c_d = 0.06
+        self.drag = 0.
+        self.time = 1.0
+        self.grav_accel = np.array([ [0.] , [13.] ])
 
     def accelerate(self,force):
         self.force = force

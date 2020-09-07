@@ -29,8 +29,9 @@ class DynamicObstacles(Colors,FilePaths):
         self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so')
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
-    def ball(self,x,y):
-        sprite = OBSSprite('mouse/right/',scale=40,physics={'mass':12.,'max_vel':20.})
+    def ball(self,x,y,dir=0.):
+        sprite = Sprite('mouse/right/',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
+        sprite.direction(dir)
         x = np.array([x])
         y = np.array([y])
         sprite.polys[sprite.idx].teleport(x,y)

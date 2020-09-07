@@ -124,14 +124,11 @@ class Game(QMainWindow,FilePaths):
     
     def update_dynamics(self):   
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
-        print()
         for sprite in self.dynamic_obstacles.sprites:
             player_obstacles.append(sprite.polys[sprite.idx])
-            log(f'Obs: {len(sprite.pixmaps)}')
         while None in player_obstacles:
             player_obstacles.remove(None)
         
-        log(f'Player: {len(self.player.sprite.pixmaps)}')
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
@@ -410,15 +407,15 @@ class Game(QMainWindow,FilePaths):
             self.fps_calc = []
         
         # Check for game prompts
-        self.prompt_manager.check_prompts()
+        # self.prompt_manager.check_prompts()
 
         # Actions to run only on first game loop
         if self.run_once:
-            self.game_menu_options.show_obstacles()
+            # self.game_menu_options.show_obstacles()
 
             x,y = 600,350
             for idx in range(0,1):
-                self.dynamic_obstacles.ball(x,y)
+                self.dynamic_obstacles.ball(x,y,dir=180.)
                 x += 150
 
             self.run_once = False
