@@ -401,10 +401,14 @@ class Game(QMainWindow,FilePaths):
         self.fps_time = curr_time
 
         toc = time.time()
-        self.fps_calc.append((1./(toc-curr_time))) 
-        if len(self.fps_calc) == 30:
-            self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
-            self.fps_calc = []
+        # print(f"Max FPS: {1./(toc-curr_time)}")
+        try:
+            self.fps_calc.append((1./(toc-curr_time))) 
+            if len(self.fps_calc) == 30:
+                self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
+                self.fps_calc = []
+        except:
+            log('Computed fps is invalid...',color='r')
         
         # Check for game prompts
         # self.prompt_manager.check_prompts()
