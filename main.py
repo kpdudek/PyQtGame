@@ -22,6 +22,8 @@ from lib.PaintUtils import *
 from lib.Game import *
 
 def main():
+    assert('cc_lib.so' in os.listdir('./lib/')),"cc_lib.so doesn't exist! Be sure to compile collision_check.c as cc_lib.so!"
+
     # create pyqt5 app
     if sys.platform == 'win32':
         QApplication.setStyle("fusion")

@@ -57,7 +57,9 @@ class Inventory(QWidget,Colors,FilePaths):
                 label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
                 label.clicked_signal.connect(self.inv_click)
                 self.layout.addWidget(label,i,j)
+
     def inv_click(self,index):
         log(f'Inventory clicked: {index[0]},{index[1]}')
+        
     def assign_item(self,item):
         self.items[0,0] = item

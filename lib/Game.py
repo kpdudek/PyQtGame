@@ -44,6 +44,7 @@ class Game(QMainWindow,FilePaths):
     exit_game = False
     load = None # If a game is being loaded, set True
     game_running = False
+    run_once = True
 
     def __init__(self,screen):
         super().__init__()
@@ -117,19 +118,24 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.pose)
+            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose)
         except:
             pass # No physics display exists
     
     def update_dynamics(self):   
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
-        for poly in self.dynamic_obstacles.polys:
-            player_obstacles.append(poly)
+        for sprite in self.dynamic_obstacles.sprites:
+            player_obstacles.append(sprite.polys[sprite.idx])
+        while None in player_obstacles:
+            player_obstacles.remove(None)
+        
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
-        obstacles = [self.environment.ground_poly,self.environment.frame_poly]
+        obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
         self.dynamic_obstacles.update_position(force,obstacles)
+
+        
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -139,12 +145,11 @@ class Game(QMainWindow,FilePaths):
 
         self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
 
-        self.game_menu_options = GameMenuOptions()
+        self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
         self.game_layout.addWidget(self.game_menu_options)
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
         self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)
@@ -204,7 +209,6 @@ class Game(QMainWindow,FilePaths):
     def display_inventory(self):
         if self.inv_dock_hide:
             self.inv_dock.hide()
-            # self.inv_dock.deleteLater()
             self.inv_dock.setGeometry(self.inventory.geom)
             self.inv_dock_hide = False
         else:
@@ -214,8 +218,6 @@ class Game(QMainWindow,FilePaths):
             self.inv_dock.setAutoFillBackground(self.inventory.auto_fill_background)
             self.inv_dock.show()
             self.inv_dock_hide = True
-
-        # self.show_dock_widget(self.inventory)
 
     def show_dock_widget(self,dock_widget):
         self.dock = QDockWidget(self) 
@@ -268,7 +270,6 @@ class Game(QMainWindow,FilePaths):
             mouse_y = e.y() - canvas_y
 
             self.mouse_pos = np.array([[float(mouse_x)],[float(mouse_y)]])
-            # log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
         except:
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
@@ -300,16 +301,12 @@ class Game(QMainWindow,FilePaths):
         ### Move Keys
         val = ''
         if event.key() == Qt.Key_D:
-            # self.key_pressed.append('right')
             val = 'right'
         elif event.key() == Qt.Key_A:
-            # self.key_pressed.append('left')
             val = 'left'
         elif event.key() == Qt.Key_W:
-            # self.key_pressed.append('up')
             val = 'up'
         elif event.key() == Qt.Key_S:
-            # self.key_pressed.append('down')
             val = 'down'
         elif event.key() == Qt.Key_E:
             self.display_inventory()
@@ -324,7 +321,6 @@ class Game(QMainWindow,FilePaths):
             self.prev_scene_event()
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
-            # self.exit_game = True
             self.end_game()
 
         elif event.key() == Qt.Key_P:
@@ -346,13 +342,10 @@ class Game(QMainWindow,FilePaths):
             if event.key() == Qt.Key_D:
                 val = 'right'
             elif event.key() == Qt.Key_A:
-                # self.key_pressed.remove('left')
                 val = 'left'
             elif event.key() == Qt.Key_W:
-                # self.key_pressed.remove('up')
                 val = 'up'
             elif event.key() == Qt.Key_S:
-                # self.key_pressed.remove('down')
                 val = 'down'
             elif event.key() == Qt.Key_E:
                 pass
@@ -369,6 +362,7 @@ class Game(QMainWindow,FilePaths):
             if self.new_env:
                 self.environment.new_environment()
                 self.new_env = False
+                return
 
             elif self.prev_scene:
                 self.environment.previous_scene()
@@ -386,30 +380,23 @@ class Game(QMainWindow,FilePaths):
                     self.clear_key_count = 0
             
             ### Update player pose and redraw environment
-            tic = time.time()
+            # tic = time.time()
             self.update_dynamics()
-            toc = time.time()
-            # print('Update call took: %.3f'%(toc-tic))
+            # toc = time.time()
+            # print('Update call took: %e'%(toc-tic))
 
             ### recreate environment and repaint widget
-            tic = time.time()
+            # tic = time.time()
             self.environment.redraw_scene()
             self.environment.repaint()
-            toc = time.time()
-            # print('Drawing call took: %.3f'%(toc-tic))
+            # toc = time.time()
+            # print('Drawing call took: %e'%(toc-tic))
             
             # Update game loop tracking information
             self.loop_number += 1
             self.game_time += self.game_timer.interval() / 1000.0
             self.environment.game_time = self.game_time
 
-        # self.fps_time = 1./((curr_time - self.fps_time))
-        self.fps_log.append(1./((curr_time - self.fps_time)))
-        if len(self.fps_log) == 50:
-            average_fps = np.mean(self.fps_log)
-            log(f'Average fps: {average_fps}')
-            self.fps_log = []
-        
         # Set time information for next loop
         self.fps_time = curr_time
 
@@ -423,4 +410,16 @@ class Game(QMainWindow,FilePaths):
         except:
             log('Computed fps is invalid...',color='r')
         
+        # Check for game prompts
         # self.prompt_manager.check_prompts()
+
+        # Actions to run only on first game loop
+        if self.run_once:
+            # self.game_menu_options.show_obstacles()
+
+            x,y = 600,350
+            for idx in range(0,1):
+                self.dynamic_obstacles.ball(x,y,dir=180.)
+                x += 150
+
+            self.run_once = False

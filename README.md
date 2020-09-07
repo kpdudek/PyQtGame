@@ -42,3 +42,8 @@ pip3 install pyqt5-tools
 The `Game` class in `main.py` is where the main window is created as well as the game loop. Within `lib/`, the player class, environment class, welcome screen class, and some utilities can be found.
 
 Geometric functions are found in `Geometry.py` and all related tests are in the tests folder.
+
+### Compiling C library for collision checking
+```
+cc -fPIC -shared -o cc_lib.so collision_check.c
+```

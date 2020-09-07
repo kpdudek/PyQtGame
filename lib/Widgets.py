@@ -191,7 +191,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         if rect:
             self.setGeometry(rect)
         else:
-            self.setGeometry(0,0,600,600)
+            self.setGeometry(0,0,400,400)
 
         self.controls_label = QLabel('Controls:')
         self.controls_label.setStyleSheet(f"font:bold italic 24px")
@@ -201,13 +201,13 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
         self.controls_list_layout = QHBoxLayout()
 
         self.controls_list = QListWidget()
-        control_list = ['Up','Down','Left','Right','Save and exit','End turn','Previous scene','Advance scene','Pause']
+        control_list = ['Up','Down','Left','Right','Save and exit','End turn','Previous scene','Advance scene','Pause','Sprint']
         self.controls_list.addItems(control_list)
         self.controls_list_layout.addWidget(self.controls_list)
         self.controls_list.itemClicked.connect(self.link_lists)
 
         self.button_list = QListWidget()
-        control_buttons = ['W','S','A','D','ESC','N','B','M','P']
+        control_buttons = ['W','S','A','D','ESC','N','B','M','P','Shift']
         self.button_list.addItems(control_buttons)
         self.controls_list_layout.addWidget(self.button_list)
         self.button_list.itemClicked.connect(self.link_button_list)
@@ -216,7 +216,7 @@ class KeyboardShortcuts(QWidget,Colors,FilePaths):
 
         self.ok_button = QPushButton('Close')
         self.ok_button.clicked.connect(self.close_window)
-        self.ok_button.setDefault(True)
+        # self.ok_button.setDefault(True)
         self.layout.addWidget(self.ok_button)
 
         self.setLayout(self.layout)
@@ -340,5 +340,38 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.collision_label.setText(collision_str)
         self.state_label.setText(state_str)
 
+
+class ObstaclesDisplay(QWidget,Colors,FilePaths):
+
+    def __init__(self,dynamic_obstacles):
+        super().__init__()
+        self.setWindowTitle('Obstacles Manager')
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+
+        self.dynamic_obstacles = dynamic_obstacles
+
+        self.auto_fill_background = True
+
+        uic.loadUi(f'{self.user_path}ui/obstacle_manager.ui', self)
+        
+        self.add_button.clicked.connect(self.add_obstacle)
+        self.remove_button.clicked.connect(self.remove_obstacle)
+        self.close_button.clicked.connect(self.close_window)
+
+    def add_obstacle(self):
+        x = float(self.x_pose.value())
+        y = float(self.y_pose.value())
+
+        for idx in range(0,int(self.obs_qty.value())):
+            self.dynamic_obstacles.ball(x,y)
+        
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
+
+    def remove_obstacle(self):
+        self.dynamic_obstacles.remove_ball()
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
+
+    def close_window(self):
+        self.close()
 
     
