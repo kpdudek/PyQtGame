@@ -10,7 +10,7 @@ from Utils import *
 from PaintUtils import *
 from Geometry import *
 
-class Environment(QWidget,Colors,FilePaths):
+class Environment(QWidget,Colors,FilePaths,PaintBrushes):
     time_of_day = None
     game_time = 0.0
 
@@ -39,8 +39,6 @@ class Environment(QWidget,Colors,FilePaths):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-
-        # self.setFixedSize(width,height)
 
         self.player = player
         self.dyn_obs = dyn_obs
@@ -135,8 +133,6 @@ class Environment(QWidget,Colors,FilePaths):
             log('Save game failed!',color='r')
 
     def set_sky(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         if self.generate_env:
             self.env_snapshot.update({'time_of_day':self.time_of_day})
         else:
@@ -154,7 +150,6 @@ class Environment(QWidget,Colors,FilePaths):
             self.painter.setBrush(brush)
 
             self.painter.drawRect(QtCore.QRect(0, 0, self.width, self.height))
-            # self.painter.end()
             
             self.draw_sun()
             self.draw_clouds()
@@ -171,24 +166,12 @@ class Environment(QWidget,Colors,FilePaths):
             self.painter.setBrush(brush)
 
             self.painter.drawRect(QtCore.QRect(0, 0, self.width, self.height))
-            # painter.end()
+            
 
             self.draw_stars()
             self.draw_moon()
 
     def draw_clouds(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-        
-        # pen = QtGui.QPen()
-        # pen.setWidth(self.pixel_width)
-        # pen.setColor(QtGui.QColor(self.white['hex']))
-        # self.painter.setPen(pen)
-
-        # brush = QtGui.QBrush()
-        # brush.setColor(QtGui.QColor(self.white['hex']))
-        # brush.setStyle(Qt.SolidPattern)
-        # self.painter.setBrush(brush)
-
         # Generate random clouds
         if self.generate_env:
             clouds = []
@@ -237,12 +220,8 @@ class Environment(QWidget,Colors,FilePaths):
 
         if self.generate_env:
             self.env_snapshot.update({'clouds':clouds})
-        
-        # painter.end()
-    
+  
     def draw_stars(self):
-        # self.painter = QtGui.QPainter(self.main_frame.pixmap())
-
         self.star_pen_width = 5
         pen = QtGui.QPen(self.star_pen_width)
         pen.setWidth(self.star_pen_width)
@@ -288,15 +267,11 @@ class Environment(QWidget,Colors,FilePaths):
                 self.painter.setPen(pen)
 
             self.painter.drawPoint(x,y)
-        
-        # painter.end()
 
         if self.generate_env:
             self.env_snapshot.update({'stars':stars})
 
     def draw_ground(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         pen = QtGui.QPen()
         pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.brown['hex']))
@@ -367,15 +342,11 @@ class Environment(QWidget,Colors,FilePaths):
 
             circle_point = QPoint(float(self.ground_poly.sphere.pose[0]),float(self.ground_poly.sphere.pose[1]))
             self.painter.drawEllipse(circle_point,self.ground_poly.sphere.radius,self.ground_poly.sphere.radius)
-        
-        # painter.end()
 
         if self.generate_env:
             self.env_snapshot.update({'ground':ground})
 
     def draw_sun(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         pen = QtGui.QPen()
         pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.star_gold['hex']))
@@ -404,15 +375,11 @@ class Environment(QWidget,Colors,FilePaths):
 
         # Draw sun pixmap
         self.painter.drawPixmap(QPoint(origin[0],origin[1]),self.sun)
-        
-        # painter.end()
 
         if self.generate_env:
             self.env_snapshot.update({'sun':sun})
     
     def draw_moon(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         pen = QtGui.QPen()
         pen.setWidth(self.pixel_width)
         pen.setColor(QtGui.QColor(self.white['hex']))
@@ -435,7 +402,7 @@ class Environment(QWidget,Colors,FilePaths):
         
         # Generate sun
         self.painter.drawEllipse(QPoint(origin[0],origin[1]),radii[0],radii[1])
-        # painter.end()
+        
 
         if self.generate_env:
             self.env_snapshot.update({'moon':moon})
@@ -444,8 +411,6 @@ class Environment(QWidget,Colors,FilePaths):
         if self.env_type == 'peak':
             return
         
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         brown_pen = QtGui.QPen()
         brown_pen.setWidth(self.pixel_width)
         brown_pen.setColor(QtGui.QColor(self.brown['hex']))
@@ -471,14 +436,10 @@ class Environment(QWidget,Colors,FilePaths):
         for p in poses:
             self.painter.drawPixmap(QPoint(p,550),self.tree)
 
-        # painter.end()
-
         if self.generate_env:
             self.env_snapshot.update({'trees':trees})
 
     def draw_player(self):
-        # painter = QtGui.QPainter(self.main_frame.pixmap())
-
         pen = QtGui.QPen()
         pen.setWidth(2)
         pen.setColor(QtGui.QColor(self.divider_color))
@@ -488,50 +449,49 @@ class Environment(QWidget,Colors,FilePaths):
         self.painter.drawPixmap(pose,self.player.sprite.pixmaps[self.player.sprite.idx])
 
         if self.player_debug:
-            rec = QRect(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]),float(self.player.size[0]),float(self.player.size[1]))
+            sidx = self.player.sprite.idx
+            rec = QRect(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]),float(self.player.sprite.sizes[sidx][0]),float(self.player.sprite.sizes[sidx][1]))
+            
+            pen,brush = self.hollow_poly(self.divider_color,2)
+            self.painter.setPen(pen)
+            self.painter.setBrush(brush)
             self.painter.drawRect(rec)
 
-            pen.setWidth(1)
-            pen.setColor(QtGui.QColor(self.warning_text))
+            pen,brush = self.hollow_poly(self.warning_text,2)
             self.painter.setPen(pen)
+            self.painter.setBrush(brush)
 
-            self.painter.drawEllipse(QPoint(float(self.player.polys[self.player.sprite.idx].sphere.pose[0]),float(self.player.polys[self.sprite.idx].sphere.pose[1])),self.player.polys[self.sprite.idx].sphere.radius,self.player.polys[self.sprite.idx].sphere.radius)
+            self.painter.drawEllipse(QPoint(float(self.player.sprite.polys[sidx].sphere.pose[0]),float(self.player.sprite.polys[sidx].sphere.pose[1])),self.player.sprite.polys[sidx].sphere.radius,self.player.sprite.polys[sidx].sphere.radius)
 
             if np.sum(self.player.mouse_pos) >= 0:
                 pen.setWidth(5)
                 pen.setColor(QtGui.QColor(self.warning_text))
                 self.painter.setPen(pen)
                 self.painter.drawPoint(QPoint(float(self.player.mouse_pos[0]),float(self.player.mouse_pos[1])))
-        
-        # painter.end()
-    
+            
     def draw_dynamic_obstacles(self):
-        # self.painter = QtGui.QPainter(self.main_frame.pixmap())
-
-        pen = QtGui.QPen()
-        pen.setWidth(2)
-        pen.setColor(QtGui.QColor(self.divider_color))
-        self.painter.setPen(pen)
-        
-        for idx in range(0,len(self.dyn_obs.polys)):
-            pix_pose = QPoint(float(self.dyn_obs.poses[idx][0]),float(self.dyn_obs.poses[idx][1]))
-            self.painter.drawPixmap(pix_pose,self.dyn_obs.pixmaps[idx])
+        for idx in range(0,len(self.dyn_obs.sprites)):
+            sprite_idx = self.dyn_obs.sprites[idx].idx
+            sprite = self.dyn_obs.sprites[idx]
+            
+            pix_pose = QPoint(float(sprite.pose[0]),float(sprite.pose[1]))
+            self.painter.drawPixmap(pix_pose,sprite.pixmaps[sprite_idx])
 
             if self.player_debug:
-                pen.setWidth(2)
-                pen.setColor(QtGui.QColor(self.warning_text))
+                pen,brush = self.hollow_poly(self.warning_text,2)
                 self.painter.setPen(pen)
-                self.painter.drawEllipse(QPoint(float(self.dyn_obs.polys[idx].sphere.pose[0]),float(self.dyn_obs.polys[idx].sphere.pose[1])),self.dyn_obs.polys[idx].sphere.radius,self.dyn_obs.polys[idx].sphere.radius)
+                self.painter.setBrush(brush)
+                self.painter.drawEllipse(QPoint(float(sprite.polys[sprite_idx].sphere.pose[0]),float(sprite.polys[idx].sphere.pose[1])),sprite.polys[idx].sphere.radius,sprite.polys[idx].sphere.radius)
                 
-                pen.setWidth(2)
-                pen.setColor(QtGui.QColor(self.divider_color))
+                pen,brush = self.hollow_poly(self.divider_color,2)
                 self.painter.setPen(pen)
+                self.painter.setBrush(brush)
                 p = QPolygonF()
-                for poly_idx in range(0,len(self.dyn_obs.polys[idx].vertices[0,:])):
-                    p.append(QPointF(self.dyn_obs.polys[idx].vertices[0,poly_idx],self.dyn_obs.polys[idx].vertices[1,poly_idx]))
+                for poly_idx in range(0,len(sprite.polys[idx].vertices[0,:])):
+                    p.append(QPointF(sprite.polys[idx].vertices[0,poly_idx],sprite.polys[idx].vertices[1,poly_idx]))
                 self.painter.drawPolygon(p)
 
-        # painter.end()
+        
 
     def redraw_scene(self):
         '''
@@ -569,7 +529,6 @@ class Environment(QWidget,Colors,FilePaths):
         self.gen_cloud_pixmaps = False
 
         self.generate_env = True
-        # self.gen_cloud_pixmaps = True
         self.redraw_scene()
         self.generate_env = False
         self.env_idx = self.env_create_count

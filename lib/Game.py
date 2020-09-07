@@ -44,6 +44,7 @@ class Game(QMainWindow,FilePaths):
     exit_game = False
     load = None # If a game is being loaded, set True
     game_running = False
+    run_once = True
 
     def __init__(self,screen):
         super().__init__()
@@ -123,17 +124,21 @@ class Game(QMainWindow,FilePaths):
     
     def update_dynamics(self):   
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
-        for poly in self.dynamic_obstacles.polys:
-            player_obstacles.append(poly)
-
+        print()
+        for sprite in self.dynamic_obstacles.sprites:
+            player_obstacles.append(sprite.polys[sprite.idx])
+            log(f'Obs: {len(sprite.pixmaps)}')
         while None in player_obstacles:
             player_obstacles.remove(None)
         
+        log(f'Player: {len(self.player.sprite.pixmaps)}')
         self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
         self.dynamic_obstacles.update_position(force,obstacles)
+
+        
 
     def display_environment(self):
         self.game_widget = QWidget()
@@ -148,7 +153,6 @@ class Game(QMainWindow,FilePaths):
         self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
         self.game_menu_options.exit_game_signal.connect(self.end_game)
         self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        # self.game_menu_options.clear_keys_signal.connect(self.clear_keys)
         self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
         self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)
@@ -208,7 +212,6 @@ class Game(QMainWindow,FilePaths):
     def display_inventory(self):
         if self.inv_dock_hide:
             self.inv_dock.hide()
-            # self.inv_dock.deleteLater()
             self.inv_dock.setGeometry(self.inventory.geom)
             self.inv_dock_hide = False
         else:
@@ -218,8 +221,6 @@ class Game(QMainWindow,FilePaths):
             self.inv_dock.setAutoFillBackground(self.inventory.auto_fill_background)
             self.inv_dock.show()
             self.inv_dock_hide = True
-
-        # self.show_dock_widget(self.inventory)
 
     def show_dock_widget(self,dock_widget):
         self.dock = QDockWidget(self) 
@@ -272,7 +273,6 @@ class Game(QMainWindow,FilePaths):
             mouse_y = e.y() - canvas_y
 
             self.mouse_pos = np.array([[float(mouse_x)],[float(mouse_y)]])
-            # log(f'<Mouse Press> X: {mouse_x} Y: {mouse_y}')
         except:
             log('Could not convert mouse press into canvas coordinate...',color='y')
 
@@ -365,7 +365,7 @@ class Game(QMainWindow,FilePaths):
             if self.new_env:
                 self.environment.new_environment()
                 self.new_env = False
-                # return
+                return
 
             elif self.prev_scene:
                 self.environment.previous_scene()
@@ -400,12 +400,6 @@ class Game(QMainWindow,FilePaths):
             self.game_time += self.game_timer.interval() / 1000.0
             self.environment.game_time = self.game_time
 
-        # self.fps_log.append(1./((curr_time - self.fps_time)))
-        # if len(self.fps_log) == 50:
-        #     average_fps = np.mean(self.fps_log)
-        #     log(f'Average fps: {average_fps}')
-        #     self.fps_log = []
-        
         # Set time information for next loop
         self.fps_time = curr_time
 
@@ -415,4 +409,16 @@ class Game(QMainWindow,FilePaths):
             self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
             self.fps_calc = []
         
-        # self.prompt_manager.check_prompts()
+        # Check for game prompts
+        self.prompt_manager.check_prompts()
+
+        # Actions to run only on first game loop
+        if self.run_once:
+            self.game_menu_options.show_obstacles()
+
+            x,y = 600,350
+            for idx in range(0,1):
+                self.dynamic_obstacles.ball(x,y)
+                x += 150
+
+            self.run_once = False

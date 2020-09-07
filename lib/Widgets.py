@@ -362,15 +362,16 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         x = float(self.x_pose.value())
         y = float(self.y_pose.value())
 
-        self.dynamic_obstacles.ball(x,y)
-        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
+        for idx in range(0,int(self.obs_qty.value())):
+            self.dynamic_obstacles.ball(x,y)
+        
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
 
     def remove_obstacle(self):
         self.dynamic_obstacles.remove_ball()
-        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.polys)}')
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
 
     def close_window(self):
-        # self.dynamic_obstacles.ball(1200.,200.)
         self.close()
 
     

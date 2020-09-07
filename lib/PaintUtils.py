@@ -87,3 +87,17 @@ class FusionColor(ElementColors):
             
         self.palette.setColor(QPalette.Highlight, QColor(142,45,197).lighter())
         self.palette.setColor(QPalette.HighlightedText, Qt.black)
+
+class PaintBrushes():
+    def __init__(self):
+        pass
+    def hollow_poly(self,color,width):
+        pen = QPen()
+        pen.setWidth(width)
+        pen.setColor(QColor(color))
+
+        brush = QBrush()
+        brush.setColor(QColor(self.brown['hex']))
+        brush.setStyle(Qt.NoBrush)
+
+        return pen,brush

@@ -59,17 +59,14 @@ class GameMenuOptions(QWidget,FilePaths,Colors):
     
     def show_controls(self):
         self.controls_window = KeyboardShortcuts()
-        # self.clear_keys_signal.emit()
         self.dock_widget_signal.emit(self.controls_window)
 
     def show_physics(self):
         self.physics_window = PhysicsDisplay()
-        # self.clear_keys_signal.emit()
         self.dock_widget_signal.emit(self.physics_window)
 
     def show_obstacles(self):
         self.obstacles_window = ObstaclesDisplay(self.dynamic_obstacles)
-        # self.clear_keys_signal.emit()
         self.dock_widget_signal.emit(self.obstacles_window)
 
 class GameController(QWidget,FilePaths,Colors):

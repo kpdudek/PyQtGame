@@ -78,8 +78,6 @@ class Player(QWidget,Colors,FilePaths):
 
         if np.sum(mouse_pos) >= 0:
             self.mouse_pos = mouse_pos # Always keep track of the mouse pose for drawing the red marker
-            player_vert = transform('img',copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices),translate=self.height)
-            mouse_vert = transform('img',mouse_pos.copy(),translate=self.height)
 
             self.sprite.polys[self.sprite.idx].teleport(mouse_pos[0],mouse_pos[1])
             self.sprite.pose = mouse_pos + self.sprite.centroid_offsets[self.sprite.idx]
@@ -140,9 +138,6 @@ class Player(QWidget,Colors,FilePaths):
             self.sprite.pose += t
         
         # Y Collision Check
-        # offsets = self.sprite.centroid_offsets[self.sprite.idx]
-        # self.sprite.polys[self.sprite.idx].teleport(self.sprite.pose[0]-offsets[0],self.sprite.pose[1]-offsets[1])
-
         self.sprite.polys[self.sprite.idx].translate(0.,self.physics.velocity[1])
         collision = False
         for obstacle in obstacles:
