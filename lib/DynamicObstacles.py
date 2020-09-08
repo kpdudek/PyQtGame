@@ -30,7 +30,7 @@ class DynamicObstacles(Colors,FilePaths):
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
     def ball(self,x,y,dir=0.):
-        sprite = Sprite('mouse/right/',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
+        sprite = Sprite('mouse/right/',name=f'Test_{len(self.sprites)+1}',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
         sprite.direction(dir)
         x = np.array([x])
         y = np.array([y])

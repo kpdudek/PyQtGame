@@ -62,7 +62,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="obstacle_list"/>
+            <widget class="QListWidget" name="obstacle_list">
+             <property name="currentRow">
+              <number>-1</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="obstacle_count">

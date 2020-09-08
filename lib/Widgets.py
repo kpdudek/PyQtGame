@@ -358,6 +358,15 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         self.remove_button.clicked.connect(self.remove_obstacle)
         self.close_button.clicked.connect(self.close_window)
 
+        self.refresh()
+
+    def refresh(self):
+        self.obstacle_list.clear()
+        for idx in range(0,len(self.dynamic_obstacles.sprites)):
+            self.obstacle_list.addItem(f'{self.dynamic_obstacles.sprites[idx].name}')
+
+        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
+
     def add_obstacle(self):
         x = float(self.x_pose.value())
         y = float(self.y_pose.value())
@@ -365,11 +374,11 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         for idx in range(0,int(self.obs_qty.value())):
             self.dynamic_obstacles.ball(x,y)
         
-        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
+        self.refresh()
 
     def remove_obstacle(self):
-        self.dynamic_obstacles.remove_ball()
-        self.obstacle_count.setText(f'Num Obstacles: {len(self.dynamic_obstacles.sprites)}')
+        self.dynamic_obstacles.remove_ball(idx=self.obstacle_list.currentRow())
+        self.refresh()
 
     def close_window(self):
         self.close()
