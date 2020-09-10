@@ -49,8 +49,8 @@ class Game(QMainWindow,FilePaths):
     def __init__(self,screen):
         super().__init__()
         
-        self.width = 1800
-        self.height = 850
+        self.width = 1900
+        self.height = 950
 
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
@@ -72,12 +72,12 @@ class Game(QMainWindow,FilePaths):
 
         self.inventory = Inventory(self.screen_width,self.screen_height)
 
-        self.player = Player(self.width,self.height)
+        self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
+        
+        self.player = Player(self.width,self.height,self.dynamic_obstacles)
         self.player.pause_signal.connect(self.pause_game)
         self.player.collision_signal.connect(self.update_collision_str)
         self.player.info_signal.connect(self.display_info)
-
-        self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -125,7 +125,7 @@ class Game(QMainWindow,FilePaths):
     def update_dynamics(self):   
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
         for sprite in self.dynamic_obstacles.sprites:
-            player_obstacles.append(sprite.polys[sprite.idx])
+            player_obstacles.append(sprite)#.polys[sprite.idx])
         while None in player_obstacles:
             player_obstacles.remove(None)
         
@@ -133,17 +133,19 @@ class Game(QMainWindow,FilePaths):
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
-        self.dynamic_obstacles.update_position(force,obstacles)
-
-        
+        self.dynamic_obstacles.update_position(force,obstacles)   
 
     def display_environment(self):
         self.game_widget = QWidget()
         self.game_layout = QVBoxLayout()
+        self.game_layout.setContentsMargins(0,0,0,0)
+
         self.game_widget.setLayout(self.game_layout)
         self.game_layout.setAlignment(Qt.AlignCenter)
 
         self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
+
+        self.game_layout.addStretch()
 
         self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
         self.game_layout.addWidget(self.game_menu_options)
@@ -162,6 +164,8 @@ class Game(QMainWindow,FilePaths):
         self.game_controller.new_scene_signal.connect(self.new_scene_event)
         self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
         self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
+
+        self.game_layout.addStretch()
         
         if sys.platform == 'win32':
             self.showMaximized()

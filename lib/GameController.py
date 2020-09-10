@@ -84,10 +84,10 @@ class GameController(QWidget,FilePaths,Colors):
         self.button_grid.addWidget(self.go_back_button,0,0)
 
         self.advance_button = ControlButton('Advance',fn=self.advance_scene)
-        self.button_grid.addWidget(self.advance_button,1,0)
+        self.button_grid.addWidget(self.advance_button,0,1)
 
         self.next_scene_button = ControlButton('End Turn',fn=self.new_scene)
-        self.button_grid.addWidget(self.next_scene_button,0,1)
+        self.button_grid.addWidget(self.next_scene_button,0,3)
 
     def new_scene(self):
         self.new_scene_signal.emit()

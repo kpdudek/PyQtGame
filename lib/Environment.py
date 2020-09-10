@@ -179,7 +179,7 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
             self.num_clouds = 15
     
             self.cloud_x_range = [20,self.width-20]
-            self.cloud_y_range = [0,math.ceil(self.height/2.)]
+            self.cloud_y_range = [0,math.ceil(self.height/3.)]
 
             self.env_snapshot.update({'num_clouds':self.num_clouds})
 
@@ -430,11 +430,11 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
 
         if not self.tree:
             self.tree = QPixmap(f'{self.user_path}/graphics/tree.png')
-            self.tree = self.tree.scaled(250, 250, Qt.KeepAspectRatio)
+            self.tree = self.tree.scaled(400, 400, Qt.KeepAspectRatio)
 
         poses = [20,300,600,1000,1300,1600]
         for p in poses:
-            self.painter.drawPixmap(QPoint(p,550),self.tree)
+            self.painter.drawPixmap(QPoint(p,500),self.tree)
 
         if self.generate_env:
             self.env_snapshot.update({'trees':trees})

@@ -23,6 +23,7 @@ class DynamicObstacles(Colors,FilePaths):
         self.height = height
 
         self.sprites = []
+        self.num_sprites = 0
 
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
@@ -30,7 +31,8 @@ class DynamicObstacles(Colors,FilePaths):
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
     def ball(self,x,y,dir=0.):
-        sprite = Sprite('mouse/right/',name=f'Test_{len(self.sprites)+1}',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
+        list_idx = self.num_sprites
+        sprite = Sprite('mouse/right/',list_idx=list_idx,name=f'Test_{len(self.sprites)+1}',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
         sprite.direction(dir)
         x = np.array([x])
         y = np.array([y])
@@ -38,6 +40,7 @@ class DynamicObstacles(Colors,FilePaths):
         sprite.pose = np.array([x,y]) + sprite.centroid_offsets[sprite.idx]
         
         self.sprites.append(sprite)
+        self.num_sprites += 1
 
     def remove_ball(self,idx=None):
         if len(self.sprites)==0:
@@ -45,7 +48,9 @@ class DynamicObstacles(Colors,FilePaths):
         if idx:
             self.sprites.pop(idx)
         else:
-            self.sprites.pop()    
+            self.sprites.pop()
+
+        self.num_sprites -=1    
 
     def update_position(self,force,obstacles):
         for idx in range(0,len(self.sprites)):

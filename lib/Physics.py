@@ -7,9 +7,9 @@ import time
 from Utils import *
 
 class PhysicsInfo(object):
-    physics_info = {'velocity':None,'acceleration':None,'max_vel':None,'grav_accel':None,'drag':None,'force':None,'mass':None,'touching_ground':None,}
 
     def __init__(self,mass,grav_accel,max_vel):
+        self.physics_info = {'velocity':None,'acceleration':None,'max_vel':None,'grav_accel':None,'drag':None,'force':None,'mass':None,'touching_ground':None,}
         self.physics_info['mass'] = mass
         self.physics_info['grav_accel'] = grav_accel
         self.physics_info['max_vel'] = max_vel
@@ -23,6 +23,7 @@ class PhysicsInfo(object):
 
 class PlayerPhysics(QWidget,FilePaths):
     info_signal = pyqtSignal(object)
+    time_scaling = 1.0
 
     def __init__(self,mass,max_vel):
         super().__init__()
@@ -70,7 +71,7 @@ class PlayerPhysics(QWidget,FilePaths):
         self.info_signal.emit(self.info)
 
 class Physics(QWidget,FilePaths):
-
+    time_scaling = 1.0
     def __init__(self,mass,max_vel):
         super().__init__()
         self.mass = mass

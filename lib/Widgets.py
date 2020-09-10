@@ -168,7 +168,7 @@ class ControlButton(QPushButton,Colors,FilePaths):
         super().__init__()
 
         self.setText(text)
-        self.setFixedSize(150,30)
+        self.setFixedSize(150,25)
 
         if fn:
             self.clicked.connect(fn)

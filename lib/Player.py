@@ -32,8 +32,9 @@ class Player(QWidget,Colors,FilePaths):
     pause_signal = pyqtSignal()
     collision_signal = pyqtSignal(object)
     
-    def __init__(self,width,height):
+    def __init__(self,width,height,dynamic_obstacles):
         super().__init__()
+        self.dynamic_obstacles = dynamic_obstacles
 
         self.width = width
         self.height = height
@@ -114,7 +115,23 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
 
         for obstacle in obstacles:
+            if type(obstacle) == Sprite:
+                # Admitedly, this is a bad way of doing this. It would definitley be better
+                # not to overwrite obstacles with its polygon attribute. Make everything a sprite that way
+                # the 'obstacles' argument doesn't have both sprites and polygons ¯\_(ツ)_/¯
+                list_idx = obstacle.list_idx
+                edible = obstacle.is_edible
+                name = obstacle.name
+                obstacle = obstacle.polys[obstacle.idx]
+            else:
+                edible = False
+                
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
+                if edible:
+                    log(f'I ate a: {name}')
+                    self.dynamic_obstacles.remove_ball(list_idx)
+                    return
+
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)
                 data_p = data.ctypes.data_as(self.c_float_p)
@@ -141,6 +158,9 @@ class Player(QWidget,Colors,FilePaths):
         self.sprite.polys[self.sprite.idx].translate(0.,self.physics.velocity[1])
         collision = False
         for obstacle in obstacles:
+            if type(obstacle) == Sprite:
+                obstacle = obstacle.polys[obstacle.idx]
+
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)

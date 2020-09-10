@@ -17,8 +17,10 @@ from Geometry import *
 
 class Sprite(FilePaths):
 
-    def __init__(self,folder,ang=180.,scale=None,physics=None,name=None):
+    def __init__(self,folder,list_idx=None,ang=180.,scale=None,physics=None,name=None):
         super().__init__()
+        self.list_idx = list_idx
+        self.is_edible = True
 
         self.name = name
         self.idx = 0
