@@ -95,10 +95,12 @@ class Player(QWidget,Colors,FilePaths):
         self.collision_str = np.zeros(2).reshape(2,1)
 
         self.physics.gravity()
-        self.collision_check(obstacles)
-
+        flag = self.collision_check(obstacles)
+        if flag =='exit':
+            return
+            
         self.physics.accelerate(self.force)
-        self.collision_check(obstacles)
+        flag = self.collision_check(obstacles)
 
         self.collision_signal.emit(self.collision_str)
 
@@ -130,7 +132,7 @@ class Player(QWidget,Colors,FilePaths):
                 if edible:
                     log(f'I ate a: {name}')
                     self.dynamic_obstacles.remove_ball(list_idx)
-                    return
+                    return 'exit'
 
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)
@@ -183,3 +185,5 @@ class Player(QWidget,Colors,FilePaths):
         else:
             t = np.array([[0.],self.physics.velocity[1]])
             self.sprite.pose += t
+
+        return None
