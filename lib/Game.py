@@ -50,7 +50,7 @@ class Game(QMainWindow,FilePaths):
         super().__init__()
         
         self.width = 1900
-        self.height = 950
+        self.height = 900
 
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
@@ -129,7 +129,11 @@ class Game(QMainWindow,FilePaths):
         while None in player_obstacles:
             player_obstacles.remove(None)
         
-        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
+        mark_to_remove = self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
+
+        if mark_to_remove:
+            for obs in mark_to_remove:
+                self.dynamic_obstacles.sprites.remove(obs)
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
@@ -166,14 +170,17 @@ class Game(QMainWindow,FilePaths):
         self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
 
         self.game_layout.addStretch()
-        
-        if sys.platform == 'win32':
-            self.showMaximized()
-        else:
-            self.setGeometry(0, 0, self.screen_width, self.screen_height)
 
         self.game_main_window = False
         self.setCentralWidget(self.game_widget)
+        self.setContentsMargins(0,0,0,0)
+
+        if sys.platform == 'win32':
+            self.showMaximized()
+            # print(f'{self.screen_width} {self.screen_height}')
+            # self.setGeometry(0, 0, self.screen_width, self.screen_height)
+        else:
+            self.setGeometry(0, 0, self.screen_width, self.screen_height)
 
     def new_scene_event(self):
         log('New scene called...',color='y')
@@ -399,18 +406,17 @@ class Game(QMainWindow,FilePaths):
             # Update game loop tracking information
             self.loop_number += 1
             self.game_time += self.game_timer.interval() / 1000.0
-            self.environment.game_time = self.game_time
-
-        # Set time information for next loop
-        self.fps_time = curr_time
+            self.environment.game_time = self.game_time        
 
         toc = time.time()
         # print(f"Max FPS: {1./(toc-curr_time)}")
         try:
             self.fps_calc.append((1./(toc-curr_time))) 
-            if len(self.fps_calc) == 30:
+            if toc-self.fps_time > 0.5:
                 self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
                 self.fps_calc = []
+                self.fps_time = toc
+            # self.game_menu_options.fps_label.setText('FPS: %.2f'%(1./(toc-curr_time)))
         except:
             log('Computed fps is invalid...',color='r')
         
@@ -422,7 +428,7 @@ class Game(QMainWindow,FilePaths):
             # self.game_menu_options.show_obstacles()
 
             x,y = 600,350
-            for idx in range(0,1):
+            for idx in range(0,2):
                 self.dynamic_obstacles.ball(x,y,dir=180.)
                 x += 150
 

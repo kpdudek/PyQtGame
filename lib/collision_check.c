@@ -33,6 +33,11 @@ int edge_is_collision(double e1 [2][2], double e2 [2][2]){
     }
 }
 
+int sphere_is_collision(){
+    int collision = 0;
+    return collision;
+}
+
 int polygon_is_collision(double poly1 [], int poly1_row, int poly1_col, double poly2 [], int poly2_row, int poly2_col){
     int collision = 0;
     double e1 [2][2] = {};

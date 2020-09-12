@@ -18,9 +18,11 @@ class FilePaths(object):
     if sys.platform == 'win32':
         user_path = str(pathlib.Path().absolute()) + '\\'
         lib_path = user_path + 'lib\\'
+        cc_lib_path = 'cc_lib.dll'
     elif sys.platform == 'linux':    
         user_path = str(pathlib.Path().absolute()) + '/'
         lib_path = user_path + 'lib/'
+        cc_lib_path = 'cc_lib.so'
     else:
         raise Error('OS not recognized!')
 

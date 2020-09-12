@@ -41,7 +41,8 @@ class Sprite(FilePaths):
             
             size = [pix.size().width(),pix.size().height()]
             self.sizes.append(size)
-            self.pixmaps.append(pix.copy(self.pose[0],self.pose[1],size[0],size[1]))
+            # self.pixmaps.append(pix.copy(self.pose[0],self.pose[1],size[0],size[1]))
+            self.pixmaps.append(pix)
 
             poly = Polygon()
             bot_right = np.array([self.pose[0]+size[0],self.pose[1]+size[1]])

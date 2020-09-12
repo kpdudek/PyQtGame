@@ -27,7 +27,7 @@ class DynamicObstacles(Colors,FilePaths):
 
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
-        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so')
+        self.fun = ctypes.CDLL(f'{self.user_path}lib/{self.cc_lib_path}')
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
 
     def ball(self,x,y,dir=0.):
@@ -45,12 +45,13 @@ class DynamicObstacles(Colors,FilePaths):
     def remove_ball(self,idx=None):
         if len(self.sprites)==0:
             return
+
         if idx:
             self.sprites.pop(idx)
         else:
             self.sprites.pop()
 
-        self.num_sprites -=1    
+        self.num_sprites -= 1    
 
     def update_position(self,force,obstacles):
         for idx in range(0,len(self.sprites)):
