@@ -96,9 +96,9 @@ class Player(QWidget,Colors,FilePaths):
 
         self.physics.gravity()
         flag = self.collision_check(obstacles)
-        if flag =='exit':
-            return
-            
+        # if flag == 'exit':
+        #     return
+
         self.physics.accelerate(self.force)
         flag = self.collision_check(obstacles)
 
@@ -131,22 +131,22 @@ class Player(QWidget,Colors,FilePaths):
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
                 if edible:
                     log(f'I ate a: {name}')
-                    self.dynamic_obstacles.remove_ball(list_idx)
-                    return 'exit'
+                    # self.dynamic_obstacles.remove_ball(list_idx)
+                    # return 'exit'
+                else:
+                    data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
+                    data = data.astype(np.double)
+                    data_p = data.ctypes.data_as(self.c_float_p)
 
-                data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
-                data = data.astype(np.double)
-                data_p = data.ctypes.data_as(self.c_float_p)
+                    data2 = copy.deepcopy(obstacle.vertices)
+                    data2 = data2.astype(np.double)
+                    data_p2 = data2.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)
-                data2 = data2.astype(np.double)
-                data_p2 = data2.ctypes.data_as(self.c_float_p)
-
-                # C Function call in python
-                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
-                if res:
-                    collision = True
-                    break
+                    # C Function call in python
+                    res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+                    if res:
+                        collision = True
+                        break
     
         if collision:
             self.sprite.polys[self.sprite.idx].translate(-1*self.physics.velocity[0],0.)
@@ -164,19 +164,24 @@ class Player(QWidget,Colors,FilePaths):
                 obstacle = obstacle.polys[obstacle.idx]
 
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
-                data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
-                data = data.astype(np.double)
-                data_p = data.ctypes.data_as(self.c_float_p)
+                if edible:
+                    log(f'I ate a: {name}')
+                    # self.dynamic_obstacles.remove_ball(list_idx)
+                    # return 'exit'
+                else:
+                    data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
+                    data = data.astype(np.double)
+                    data_p = data.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)
-                data2 = data2.astype(np.double)
-                data_p2 = data2.ctypes.data_as(self.c_float_p)
+                    data2 = copy.deepcopy(obstacle.vertices)
+                    data2 = data2.astype(np.double)
+                    data_p2 = data2.ctypes.data_as(self.c_float_p)
 
-                # # C Function call in python
-                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
-                if res:
-                    collision = True
-                    break
+                    # # C Function call in python
+                    res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+                    if res:
+                        collision = True
+                        break
 
         if collision:
             self.sprite.polys[self.sprite.idx].translate(0.,-1*self.physics.velocity[1])
