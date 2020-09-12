@@ -129,7 +129,11 @@ class Game(QMainWindow,FilePaths):
         while None in player_obstacles:
             player_obstacles.remove(None)
         
-        self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
+        mark_to_remove = self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
+
+        if mark_to_remove:
+            for obs in mark_to_remove:
+                self.dynamic_obstacles.sprites.remove(obs)
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
@@ -424,7 +428,7 @@ class Game(QMainWindow,FilePaths):
             # self.game_menu_options.show_obstacles()
 
             x,y = 600,350
-            for idx in range(0,1):
+            for idx in range(0,2):
                 self.dynamic_obstacles.ball(x,y,dir=180.)
                 x += 150
 

@@ -358,6 +358,11 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         self.remove_button.clicked.connect(self.remove_obstacle)
         self.close_button.clicked.connect(self.close_window)
 
+        self.timer = QTimer()
+        self.timer.setInterval((1.0/10.)*1000.0)
+        self.timer.timeout.connect(self.refresh)
+        self.timer.start()
+
         self.refresh()
 
     def refresh(self):

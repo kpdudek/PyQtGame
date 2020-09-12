@@ -45,12 +45,13 @@ class DynamicObstacles(Colors,FilePaths):
     def remove_ball(self,idx=None):
         if len(self.sprites)==0:
             return
+
         if idx:
             self.sprites.pop(idx)
         else:
             self.sprites.pop()
 
-        self.num_sprites -=1    
+        self.num_sprites -= 1    
 
     def update_position(self,force,obstacles):
         for idx in range(0,len(self.sprites)):

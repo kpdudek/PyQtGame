@@ -93,20 +93,19 @@ class Player(QWidget,Colors,FilePaths):
             self.mouse_pos = mouse_pos
 
         self.collision_str = np.zeros(2).reshape(2,1)
+        self.mark_to_remove = []
 
         self.physics.gravity()
-        flag = self.collision_check(obstacles)
-        if flag =='exit':
-            return
-            
+        self.collision_check(obstacles)
+
         self.physics.accelerate(self.force)
-        flag = self.collision_check(obstacles)
+        self.collision_check(obstacles)
 
         self.collision_signal.emit(self.collision_str)
-
         self.physics.send_info()
-
         self.sprite.animate(self.physics.velocity[0])
+
+        return self.mark_to_remove
 
     def collision_check(self,obstacles):
         # X Collision Check
@@ -116,7 +115,8 @@ class Player(QWidget,Colors,FilePaths):
         self.sprite.polys[self.sprite.idx].translate(self.physics.velocity[0],0.)
         collision = False
 
-        for obstacle in obstacles:
+        # print(obstacles)
+        for count,obstacle in enumerate(obstacles):
             if type(obstacle) == Sprite:
                 # Admitedly, this is a bad way of doing this. It would definitley be better
                 # not to overwrite obstacles with its polygon attribute. Make everything a sprite that way
@@ -124,26 +124,27 @@ class Player(QWidget,Colors,FilePaths):
                 list_idx = obstacle.list_idx
                 edible = obstacle.is_edible
                 name = obstacle.name
-                obstacle = obstacle.polys[obstacle.idx]
+                obs_check = obstacle.polys[obstacle.idx]
             else:
+                obs_check = obstacle
                 edible = False
                 
-            if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
+            if sphere_is_collision(self.sprite.polys[self.sprite.idx],obs_check):
                 if edible:
                     log(f'I ate a: {name}')
-                    self.dynamic_obstacles.remove_ball(list_idx)
-                    return 'exit'
+                    if obstacle not in self.mark_to_remove:
+                        self.mark_to_remove.append(obstacle)
 
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)
                 data_p = data.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)
+                data2 = copy.deepcopy(obs_check.vertices)
                 data2 = data2.astype(np.double)
                 data_p2 = data2.ctypes.data_as(self.c_float_p)
 
                 # C Function call in python
-                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obs_check.vertices[0,:]))
                 if res:
                     collision = True
                     break
@@ -161,19 +162,28 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
         for obstacle in obstacles:
             if type(obstacle) == Sprite:
-                obstacle = obstacle.polys[obstacle.idx]
+                # Admitedly, this is a bad way of doing this. It would definitley be better
+                # not to overwrite obstacles with its polygon attribute. Make everything a sprite that way
+                # the 'obstacles' argument doesn't have both sprites and polygons ¯\_(ツ)_/¯
+                list_idx = obstacle.list_idx
+                edible = obstacle.is_edible
+                name = obstacle.name
+                obs_check = obstacle.polys[obstacle.idx]
+            else:
+                obs_check = obstacle
+                edible = False
 
-            if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
+            if sphere_is_collision(self.sprite.polys[self.sprite.idx],obs_check):
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)
                 data_p = data.ctypes.data_as(self.c_float_p)
 
-                data2 = copy.deepcopy(obstacle.vertices)
+                data2 = copy.deepcopy(obs_check.vertices)
                 data2 = data2.astype(np.double)
                 data_p2 = data2.ctypes.data_as(self.c_float_p)
 
                 # # C Function call in python
-                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
+                res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obs_check.vertices[0,:]))
                 if res:
                     collision = True
                     break
