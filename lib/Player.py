@@ -96,13 +96,7 @@ class Player(QWidget,Colors,FilePaths):
         self.mark_to_remove = []
 
         self.physics.gravity()
-<<<<<<< HEAD
-        flag = self.collision_check(obstacles)
-        # if flag == 'exit':
-        #     return
-=======
         self.collision_check(obstacles)
->>>>>>> 777a3ac4a8451427da97e6dac88e15dd9e655ba2
 
         self.physics.accelerate(self.force)
         self.collision_check(obstacles)
@@ -179,27 +173,6 @@ class Player(QWidget,Colors,FilePaths):
                 obs_check = obstacle
                 edible = False
 
-<<<<<<< HEAD
-            if sphere_is_collision(self.sprite.polys[self.sprite.idx],obstacle):
-                if edible:
-                    log(f'I ate a: {name}')
-                    # self.dynamic_obstacles.remove_ball(list_idx)
-                    # return 'exit'
-                else:
-                    data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
-                    data = data.astype(np.double)
-                    data_p = data.ctypes.data_as(self.c_float_p)
-
-                    data2 = copy.deepcopy(obstacle.vertices)
-                    data2 = data2.astype(np.double)
-                    data_p2 = data2.ctypes.data_as(self.c_float_p)
-
-                    # # C Function call in python
-                    res = self.fun.polygon_is_collision(data_p,2,len(self.sprite.polys[self.sprite.idx].vertices[0,:]),data_p2,2,len(obstacle.vertices[0,:]))
-                    if res:
-                        collision = True
-                        break
-=======
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obs_check):
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)
@@ -214,7 +187,6 @@ class Player(QWidget,Colors,FilePaths):
                 if res:
                     collision = True
                     break
->>>>>>> 777a3ac4a8451427da97e6dac88e15dd9e655ba2
 
         if collision:
             self.sprite.polys[self.sprite.idx].translate(0.,-1*self.physics.velocity[1])
