@@ -46,7 +46,7 @@ class Player(QWidget,Colors,FilePaths):
 
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
-        self.fun = ctypes.CDLL(f'{self.user_path}lib/cc_lib.so') # Or full path to file           
+        self.fun = ctypes.CDLL(f'{self.user_path}lib/{self.cc_lib_path}') # Or full path to file
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
     
     def send_info(self,info):
