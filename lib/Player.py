@@ -48,7 +48,7 @@ class Player(QWidget,Colors,FilePaths):
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
         self.fun = ctypes.CDLL(f'{self.user_path}lib/{self.cc_lib_path}') # Or full path to file
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
-        self.fun.sphere_is_collision.argtypes = [self.c_float_p,ctypes.c_double,self.c_float_p,ctypes.c_double]
+        # self.fun.sphere_is_collision.argtypes = [self.c_float_p,ctypes.c_double,self.c_float_p,ctypes.c_double]
     
     def send_info(self,info):
         self.info_signal.emit(info)
@@ -124,9 +124,9 @@ class Player(QWidget,Colors,FilePaths):
                 obs_check = obstacle
                 edible = False
                 
-            data_p = self.sprite.polys[self.sprite.idx].sphere.pose.ctypes.data_as(self.c_float_p)
-            data_p2 = obs_check.sphere.pose.ctypes.data_as(self.c_float_p)
-            res = self.fun.sphere_is_collision(data_p,self.sprite.polys[self.sprite.idx].sphere.radius,data_p2,obs_check.sphere.radius)
+            # data_p = self.sprite.polys[self.sprite.idx].sphere.pose.ctypes.data_as(self.c_float_p)
+            # data_p2 = obs_check.sphere.pose.ctypes.data_as(self.c_float_p)
+            # res = self.fun.sphere_is_collision(data_p,self.sprite.polys[self.sprite.idx].sphere.radius,data_p2,obs_check.sphere.radius)
             # print(f'{self.sprite.polys[self.sprite.idx].sphere.pose} {obs_check.sphere.pose} {self.sprite.polys[self.sprite.idx].sphere.radius} {obs_check.sphere.radius} {res}')
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obs_check):
                 if edible:

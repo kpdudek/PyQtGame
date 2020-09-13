@@ -32,6 +32,10 @@ class Item(QLabel,Colors,FilePaths):
     def add_pixmap(self,sprite):
         self.sprite = sprite
         self.set_pixmap()
+
+    def remove_pixmap(self):
+        self.sprite = None
+        self.clear()
     
     def mousePressEvent(self,e):
         self.clicked_signal.emit(self.index)
@@ -40,6 +44,8 @@ class Inventory(QWidget,Colors,FilePaths):
     '''
     Inventory entries are sprites
     '''
+    return_to_game = pyqtSignal(object)
+
     def __init__(self,screen_width,screen_height):
         super().__init__()
         self.setWindowTitle('Inventory')
@@ -49,8 +55,8 @@ class Inventory(QWidget,Colors,FilePaths):
 
         self.layout = QGridLayout()
 
-        self.width = 800
-        self.height = 600
+        self.width = 600
+        self.height = 400
         self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
 
@@ -72,27 +78,60 @@ class Inventory(QWidget,Colors,FilePaths):
                 self.items[i,j] = label
                 self.layout.addWidget(label,i,j)
 
+    def find_open_slot(self):
+        for item_array in self.items:
+            item = item_array[0]
+            if not item.sprite:
+                log(f'Found available inventory slot: ({item.index[0]},{item.index[1]})')
+                return item.index
+        return None
+
     def add_item(self,sprite):
         r,c = self.idx
-        if (r == self.r_max) and (c == self.c_max):
-            if not self.full:
-                self.full = True
-                log('Inventory filled up!')
-            return
-        else:
+        # print(f'{r} {c}')
+        if self.items[r,c][0].sprite == None:
+            # print('fist loop')
             self.items[r,c][0].add_pixmap(sprite)
-        
-        if (r == self.r_max-1) and (c != self.c_max-1):
-            self.idx[0] = 0
-            self.idx[1] += 1
-        elif (r == self.r_max-1) and (c == self.c_max-1):
-            self.idx[0] += 1
-            self.idx[1] += 1
+            
+            if (r == self.r_max-1) and (c != self.c_max-1):
+                self.idx[0] = 0
+                self.idx[1] += 1
+            elif (r == self.r_max-1) and (c == self.c_max-1):
+                self.idx[0] = 0
+                self.idx[1] = 0
+            else:
+                self.idx[0] += 1
         else:
-            self.idx[0] += 1
+            idx = self.find_open_slot()
+            if idx == None:
+                if not self.full:
+                    self.full = True
+                    log('Inventory filled up!')
+                return
+
+            self.items[idx[0],idx[1]][0].add_pixmap(sprite)
+
+            if (r == self.r_max-1) and (c != self.c_max-1):
+                self.idx[0] = 0
+                self.idx[1] += 1
+            elif (r == self.r_max-1) and (c == self.c_max-1):
+                self.idx[0] = 0
+                self.idx[1] = 0
+            else:
+                self.idx[0] += 1
+
+
+    def remove_item(self,item):
+        r,c = item.index
+        self.idx = item.index
+        self.items[r,c][0].remove_pixmap()
+        self.full = False
         
     def inv_click(self,index):
-        log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
+        if self.items[index[0],index[1]][0].sprite:
+            log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
+            self.return_to_game.emit(self.items[index[0],index[1]][0].sprite)
+            self.remove_item(self.items[index[0],index[1]][0])
         
     def assign_item(self,item):
         self.items[0,0] = item

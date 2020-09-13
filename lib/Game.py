@@ -71,6 +71,7 @@ class Game(QMainWindow,FilePaths):
         self.game_main_window = True
 
         self.inventory = Inventory(self.screen_width,self.screen_height)
+        self.inventory.return_to_game.connect(self.return_from_inventory)
 
         self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
         
@@ -138,7 +139,11 @@ class Game(QMainWindow,FilePaths):
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
-        self.dynamic_obstacles.update_position(force,obstacles)   
+        self.dynamic_obstacles.update_position(force,obstacles)
+
+    def return_from_inventory(self,sprite):
+        self.dynamic_obstacles.sprites.append(sprite)
+        self.dynamic_obstacles.num_sprites += 1
 
     def display_environment(self):
         self.game_widget = QWidget()
