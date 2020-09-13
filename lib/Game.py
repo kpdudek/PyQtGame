@@ -18,7 +18,6 @@ from Inventory import *
 from DynamicObstacles import *
 
 class Game(QMainWindow,FilePaths):
-    fps = 45.0
     fps_calc = []
     game_time = 0.0
     loop_number = 0
@@ -46,8 +45,9 @@ class Game(QMainWindow,FilePaths):
     game_running = False
     run_once = True
 
-    def __init__(self,screen):
+    def __init__(self,screen,fps=45.0):
         super().__init__()
+        self.fps = fps
         
         self.width = 1900
         self.height = 900
@@ -122,7 +122,7 @@ class Game(QMainWindow,FilePaths):
         except:
             pass # No physics display exists
     
-    def update_dynamics(self):   
+    def update_dynamics(self):
         player_obstacles = [self.environment.ground_poly,self.environment.frame_poly]
         for sprite in self.dynamic_obstacles.sprites:
             player_obstacles.append(sprite)#.polys[sprite.idx])

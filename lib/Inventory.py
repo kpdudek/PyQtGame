@@ -16,14 +16,11 @@ from PaintUtils import *
 
 class Item(QLabel,Colors,FilePaths):
     clicked_signal = pyqtSignal(object)
-
+    
     def __init__(self,sprite,r,c,):
         super().__init__()
         self.sprite = sprite
-        self.index = np.array([[r],[c]])
-
-        if sprite:
-            self.set_pixmap()
+        self.index = np.array([[r],[c]])    
 
     def set_pixmap(self):
         # print(self.sprite.pixmaps[self.sprite.idx])
@@ -61,7 +58,7 @@ class Inventory(QWidget,Colors,FilePaths):
         self.setGeometry(self.geom) 
 
         self.full = False
-        self.items = np.empty(6,dtype=object).reshape(2,3)
+        self.items = np.empty(2,dtype=object).reshape(1,2)
         self.r_max,self.c_max = self.items.shape
         self.generate_layout()
         self.idx = np.array([[0],[0]])
@@ -86,11 +83,18 @@ class Inventory(QWidget,Colors,FilePaths):
                 return item.index
         return None
 
+    def is_empty(self):
+        for item_array in self.items:
+            item = item_array[0]
+            if item.sprite:
+                log(f'Found taken inventory slot: ({item.index[0]},{item.index[1]})')
+                return False
+        log('Inventory is empty...')
+        return True
+
     def add_item(self,sprite):
         r,c = self.idx
-        # print(f'{r} {c}')
         if self.items[r,c][0].sprite == None:
-            # print('fist loop')
             self.items[r,c][0].add_pixmap(sprite)
             
             if (r == self.r_max-1) and (c != self.c_max-1):
@@ -120,18 +124,21 @@ class Inventory(QWidget,Colors,FilePaths):
             else:
                 self.idx[0] += 1
 
-
     def remove_item(self,item):
         r,c = item.index
         self.idx = item.index
         self.items[r,c][0].remove_pixmap()
-        self.full = False
+        
+        if self.is_empty():
+            self.idx = np.array([[0],[0]])
         
     def inv_click(self,index):
+        print('Clicked!!!')
         if self.items[index[0],index[1]][0].sprite:
             log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
             self.return_to_game.emit(self.items[index[0],index[1]][0].sprite)
             self.remove_item(self.items[index[0],index[1]][0])
+            self.full = False
         
-    def assign_item(self,item):
-        self.items[0,0] = item
+    # def assign_item(self,item):
+    #     self.items[0,0] = item

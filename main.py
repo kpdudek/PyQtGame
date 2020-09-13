@@ -29,6 +29,7 @@ def main():
     if sys.platform == 'win32':
         QApplication.setStyle("fusion")
         dark_mode = True
+        fps = 55.
 
     elif sys.platform == 'linux':   
         QApplication.setStyle("fusion")
@@ -46,7 +47,7 @@ def main():
         app.setPalette(palette)
     
     # create the instance of our Window 
-    game_window = Game(app.primaryScreen()) 
+    game_window = Game(app.primaryScreen(),fps) 
 
     # start the app 
     sys.exit(app.exec()) 
