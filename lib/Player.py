@@ -29,12 +29,12 @@ class Player(QWidget,Colors,FilePaths):
     mouse_prev = np.zeros(2).reshape(2,1) - 1
 
     info_signal = pyqtSignal(object)
-    pause_signal = pyqtSignal()
     collision_signal = pyqtSignal(object)
     
-    def __init__(self,width,height,dynamic_obstacles):
+    def __init__(self,width,height,dynamic_obstacles,inventory):
         super().__init__()
         self.dynamic_obstacles = dynamic_obstacles
+        self.inventory = inventory
 
         self.width = width
         self.height = height
@@ -48,6 +48,7 @@ class Player(QWidget,Colors,FilePaths):
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
         self.fun = ctypes.CDLL(f'{self.user_path}lib/{self.cc_lib_path}') # Or full path to file
         self.fun.polygon_is_collision.argtypes = [self.c_float_p,ctypes.c_int,ctypes.c_int,self.c_float_p,ctypes.c_int,ctypes.c_int] 
+        self.fun.sphere_is_collision.argtypes = [self.c_float_p,ctypes.c_double,self.c_float_p,ctypes.c_double]
     
     def send_info(self,info):
         self.info_signal.emit(info)
@@ -59,11 +60,9 @@ class Player(QWidget,Colors,FilePaths):
             for key in key_press:
                 if key == 'right':
                     self.force[0] = self.key_force
-                    # self.geom = 'left_1.png'
                     self.sprite.direction(0.)       
                 elif key == 'left':
                     self.force[0] = -self.key_force
-                    # self.geom = 'left_1.png'
                     self.sprite.direction(180.)
                 
                 if sprint:
@@ -118,10 +117,6 @@ class Player(QWidget,Colors,FilePaths):
         # print(obstacles)
         for count,obstacle in enumerate(obstacles):
             if type(obstacle) == Sprite:
-                # Admitedly, this is a bad way of doing this. It would definitley be better
-                # not to overwrite obstacles with its polygon attribute. Make everything a sprite that way
-                # the 'obstacles' argument doesn't have both sprites and polygons ¯\_(ツ)_/¯
-                list_idx = obstacle.list_idx
                 edible = obstacle.is_edible
                 name = obstacle.name
                 obs_check = obstacle.polys[obstacle.idx]
@@ -129,9 +124,13 @@ class Player(QWidget,Colors,FilePaths):
                 obs_check = obstacle
                 edible = False
                 
+            data_p = self.sprite.polys[self.sprite.idx].sphere.pose.ctypes.data_as(self.c_float_p)
+            data_p2 = obs_check.sphere.pose.ctypes.data_as(self.c_float_p)
+            res = self.fun.sphere_is_collision(data_p,self.sprite.polys[self.sprite.idx].sphere.radius,data_p2,obs_check.sphere.radius)
+            # print(f'{self.sprite.polys[self.sprite.idx].sphere.pose} {obs_check.sphere.pose} {self.sprite.polys[self.sprite.idx].sphere.radius} {obs_check.sphere.radius} {res}')
             if sphere_is_collision(self.sprite.polys[self.sprite.idx],obs_check):
                 if edible:
-                    log(f'I ate a: {name}')
+                    # log(f'I ate a: {name}')
                     if obstacle not in self.mark_to_remove:
                         self.mark_to_remove.append(obstacle)
 
@@ -162,9 +161,6 @@ class Player(QWidget,Colors,FilePaths):
         collision = False
         for obstacle in obstacles:
             if type(obstacle) == Sprite:
-                # Admitedly, this is a bad way of doing this. It would definitley be better
-                # not to overwrite obstacles with its polygon attribute. Make everything a sprite that way
-                # the 'obstacles' argument doesn't have both sprites and polygons ¯\_(ツ)_/¯
                 list_idx = obstacle.list_idx
                 edible = obstacle.is_edible
                 name = obstacle.name

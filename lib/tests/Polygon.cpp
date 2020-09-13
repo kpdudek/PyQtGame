@@ -8,7 +8,7 @@ using namespace std;
 
 class Polygon {
     public:
-        Polygon(int num, double offset);  // This is the constructor
+        Polygon(int num, double offset); 
         int num_vert;
         double vertices [2][50] = {};
         double offset;
@@ -18,7 +18,7 @@ class Polygon {
 
 // Member functions definitions including constructor
 Polygon::Polygon(int num, double off) {
-    cout << "Object is being created" << endl;
+    cout << "Polygon is being created..." << endl;
     num_vert = num;
     offset = off;
 
@@ -26,8 +26,8 @@ Polygon::Polygon(int num, double off) {
 }
 
 void Polygon::Set_Vertices(void) {
-    cout << "Setting vertices" << endl;
-    double delt = 2*PI / this->num_vert;
+    cout << "Setting vertices..." << endl;
+    double delt = 2.*PI / this->num_vert;
     double ang = 0.0;
 
     for(int i = 0; i < this->num_vert; i++){
@@ -109,16 +109,15 @@ bool polygon_is_collision(Polygon poly1, Polygon poly2){
             break;
         }
     }
-
     return collision;
 }
 
 // Main function for the program
 int main() {
-    Polygon poly1(40,0.0);
+    Polygon poly1(40.,0.0);
     cout << "Number of vertices 1: " << poly1.num_vert << endl;
 
-    Polygon poly2(40,0.2);
+    Polygon poly2(40.,0.2);
     cout << "Number of vertices 2: " << poly2.num_vert << endl;
     
     bool col_res;
@@ -129,5 +128,6 @@ int main() {
     std::chrono::duration<double> elapsed_seconds = end-start;
     printf("Collision result: %d\n",col_res);
     printf("Collision check took: %f\n",elapsed_seconds.count());
+
     return 0;
 }

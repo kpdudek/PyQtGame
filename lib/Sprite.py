@@ -28,7 +28,7 @@ class Sprite(FilePaths):
         self.sizes = []
         self.polys = []
         self.centroid_offsets = []
-        self.pose = np.array([ [200.] , [200.] ])
+        self.pose = np.array([ [100.] , [200.] ])
         self.freq = 1./8.0 #Hz
         self.ang = ang # Degrees from 0 at horizontal right
 

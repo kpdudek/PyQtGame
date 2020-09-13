@@ -17,19 +17,29 @@ from PaintUtils import *
 class Item(QLabel,Colors,FilePaths):
     clicked_signal = pyqtSignal(object)
 
-    def __init__(self,item_type,icon,r,c):
+    def __init__(self,sprite,r,c,):
         super().__init__()
-        self.setText(f'{item_type},{r},{c}')
-        self.type = item_type
-        self.icon = icon
+        self.sprite = sprite
         self.index = np.array([[r],[c]])
 
+        if sprite:
+            self.set_pixmap()
+
+    def set_pixmap(self):
+        # print(self.sprite.pixmaps[self.sprite.idx])
+        self.setPixmap(self.sprite.pixmaps[self.sprite.idx])
+
+    def add_pixmap(self,sprite):
+        self.sprite = sprite
+        self.set_pixmap()
+    
     def mousePressEvent(self,e):
         self.clicked_signal.emit(self.index)
 
 class Inventory(QWidget,Colors,FilePaths):
-    items = np.empty(24,dtype=object).reshape(4,6)
-
+    '''
+    Inventory entries are sprites
+    '''
     def __init__(self,screen_width,screen_height):
         super().__init__()
         self.setWindowTitle('Inventory')
@@ -44,22 +54,45 @@ class Inventory(QWidget,Colors,FilePaths):
         self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
 
+        self.full = False
+        self.items = np.empty(6,dtype=object).reshape(2,3)
+        self.r_max,self.c_max = self.items.shape
         self.generate_layout()
+        self.idx = np.array([[0],[0]])
 
         self.setLayout(self.layout)
 
     def generate_layout(self):
-        r,c = self.items.shape
-        for i in range(0,r):
-            for j in range(0,c):
-                label = Item('t','png',i,j)
+        for i in range(0,self.r_max):
+            for j in range(0,self.c_max):
+                label = Item(None,i,j)
                 label.setStyleSheet(f"font:bold 14px; color: {self.divider_color}")
                 label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
                 label.clicked_signal.connect(self.inv_click)
+                self.items[i,j] = label
                 self.layout.addWidget(label,i,j)
 
+    def add_item(self,sprite):
+        r,c = self.idx
+        if (r == self.r_max) and (c == self.c_max):
+            if not self.full:
+                self.full = True
+                log('Inventory filled up!')
+            return
+        else:
+            self.items[r,c][0].add_pixmap(sprite)
+        
+        if (r == self.r_max-1) and (c != self.c_max-1):
+            self.idx[0] = 0
+            self.idx[1] += 1
+        elif (r == self.r_max-1) and (c == self.c_max-1):
+            self.idx[0] += 1
+            self.idx[1] += 1
+        else:
+            self.idx[0] += 1
+        
     def inv_click(self,index):
-        log(f'Inventory clicked: {index[0]},{index[1]}')
+        log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
         
     def assign_item(self,item):
         self.items[0,0] = item

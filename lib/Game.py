@@ -74,8 +74,7 @@ class Game(QMainWindow,FilePaths):
 
         self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
         
-        self.player = Player(self.width,self.height,self.dynamic_obstacles)
-        self.player.pause_signal.connect(self.pause_game)
+        self.player = Player(self.width,self.height,self.dynamic_obstacles,self.inventory)
         self.player.collision_signal.connect(self.update_collision_str)
         self.player.info_signal.connect(self.display_info)
 
@@ -133,7 +132,9 @@ class Game(QMainWindow,FilePaths):
 
         if mark_to_remove:
             for obs in mark_to_remove:
-                self.dynamic_obstacles.sprites.remove(obs)
+                self.inventory.add_item(obs)
+                if not self.inventory.full:
+                    self.dynamic_obstacles.sprites.remove(obs)
 
         force = 0.
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
@@ -177,8 +178,6 @@ class Game(QMainWindow,FilePaths):
 
         if sys.platform == 'win32':
             self.showMaximized()
-            # print(f'{self.screen_width} {self.screen_height}')
-            # self.setGeometry(0, 0, self.screen_width, self.screen_height)
         else:
             self.setGeometry(0, 0, self.screen_width, self.screen_height)
 
@@ -427,8 +426,8 @@ class Game(QMainWindow,FilePaths):
         if self.run_once:
             # self.game_menu_options.show_obstacles()
 
-            x,y = 600,350
-            for idx in range(0,2):
+            x,y = 500,350
+            for idx in range(0,8):
                 self.dynamic_obstacles.ball(x,y,dir=180.)
                 x += 150
 

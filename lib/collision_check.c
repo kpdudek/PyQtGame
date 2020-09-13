@@ -33,8 +33,35 @@ int edge_is_collision(double e1 [2][2], double e2 [2][2]){
     }
 }
 
-int sphere_is_collision(){
+int sphere_is_collision(double s1_pose [], double s1_rad, double s2_pose [], double s2_rad){
+    /*
+    This function determines if two spheres are in collision
+    positive r --> solid sphere
+    negative r --> hollow sphere
+    */
     int collision = 0;
+    double dist = pow(pow(s1_pose[0]+s2_pose[0],2)+pow(s1_pose[1]+s2_pose[1],2),0.5);
+
+    if(s1_rad < 0 && s2_rad < 0){
+        return 1;
+    }
+    else if(s1_rad < 0 || s2_rad < 0){
+        if(dist > -1*(s1_rad + s2_rad)){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    else{
+        if(dist < (s1_rad + s2_rad)){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+
     return collision;
 }
 
