@@ -49,15 +49,15 @@ class Game(QMainWindow,FilePaths,ElementColors):
     def __init__(self,screen,fps=45.0):
         super().__init__()
         self.fps = fps
-        
-        self.width = 1920
-        self.height = 1080
 
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
 
+        self.width = self.screen_width
+        self.height = self.screen_height
+
         # setting title 
-        self.setWindowTitle("Oregon Trail 2020")
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         welcome_width = 800
         welcome_height = 600
@@ -184,7 +184,7 @@ class Game(QMainWindow,FilePaths,ElementColors):
         self.game_layout.addStretch()
 
         self.game_main_window = False
-        self.setCentralWidget(self.game_widget)
+        self.setCentralWidget(self.environment)
         self.setContentsMargins(0,0,0,0)
 
         if sys.platform == 'win32':

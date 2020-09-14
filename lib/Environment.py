@@ -436,7 +436,7 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
 
         poses = [20,300,600,1000,1300,1600]
         for p in poses:
-            self.painter.drawPixmap(QPoint(p,450),self.tree)
+            self.painter.drawPixmap(QPoint(p,630),self.tree)
 
         if self.generate_env:
             self.env_snapshot.update({'trees':trees})
