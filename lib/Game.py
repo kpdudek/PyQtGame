@@ -16,8 +16,9 @@ from WelcomeScreen import *
 from GameController import *
 from Inventory import *
 from DynamicObstacles import *
+from Widgets import *
 
-class Game(QMainWindow,FilePaths):
+class Game(QMainWindow,FilePaths,ElementColors):
     fps_calc = []
     game_time = 0.0
     loop_number = 0
@@ -49,8 +50,8 @@ class Game(QMainWindow,FilePaths):
         super().__init__()
         self.fps = fps
         
-        self.width = 1900
-        self.height = 900
+        self.width = 1920
+        self.height = 1080
 
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
@@ -70,10 +71,15 @@ class Game(QMainWindow,FilePaths):
         self.setCentralWidget(self.main_widget)
         self.game_main_window = True
 
+        self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
+
         self.inventory = Inventory(self.screen_width,self.screen_height)
         self.inventory.return_to_game.connect(self.return_from_inventory)
 
         self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
+
+        self.obs_display = ObstaclesDisplay(self.dynamic_obstacles)
+        self.physics_window = PhysicsDisplay()
         
         self.player = Player(self.width,self.height,self.dynamic_obstacles,self.inventory)
         self.player.collision_signal.connect(self.update_collision_str)
@@ -118,7 +124,7 @@ class Game(QMainWindow,FilePaths):
     
     def display_info(self,info):
         try:
-            self.game_menu_options.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose)
+            self.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose,self.avgfps)
         except:
             pass # No physics display exists
     
@@ -148,32 +154,32 @@ class Game(QMainWindow,FilePaths):
     def display_environment(self):
         self.game_widget = QWidget()
         self.game_layout = QVBoxLayout()
-        self.game_layout.setContentsMargins(0,0,0,0)
 
+        self.game_layout.setContentsMargins(0,0,0,0)
+        self.game_widget.setContentsMargins(0,0,0,0)
+        
         self.game_widget.setLayout(self.game_layout)
         self.game_layout.setAlignment(Qt.AlignCenter)
 
-        self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
-
         self.game_layout.addStretch()
 
-        self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
-        self.game_layout.addWidget(self.game_menu_options)
-        self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
-        self.game_menu_options.exit_game_signal.connect(self.end_game)
-        self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
+        # self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
+        # self.game_layout.addWidget(self.game_menu_options)
+        # self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
+        # self.game_menu_options.exit_game_signal.connect(self.end_game)
+        # self.game_menu_options.pause_game_signal.connect(self.pause_game)
+        # self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
 
         self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)
 
-        self.game_controller = GameController()
-        self.game_layout.addWidget(self.game_controller)
-        self.game_controller.new_scene_signal.connect(self.new_scene_event)
-        self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
-        self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
+        # self.game_controller = GameController()
+        # self.game_layout.addWidget(self.game_controller)
+        # self.game_controller.new_scene_signal.connect(self.new_scene_event)
+        # self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
+        # self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
 
         self.game_layout.addStretch()
 
@@ -332,6 +338,20 @@ class Game(QMainWindow,FilePaths):
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
+        elif event.key() == Qt.Key_O:
+            if not self.obs_display.displayed:
+                self.show_dock_widget(self.obs_display)
+                self.obs_display.displayed = True
+            else:
+                self.dock.close()
+                self.obs_display.displayed = False
+        elif event.key() == Qt.Key_L:
+            if not self.physics_window.displayed:
+                self.show_dock_widget(self.physics_window)
+                self.physics_window.displayed = True
+            else:
+                self.dock.close()
+                self.physics_window.displayed = False
         elif event.key() == Qt.Key_B:
             self.prev_scene_event()
         elif event.key() == Qt.Key_Escape:
@@ -414,15 +434,21 @@ class Game(QMainWindow,FilePaths):
 
         toc = time.time()
         # print(f"Max FPS: {1./(toc-curr_time)}")
-        try:
-            self.fps_calc.append((1./(toc-curr_time))) 
-            if toc-self.fps_time > 0.5:
-                self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
-                self.fps_calc = []
-                self.fps_time = toc
+        # try:
+        self.fps_calc.append((1./(toc-curr_time))) 
+        if toc-self.fps_time > 0.5:
+            # self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
+            # self.painter.drawText(250,250,'FPS: %.2f'%(np.mean(self.fps_calc)))
+
+            # self.painter.end()
+            self.avgfps = 'FPS: %.2f'%(np.mean(self.fps_calc))
+            self.fps_calc = []
+            self.fps_time = toc
             # self.game_menu_options.fps_label.setText('FPS: %.2f'%(1./(toc-curr_time)))
-        except:
-            log('Computed fps is invalid...',color='r')
+
+        # self.environment.repaint()
+        # except:
+        #     log('Computed fps is invalid...',color='r')
         
         # Check for game prompts
         # self.prompt_manager.check_prompts()

@@ -19,6 +19,7 @@ class Item(QLabel,Colors,FilePaths):
     
     def __init__(self,sprite,r,c,):
         super().__init__()
+        self.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.sprite = sprite
         self.index = np.array([[r],[c]])    
 
@@ -57,8 +58,10 @@ class Inventory(QWidget,Colors,FilePaths):
         self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
 
+        r,c = 2,2
+        size = r*c
         self.full = False
-        self.items = np.empty(2,dtype=object).reshape(1,2)
+        self.items = np.empty(size,dtype=object).reshape(r,c)
         self.r_max,self.c_max = self.items.shape
         self.generate_layout()
         self.idx = np.array([[0],[0]])
@@ -107,6 +110,7 @@ class Inventory(QWidget,Colors,FilePaths):
                 self.idx[0] += 1
         else:
             idx = self.find_open_slot()
+
             if idx == None:
                 if not self.full:
                     self.full = True
@@ -126,19 +130,15 @@ class Inventory(QWidget,Colors,FilePaths):
 
     def remove_item(self,item):
         r,c = item.index
-        self.idx = item.index
+        self.idx = item.index.copy()
         self.items[r,c][0].remove_pixmap()
         
         if self.is_empty():
             self.idx = np.array([[0],[0]])
         
     def inv_click(self,index):
-        print('Clicked!!!')
         if self.items[index[0],index[1]][0].sprite:
             log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
             self.return_to_game.emit(self.items[index[0],index[1]][0].sprite)
             self.remove_item(self.items[index[0],index[1]][0])
             self.full = False
-        
-    # def assign_item(self,item):
-    #     self.items[0,0] = item

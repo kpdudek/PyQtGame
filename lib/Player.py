@@ -33,6 +33,8 @@ class Player(QWidget,Colors,FilePaths):
     
     def __init__(self,width,height,dynamic_obstacles,inventory):
         super().__init__()
+        self.num_hearts = 1
+
         self.dynamic_obstacles = dynamic_obstacles
         self.inventory = inventory
 
@@ -133,6 +135,8 @@ class Player(QWidget,Colors,FilePaths):
                     # log(f'I ate a: {name}')
                     if obstacle not in self.mark_to_remove:
                         self.mark_to_remove.append(obstacle)
+                        if not self.inventory.full and self.num_hearts < 10:
+                            self.num_hearts += 1
 
                 data = copy.deepcopy(self.sprite.polys[self.sprite.idx].vertices)
                 data = data.astype(np.double)

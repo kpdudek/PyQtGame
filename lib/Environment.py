@@ -27,6 +27,7 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
     ground_chunk = None
     ground_poly = None
     frame_poly = None
+    heart_pixmap = None
     tree = None
     sun = None
     gen_cloud_pixmaps = None
@@ -38,6 +39,7 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
         self.params = params
 
         self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
 
         self.player = player
@@ -448,6 +450,18 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
         pose = QPoint(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]))
         self.painter.drawPixmap(pose,self.player.sprite.pixmaps[self.player.sprite.idx])
 
+        if not self.heart_pixmap:
+            self.heart_pixmap = QPixmap(f'{self.user_path}/graphics/heart.png')
+            self.heart_pixmap = self.heart_pixmap.scaled(25, 25, Qt.KeepAspectRatio)
+
+        heart_x = 50
+        heart_y = 50
+        dist = 35
+        for heart_idx in range(0,self.player.num_hearts):
+            pose = QPoint(heart_x,heart_y)
+            self.painter.drawPixmap(pose,self.heart_pixmap)
+            heart_x += dist
+
         if self.player_debug:
             sidx = self.player.sprite.idx
             rec = QRect(float(self.player.sprite.pose[0]),float(self.player.sprite.pose[1]),float(self.player.sprite.sizes[sidx][0]),float(self.player.sprite.sizes[sidx][1]))
@@ -491,14 +505,18 @@ class Environment(QWidget,Colors,FilePaths,PaintBrushes):
                     p.append(QPointF(sprite.polys[idx].vertices[0,poly_idx],sprite.polys[idx].vertices[1,poly_idx]))
                 self.painter.drawPolygon(p)
 
-        
-
     def redraw_scene(self):
         '''
         Call all drawing functions. redraw_scene() should be followed by a
         repaint call for the Environment class
         '''
+        # self.main_frame.clear()
+        # self.canvas = QPixmap(self.width,self.height)
+        # self.main_frame.setPixmap(self.canvas)
+
         self.painter = QtGui.QPainter(self.main_frame.pixmap())
+
+        # self.main_frame.clear()
 
         self.set_sky()
         self.draw_ground()

@@ -241,6 +241,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setGeometry(0,0,400,200)
 
         self.auto_fill_background = False
+        self.displayed = False
 
         self.layout = QVBoxLayout()
 
@@ -278,13 +279,18 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.state_label.setStyleSheet(f"font:bold 16px")
         self.state_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
+        self.fps_label = QLabel('...')
+        self.fps_label.setStyleSheet(f"font:bold 16px")
+        self.fps_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
         self.layout.addWidget(self.collision_label)
         self.layout.addWidget(self.state_label)
+        self.layout.addWidget(self.fps_label)
         self.setLayout(self.layout)
 
-    def update(self,info,keys_pressed,collision,state,pose):
+    def update(self,info,keys_pressed,collision,state,pose,fps):
         left_info_str = ''
         right_info_str = ''
 
@@ -339,6 +345,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.key_label.setText(key_str)
         self.collision_label.setText(collision_str)
         self.state_label.setText(state_str)
+        self.fps_label.setText(fps)
 
 
 class ObstaclesDisplay(QWidget,Colors,FilePaths):
@@ -353,6 +360,8 @@ class ObstaclesDisplay(QWidget,Colors,FilePaths):
         self.auto_fill_background = True
 
         uic.loadUi(f'{self.user_path}ui/obstacle_manager.ui', self)
+
+        self.displayed = False
         
         self.add_button.clicked.connect(self.add_obstacle)
         self.remove_button.clicked.connect(self.remove_obstacle)
