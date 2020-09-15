@@ -16,6 +16,8 @@ from PaintUtils import *
 
 class Item(QLabel,Colors,FilePaths):
     clicked_signal = pyqtSignal(object)
+    dragged_signal = pyqtSignal(object)
+    released_signal = pyqtSignal(object)
     
     def __init__(self,sprite,r,c,):
         super().__init__()
@@ -36,13 +38,21 @@ class Item(QLabel,Colors,FilePaths):
         self.clear()
     
     def mousePressEvent(self,e):
-        self.clicked_signal.emit(self.index)
+        pass
+
+    def mouseMoveEvent(self,e):
+        pass
+
+    def mouseReleaseEvent(self,e):
+        self.released_signal.emit(self.index)
 
 class Inventory(QWidget,Colors,FilePaths):
     '''
     Inventory entries are sprites
     '''
-    return_to_game = pyqtSignal(object)
+    item_clicked = pyqtSignal(object)
+    item_dragged = pyqtSignal(object)
+    item_released = pyqtSignal(object)
 
     def __init__(self,screen_width,screen_height):
         super().__init__()
@@ -75,6 +85,8 @@ class Inventory(QWidget,Colors,FilePaths):
                 label.setStyleSheet(f"font:bold 14px; color: {self.divider_color}")
                 label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
                 label.clicked_signal.connect(self.inv_click)
+                label.dragged_signal.connect(self.inv_drag)
+                label.released_signal.connect(self.inv_release)
                 self.items[i,j] = label
                 self.layout.addWidget(label,i,j)
 
@@ -137,8 +149,14 @@ class Inventory(QWidget,Colors,FilePaths):
             self.idx = np.array([[0],[0]])
         
     def inv_click(self,index):
+        pass
+
+    def inv_drag(self,index):
+        pass
+
+    def inv_release(self,index):
         if self.items[index[0],index[1]][0].sprite:
             log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
-            self.return_to_game.emit(self.items[index[0],index[1]][0].sprite)
+            self.item_released.emit(self.items[index[0],index[1]][0].sprite)
             self.remove_item(self.items[index[0],index[1]][0])
             self.full = False

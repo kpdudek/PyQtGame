@@ -25,6 +25,8 @@ class DynamicObstacles(Colors,FilePaths):
         self.sprites = []
         self.num_sprites = 0
 
+        self.player = None
+
         # C library for collision checking
         self.c_float_p = ctypes.POINTER(ctypes.c_double)
         self.fun = ctypes.CDLL(f'{self.user_path}lib/{self.cc_lib_path}')
@@ -32,7 +34,7 @@ class DynamicObstacles(Colors,FilePaths):
 
     def ball(self,x,y,dir=0.):
         list_idx = self.num_sprites
-        sprite = Sprite('mouse/right/',list_idx=list_idx,name=f'Test_{len(self.sprites)+1}',ang=0.,scale=40,physics={'mass':12.,'max_vel':20.})
+        sprite = Sprite('mouse/right/',list_idx=list_idx,name=f'Test_{len(self.sprites)+1}',ang=0.,scale=40,physics={'mass':12.,'max_vel':10.})
         sprite.direction(dir)
         x = np.array([x])
         y = np.array([y])
@@ -53,10 +55,24 @@ class DynamicObstacles(Colors,FilePaths):
 
         self.num_sprites -= 1    
 
-    def update_position(self,force,obstacles):
+    def update_position(self,obstacles):
         for idx in range(0,len(self.sprites)):
             self.sprites[idx].physics.gravity()
             self.collision_check(obstacles,idx)
+
+            x_diff = self.sprites[idx].pose[0]-self.player.sprite.pose[0]
+            y_diff = self.sprites[idx].pose[1]-self.player.sprite.pose[1]
+            dist = math.sqrt(math.pow(x_diff,2) + math.pow(y_diff,2))
+            if dist < 150:
+                max_force = .45
+                force = np.array([[(1./dist)*25],[0.]])
+                if abs(force[0]) > max_force:
+                    force[0] = np.sign(force[0])*max_force
+                if abs(force[1]) > max_force:
+                    force[1] = np.sign(force[1])*max_force
+            
+                self.sprites[idx].physics.accelerate(force)
+                self.collision_check(obstacles,idx)
 
             self.sprites[idx].animate(self.sprites[idx].physics.velocity[0])
 

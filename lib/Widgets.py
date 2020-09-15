@@ -283,14 +283,19 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.fps_label.setStyleSheet(f"font:bold 16px")
         self.fps_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
 
+        self.fps_throttle_label = QLabel('...')
+        self.fps_throttle_label.setStyleSheet(f"font:bold 16px")
+        self.fps_throttle_label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+
         self.layout.addLayout(self.physics_layout)
         self.layout.addWidget(self.key_label)
         self.layout.addWidget(self.collision_label)
         self.layout.addWidget(self.state_label)
         self.layout.addWidget(self.fps_label)
+        self.layout.addWidget(self.fps_throttle_label)
         self.setLayout(self.layout)
 
-    def update(self,info,keys_pressed,collision,state,pose,fps):
+    def update(self,info,keys_pressed,collision,state,pose,fps,throtfps):
         left_info_str = ''
         right_info_str = ''
 
@@ -346,7 +351,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.collision_label.setText(collision_str)
         self.state_label.setText(state_str)
         self.fps_label.setText(fps)
-
+        self.fps_throttle_label.setText(throtfps)
 
 class ObstaclesDisplay(QWidget,Colors,FilePaths):
 

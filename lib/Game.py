@@ -5,6 +5,7 @@ from PyQt5 import QtCore, QtGui, QtSvg, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 import random, sys, os, math, time
+from multiprocessing import Process
 import numpy as np
 import copy
 
@@ -23,7 +24,9 @@ class Game(QMainWindow,FilePaths,ElementColors):
     game_time = 0.0
     loop_number = 0
     fps_time = time.time()
+    prev_fps_time = time.time()
     fps_log = []
+    fps_throttle = []
 
     key_pressed = []
     sprint = False
@@ -74,7 +77,9 @@ class Game(QMainWindow,FilePaths,ElementColors):
         self.prompt_manager = PromptManager(self.screen_width,self.screen_height)
 
         self.inventory = Inventory(self.screen_width,self.screen_height)
-        self.inventory.return_to_game.connect(self.return_from_inventory)
+        self.inventory.item_released.connect(self.return_from_inventory)
+        self.inventory.item_clicked.connect(self.store_selected_item)
+        self.inventory.item_dragged.connect(self.update_inventory_selection)
 
         self.dynamic_obstacles = DynamicObstacles(self.width,self.height)
 
@@ -84,6 +89,8 @@ class Game(QMainWindow,FilePaths,ElementColors):
         self.player = Player(self.width,self.height,self.dynamic_obstacles,self.inventory)
         self.player.collision_signal.connect(self.update_collision_str)
         self.player.info_signal.connect(self.display_info)
+
+        self.dynamic_obstacles.player = self.player
 
         self.setFocusPolicy(Qt.StrongFocus)
 
@@ -124,7 +131,7 @@ class Game(QMainWindow,FilePaths,ElementColors):
     
     def display_info(self,info):
         try:
-            self.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose,self.avgfps)
+            self.physics_window.update(info,self.key_pressed,self.collision_str,self.game_running,self.player.sprite.pose,self.avgfps,self.throtfps)
         except:
             pass # No physics display exists
     
@@ -138,14 +145,19 @@ class Game(QMainWindow,FilePaths,ElementColors):
         mark_to_remove = self.player.update_position(self.key_pressed,self.sprint,self.mouse_pos.copy(),player_obstacles)
 
         if mark_to_remove:
-            for obs in mark_to_remove:
-                self.inventory.add_item(obs)
+            for sprite in mark_to_remove:
+                self.inventory.add_item(sprite)
                 if not self.inventory.full:
-                    self.dynamic_obstacles.sprites.remove(obs)
+                    self.dynamic_obstacles.sprites.remove(sprite)
 
-        force = 0.
+        # force = .25
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
-        self.dynamic_obstacles.update_position(force,obstacles)
+        self.dynamic_obstacles.update_position(obstacles)
+
+    def store_selected_item(self):
+        pass
+    def update_inventory_selection(self):
+        pass
 
     def return_from_inventory(self,sprite):
         self.dynamic_obstacles.sprites.append(sprite)
@@ -254,15 +266,6 @@ class Game(QMainWindow,FilePaths,ElementColors):
             if not self.game_main_window:
                 log('Failed to save the same on an end game call!',color='r')
         self.close()
-
-        try:
-            self.game_menu_options.physics_window.close()
-        except:
-            pass
-        try:
-            self.prompt_manager.welcome_prompt.close()
-        except:
-            pass
     
     # Qt method
     def mousePressEvent(self,e):
@@ -433,22 +436,16 @@ class Game(QMainWindow,FilePaths,ElementColors):
             self.environment.game_time = self.game_time        
 
         toc = time.time()
-        # print(f"Max FPS: {1./(toc-curr_time)}")
-        # try:
         self.fps_calc.append((1./(toc-curr_time))) 
+        self.fps_throttle.append((1./(curr_time-self.prev_fps_time)))
+        self.prev_fps_time = curr_time
         if toc-self.fps_time > 0.5:
-            # self.game_menu_options.fps_label.setText('FPS: %.2f'%(np.mean(self.fps_calc)))
-            # self.painter.drawText(250,250,'FPS: %.2f'%(np.mean(self.fps_calc)))
-
-            # self.painter.end()
-            self.avgfps = 'FPS: %.2f'%(np.mean(self.fps_calc))
+            self.avgfps = 'MAX FPS: %.2f'%(np.mean(self.fps_calc))
+            self.throtfps = 'Throttled FPS: %.2f'%(np.mean(self.fps_throttle))
             self.fps_calc = []
             self.fps_time = toc
-            # self.game_menu_options.fps_label.setText('FPS: %.2f'%(1./(toc-curr_time)))
+        
 
-        # self.environment.repaint()
-        # except:
-        #     log('Computed fps is invalid...',color='r')
         
         # Check for game prompts
         # self.prompt_manager.check_prompts()
@@ -458,7 +455,7 @@ class Game(QMainWindow,FilePaths,ElementColors):
             # self.game_menu_options.show_obstacles()
 
             x,y = 500,350
-            for idx in range(0,8):
+            for idx in range(0,5):
                 self.dynamic_obstacles.ball(x,y,dir=180.)
                 x += 150
 
