@@ -252,12 +252,19 @@ class Game(QMainWindow,FilePaths,ElementColors):
             self.inv_dock.show()
             self.inv_dock_hide = True
 
-    def show_dock_widget(self,dock_widget):
-        self.dock = QDockWidget(self) 
-        self.dock.setWidget(dock_widget) 
-        self.dock.setGeometry(dock_widget.geometry())
-        self.dock.setAutoFillBackground(dock_widget.auto_fill_background)
-        self.dock.show()
+    def show_obstacle_dock(self,dock_widget):
+        self.obstacle_dock = QDockWidget(self) 
+        self.obstacle_dock.setWidget(dock_widget) 
+        self.obstacle_dock.setGeometry(dock_widget.geometry())
+        self.obstacle_dock.setAutoFillBackground(dock_widget.auto_fill_background)
+        self.obstacle_dock.show()
+
+    def show_physics_dock(self,dock_widget):
+        self.physics_dock = QDockWidget(self) 
+        self.physics_dock.setWidget(dock_widget) 
+        self.physics_dock.setGeometry(dock_widget.geometry())
+        self.physics_dock.setAutoFillBackground(dock_widget.auto_fill_background)
+        self.physics_dock.show()
 
     def end_game(self):
         try:
@@ -338,31 +345,37 @@ class Game(QMainWindow,FilePaths,ElementColors):
         ### Game operation keys
         elif event.key() == Qt.Key_N:
             self.new_scene_event()
+            
         elif event.key() == Qt.Key_M:
             log('Advancing to next scene')
             self.next_scene = True
+
         elif event.key() == Qt.Key_O:
             if not self.obs_display.displayed:
-                self.show_dock_widget(self.obs_display)
+                self.show_obstacle_dock(self.obs_display)
                 self.obs_display.displayed = True
             else:
-                self.dock.close()
+                self.obstacle_dock.close()
                 self.obs_display.displayed = False
+
         elif event.key() == Qt.Key_L:
             if not self.physics_window.displayed:
-                self.show_dock_widget(self.physics_window)
+                self.show_physics_dock(self.physics_window)
                 self.physics_window.displayed = True
             else:
-                self.dock.close()
+                self.physics_dock.close()
                 self.physics_window.displayed = False
+
         elif event.key() == Qt.Key_B:
             self.prev_scene_event()
+
         elif event.key() == Qt.Key_Escape:
             log('Exit game called...',color='y')
             self.end_game()
 
         elif event.key() == Qt.Key_P:
             self.pause_game()
+
         else:
             log('Key press not recognized...')
 
@@ -436,24 +449,24 @@ class Game(QMainWindow,FilePaths,ElementColors):
             self.environment.game_time = self.game_time        
 
         toc = time.time()
-        self.fps_calc.append((1./(toc-curr_time))) 
-        self.fps_throttle.append((1./(curr_time-self.prev_fps_time)))
-        self.prev_fps_time = curr_time
-        if toc-self.fps_time > 0.5:
-            self.avgfps = 'MAX FPS: %.2f'%(np.mean(self.fps_calc))
-            self.throtfps = 'Throttled FPS: %.2f'%(np.mean(self.fps_throttle))
-            self.fps_calc = []
-            self.fps_time = toc
-        
-
+        try:
+            self.fps_calc.append((1./(toc-curr_time))) 
+            self.fps_throttle.append((1./(curr_time-self.prev_fps_time)))
+            self.prev_fps_time = curr_time
+            if toc-self.fps_time > 0.5:
+                self.avgfps = 'MAX FPS: %.2f'%(np.mean(self.fps_calc))
+                self.throtfps = 'Throttled FPS: %.2f'%(np.mean(self.fps_throttle))
+                self.fps_calc = []
+                self.fps_throttle = []
+                self.fps_time = toc
+        except ZeroDivisionError:
+            self.prev_fps_time = curr_time
         
         # Check for game prompts
         # self.prompt_manager.check_prompts()
 
         # Actions to run only on first game loop
         if self.run_once:
-            # self.game_menu_options.show_obstacles()
-
             x,y = 500,350
             for idx in range(0,5):
                 self.dynamic_obstacles.ball(x,y,dir=180.)
