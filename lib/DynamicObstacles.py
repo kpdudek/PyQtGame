@@ -58,22 +58,25 @@ class DynamicObstacles(Colors,FilePaths):
     def update_position(self,obstacles):
         for idx in range(0,len(self.sprites)):
             self.sprites[idx].physics.gravity()
-            self.collision_check(obstacles,idx)
+            # self.collision_check(obstacles,idx)
 
             x_diff = self.sprites[idx].pose[0]-self.player.sprite.pose[0]
             y_diff = self.sprites[idx].pose[1]-self.player.sprite.pose[1]
             dist = math.sqrt(math.pow(x_diff,2) + math.pow(y_diff,2))
             if dist < 150:
-                max_force = .45
-                force = np.array([[(1./dist)*25],[0.]])
-                if abs(force[0]) > max_force:
-                    force[0] = np.sign(force[0])*max_force
-                if abs(force[1]) > max_force:
-                    force[1] = np.sign(force[1])*max_force
+                max_x_force = .8
+                max_y_force = 50.
+                force = np.array([(1./x_diff)*85,(1./y_diff)*800])
+                if abs(force[0]) > max_x_force:
+                    force[0] = np.sign(force[0])*max_x_force
+                if abs(force[1]) > max_y_force:
+                    force[1] = np.sign(force[1])*max_y_force
+            else:
+                force = np.array([[0.],[0.]])
             
-                self.sprites[idx].physics.accelerate(force)
-                self.collision_check(obstacles,idx)
-
+            self.sprites[idx].physics.accelerate(force)
+            
+            self.collision_check(obstacles,idx)
             self.sprites[idx].animate(self.sprites[idx].physics.velocity[0])
 
     def collision_check(self,obstacles,idx):

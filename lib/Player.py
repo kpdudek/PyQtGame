@@ -16,9 +16,9 @@ from Geometry import *
 from Sprite import *
 
 class Player(QWidget,Colors,FilePaths):
-    key_force = 2.
+    key_force = 4.
     sprint_multiplier = 2.5
-    boost = 28.
+    boost = 50.
     max_vel = 11.
     mass = 12.
 
@@ -97,7 +97,7 @@ class Player(QWidget,Colors,FilePaths):
         self.mark_to_remove = []
 
         self.physics.gravity()
-        self.collision_check(obstacles)
+        # self.collision_check(obstacles)
 
         self.physics.accelerate(self.force)
         self.collision_check(obstacles)
