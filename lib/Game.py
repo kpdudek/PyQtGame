@@ -154,14 +154,19 @@ class Game(QMainWindow,FilePaths,ElementColors):
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
         self.dynamic_obstacles.update_position(obstacles)
 
-    def store_selected_item(self):
-        pass
-    def update_inventory_selection(self):
-        pass
-
-    def return_from_inventory(self,sprite):
+    def store_selected_item(self,sprite):
         self.dynamic_obstacles.sprites.append(sprite)
         self.dynamic_obstacles.num_sprites += 1
+        
+        self.dyn_obs_idx = len(self.dynamic_obstacles.sprites)-1
+
+    def update_inventory_selection(self,pose):
+        sprite = self.dynamic_obstacles.sprites[self.dyn_obs_idx]
+        sprite.polys[sprite.idx].teleport(self.mouse_pos[0],self.mouse_pos[1])
+        sprite.pose = self.mouse_pos + sprite.centroid_offsets[sprite.idx]
+
+    def return_from_inventory(self):
+        self.dyn_obs_idx = None
 
     def display_environment(self):
         self.game_widget = QWidget()

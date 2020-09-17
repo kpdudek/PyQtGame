@@ -34,7 +34,7 @@ def main():
     elif sys.platform == 'linux':   
         QApplication.setStyle("fusion")
         dark_mode = True
-        fps = 45.
+        fps = 50.
 
     app = QApplication(sys.argv)
     log('Game started...',color='g')

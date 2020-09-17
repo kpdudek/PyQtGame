@@ -15,18 +15,22 @@ from Utils import *
 from PaintUtils import *
 
 class Item(QLabel,Colors,FilePaths):
+    transform = None
     clicked_signal = pyqtSignal(object)
     dragged_signal = pyqtSignal(object)
     released_signal = pyqtSignal(object)
     
-    def __init__(self,sprite,r,c,):
+    def __init__(self,sprite,r,c,inv_pose):
         super().__init__()
+        pose = np.array([[self.geometry().x()],[self.geometry().y()]])
+        self.transform = -1.*(pose - inv_pose)
+
         self.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.sprite = sprite
         self.index = np.array([[r],[c]])    
+        self.mous_pos = None
 
     def set_pixmap(self):
-        # print(self.sprite.pixmaps[self.sprite.idx])
         self.setPixmap(self.sprite.pixmaps[self.sprite.idx])
 
     def add_pixmap(self,sprite):
@@ -38,10 +42,20 @@ class Item(QLabel,Colors,FilePaths):
         self.clear()
     
     def mousePressEvent(self,e):
-        pass
+        pose = np.array([[e.x()],[e.y()]])
+        # print(f'pose {pose}')
+        # print(self.transform)
+        self.mous_pos = pose + self.transform
+        # print(self.mous_pos)
+        self.clicked_signal.emit(self.index)
 
     def mouseMoveEvent(self,e):
-        pass
+        pose = np.array([[e.x()],[e.y()]])
+        # print(f'pose {pose}')
+        # print(self.transform)
+        self.mous_pos = pose + self.transform
+        # print(self.mous_pos)
+        self.dragged_signal.emit(self.index)
 
     def mouseReleaseEvent(self,e):
         self.released_signal.emit(self.index)
@@ -52,14 +66,14 @@ class Inventory(QWidget,Colors,FilePaths):
     '''
     item_clicked = pyqtSignal(object)
     item_dragged = pyqtSignal(object)
-    item_released = pyqtSignal(object)
+    item_released = pyqtSignal()
 
     def __init__(self,screen_width,screen_height):
         super().__init__()
         self.setWindowTitle('Inventory')
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
-        self.auto_fill_background = True
+        self.auto_fill_background = False
 
         self.layout = QGridLayout()
 
@@ -67,6 +81,8 @@ class Inventory(QWidget,Colors,FilePaths):
         self.height = 400
         self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
+
+        self.pose = np.array([[self.geometry().x()],[self.geometry().y()]])
 
         r,c = 2,2
         size = r*c
@@ -81,7 +97,7 @@ class Inventory(QWidget,Colors,FilePaths):
     def generate_layout(self):
         for i in range(0,self.r_max):
             for j in range(0,self.c_max):
-                label = Item(None,i,j)
+                label = Item(None,i,j,self.pose)
                 label.setStyleSheet(f"font:bold 14px; color: {self.divider_color}")
                 label.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
                 label.clicked_signal.connect(self.inv_click)
@@ -148,15 +164,27 @@ class Inventory(QWidget,Colors,FilePaths):
         if self.is_empty():
             self.idx = np.array([[0],[0]])
         
-    def inv_click(self,index):
-        pass
+    def inv_release(self,index):
+        self.item_released.emit()
+        self.remove_item(self.items[index[0],index[1]][0])
+        self.full = False
 
     def inv_drag(self,index):
-        pass
+        if self.items[index[0],index[1]][0].sprite:
+            # log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
+            self.mouse_pos = self.items[index[0],index[1]][0].mous_pos
+            self.item_dragged.emit(self.mouse_pos)
 
-    def inv_release(self,index):
+    def inv_click(self,index):
+        # TODO: pass the item itself through this signal instead of its index
+
         if self.items[index[0],index[1]][0].sprite:
             log(f'Clicked: {self.items[index[0],index[1]][0].sprite.name} at index {index[0]},{index[1]}')
-            self.item_released.emit(self.items[index[0],index[1]][0].sprite)
-            self.remove_item(self.items[index[0],index[1]][0])
-            self.full = False
+
+            sprite = self.items[index[0],index[1]][0].sprite
+
+            self.mouse_pos = self.items[index[0],index[1]][0].mous_pos
+            sprite.polys[sprite.idx].teleport(self.mouse_pos[0],self.mouse_pos[1])
+            sprite.pose = self.mouse_pos + sprite.centroid_offsets[sprite.idx]
+
+            self.item_clicked.emit(sprite)
