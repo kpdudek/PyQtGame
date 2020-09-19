@@ -152,7 +152,7 @@ class Game(QMainWindow,FilePaths,ElementColors):
 
         # force = .25
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
-        self.dynamic_obstacles.update_position(obstacles)
+        # self.dynamic_obstacles.update_position(obstacles)
 
     def store_selected_item(self,sprite):
         self.dynamic_obstacles.sprites.append(sprite)

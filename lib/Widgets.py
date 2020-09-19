@@ -240,7 +240,7 @@ class PhysicsDisplay(QWidget,Colors,FilePaths):
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.setGeometry(0,0,400,200)
 
-        self.auto_fill_background = False
+        self.auto_fill_background = True
         self.displayed = False
 
         self.layout = QVBoxLayout()
