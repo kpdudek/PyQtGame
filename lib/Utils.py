@@ -59,7 +59,17 @@ def log(text, color=None):
 
     # Print to terminal in specified color
     if sys.platform == 'win32':
-        print(log_msg)
+        # print(log_msg)
+        if color == 'g' or color == 'G':
+            print(GREEN + log_msg + RESET)
+        elif color == 'r' or color == 'R':
+            print(RED + log_msg + RESET)
+        elif color == 'y' or color == 'Y':
+            print(YELLOW + log_msg + RESET)
+        elif color == 'c' or color == 'C':
+            print(CYAN + log_msg + RESET)
+        else:
+            print(log_msg)
     elif sys.platform == 'linux':    
         if color == 'g' or color == 'G':
             print(GREEN + log_msg + RESET)

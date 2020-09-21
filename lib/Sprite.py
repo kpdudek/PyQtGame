@@ -32,6 +32,8 @@ class Sprite(FilePaths):
         self.freq = 1./8.0 #Hz
         self.ang = ang # Degrees from 0 at horizontal right
 
+        self.skip_physics = False
+
         assert(len(self.pixmaps)==0)
 
         for png in sorted(os.listdir(f'{self.user_path}graphics/{folder}')):

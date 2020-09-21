@@ -152,22 +152,35 @@ class Game(QMainWindow,FilePaths,ElementColors):
 
         # force = .25
         obstacles = [self.environment.ground_poly,self.environment.frame_poly,self.player.sprite.polys[self.player.sprite.idx]]
-        # self.dynamic_obstacles.update_position(obstacles)
+        self.dynamic_obstacles.update_position(obstacles)
 
     def store_selected_item(self,sprite):
-        self.dynamic_obstacles.sprites.append(sprite)
-        self.dynamic_obstacles.num_sprites += 1
-        
-        self.dyn_obs_idx = len(self.dynamic_obstacles.sprites)-1
+        try:
+            self.dynamic_obstacles.sprites.append(sprite)
+            self.dynamic_obstacles.num_sprites += 1
+            self.dyn_obs_idx = len(self.dynamic_obstacles.sprites)-1
+            self.dynamic_obstacles.sprites[-1].skip_physics = True
+            # self.item_stored = True
+        except:
+            # self.item_stored = False
+            log(f'Failed to store item {sprite}')
 
     def update_inventory_selection(self,pose):
-        sprite = self.dynamic_obstacles.sprites[self.dyn_obs_idx]
-        sprite.polys[sprite.idx].teleport(self.mouse_pos[0],self.mouse_pos[1])
-        sprite.pose = self.mouse_pos + sprite.centroid_offsets[sprite.idx]
-
+        try:
+            sprite = self.dynamic_obstacles.sprites[self.dyn_obs_idx]
+            sprite.polys[sprite.idx].teleport(pose[0],pose[1])
+            sprite.pose = (pose + sprite.centroid_offsets[sprite.idx])#*(np.array([[1.],[-1.]]))
+        except:
+            log(f'Update call failed with index {self.dyn_obs_idx}',color='r')
+            self.dyn_obs_idx = len(self.dynamic_obstacles.sprites)-1
+    
     def return_from_inventory(self):
-        self.dyn_obs_idx = None
-
+        try:
+            self.dyn_obs_idx = None
+            self.dynamic_obstacles.sprites[-1].skip_physics = False
+        except:
+            log(f'Failed to return item!',color='r')
+    
     def display_environment(self):
         self.game_widget = QWidget()
         self.game_layout = QVBoxLayout()
@@ -180,23 +193,10 @@ class Game(QMainWindow,FilePaths,ElementColors):
 
         self.game_layout.addStretch()
 
-        # self.game_menu_options = GameMenuOptions(self.dynamic_obstacles)
-        # self.game_layout.addWidget(self.game_menu_options)
-        # self.game_menu_options.save_scene_signal.connect(self.save_scene_event)
-        # self.game_menu_options.exit_game_signal.connect(self.end_game)
-        # self.game_menu_options.pause_game_signal.connect(self.pause_game)
-        # self.game_menu_options.dock_widget_signal.connect(self.show_dock_widget)
-
         self.environment = Environment(self.width,self.height,self.player,self.dynamic_obstacles,self.save_file_name,self.params,load = self.load)
         self.width = self.environment.width
         self.height = self.environment.height
         self.game_layout.addWidget(self.environment)
-
-        # self.game_controller = GameController()
-        # self.game_layout.addWidget(self.game_controller)
-        # self.game_controller.new_scene_signal.connect(self.new_scene_event)
-        # self.game_controller.prev_scene_signal.connect(self.prev_scene_event)
-        # self.game_controller.advance_scene_signal.connect(self.advance_scene_event)
 
         self.game_layout.addStretch()
 

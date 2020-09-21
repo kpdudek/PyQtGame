@@ -15,7 +15,7 @@ from Utils import *
 from PaintUtils import *
 
 class Item(QLabel,Colors,FilePaths):
-    transform = None
+    # transform = None
     clicked_signal = pyqtSignal(object)
     dragged_signal = pyqtSignal(object)
     released_signal = pyqtSignal(object)
@@ -25,7 +25,8 @@ class Item(QLabel,Colors,FilePaths):
         pose = np.array([[self.geometry().x()],[self.geometry().y()]])
         self.transform = -1.*(pose - inv_pose)
 
-        self.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.setFrameShape(QFrame.StyledPanel)
         self.sprite = sprite
         self.index = np.array([[r],[c]])    
         self.mous_pos = None
@@ -43,18 +44,12 @@ class Item(QLabel,Colors,FilePaths):
     
     def mousePressEvent(self,e):
         pose = np.array([[e.x()],[e.y()]])
-        # print(f'pose {pose}')
-        # print(self.transform)
         self.mous_pos = pose + self.transform
-        # print(self.mous_pos)
         self.clicked_signal.emit(self.index)
 
     def mouseMoveEvent(self,e):
         pose = np.array([[e.x()],[e.y()]])
-        # print(f'pose {pose}')
-        # print(self.transform)
         self.mous_pos = pose + self.transform
-        # print(self.mous_pos)
         self.dragged_signal.emit(self.index)
 
     def mouseReleaseEvent(self,e):
@@ -77,14 +72,14 @@ class Inventory(QWidget,Colors,FilePaths):
 
         self.layout = QGridLayout()
 
-        self.width = 600
-        self.height = 400
+        self.width = 400
+        self.height = 250
         self.geom = QRect(math.floor((screen_width-self.width)/2), math.floor((screen_height-self.height)/2), self.width, self.height)
         self.setGeometry(self.geom) 
 
         self.pose = np.array([[self.geometry().x()],[self.geometry().y()]])
 
-        r,c = 2,2
+        r,c = 3,4
         size = r*c
         self.full = False
         self.items = np.empty(size,dtype=object).reshape(r,c)
